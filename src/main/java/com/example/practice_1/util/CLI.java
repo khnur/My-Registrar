@@ -7,9 +7,7 @@ import com.example.practice_1.services.Service;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
-import org.yaml.snakeyaml.scanner.ScannerException;
 
-import java.io.IOException;
 import java.util.List;
 import java.util.Scanner;
 
@@ -39,9 +37,7 @@ public class CLI {
                 switch (scanner.nextInt()) {
                     case 1 -> createEntity();
                     case 2 -> getEntity();
-                    case 3 -> {
-
-                    }
+                    case 3 -> assignEntities();
                     case 0 -> {
                         scanner.close();
                         System.out.println("Thank you. Have fun");
@@ -65,15 +61,18 @@ public class CLI {
                 \nPick a command number:\s""");
 
         switch (scanner.nextInt()) {
+            case 0 -> {
+                init();
+                return;
+            }
             case 1 -> createEntityFurther(Student.class);
             case 2 -> createEntityFurther(Course.class);
             case 3 -> createEntityFurther(Book.class);
-            case 0 -> throw new RuntimeException();
             default -> {
                 displayErrorMessage("number");
-                createEntity();
             }
         }
+        createEntity();
     }
 
 
@@ -140,12 +139,14 @@ public class CLI {
             case 1 -> getEntityStudent();
             case 2 -> getEntityCourse();
             case 3 -> getEntityBook();
-            case 0 -> throw new RuntimeException();
-            default -> {
-                displayErrorMessage("number");
-                getEntity();
+            case 0 -> {
+                init();
+                return;
             }
+            default -> displayErrorMessage("number");
+
         }
+        getEntity();
     }
 
     private void getEntityStudent() throws RuntimeException {
@@ -159,7 +160,10 @@ public class CLI {
 
         try {
             switch (scanner.nextInt()) {
-                case 0 -> throw new RuntimeException();
+                case 0 -> {
+                    return;
+                }
+
                 case 1 -> {
                     service.getAllStudents().forEach(
                             student -> System.out.println(JsonMapper.toJsonString(student))
@@ -215,7 +219,7 @@ public class CLI {
 
         try {
             switch (command.charAt(0)) {
-                case '0', 0, 'o', 'O' -> throw new RuntimeException();
+                case '0', 0, 'o', 'O' -> getEntityStudent();
                 case 'a', 'A' -> {
                     service.getCoursesByStudent(student).forEach(
                             course -> System.out.println(JsonMapper.toJsonString(course))
@@ -247,7 +251,9 @@ public class CLI {
 
         try {
             switch (scanner.nextInt()) {
-                case 0 -> throw new RuntimeException();
+                case 0 -> {
+                    return;
+                }
                 case 1 -> {
                     service.getAllCourses().forEach(
                             course -> System.out.println(JsonMapper.toJsonString(course))
@@ -300,7 +306,7 @@ public class CLI {
 
         try {
             switch (command.charAt(0)) {
-                case '0', 0, 'o', 'O' -> throw new RuntimeException();
+                case '0', 0, 'o', 'O' -> getEntityCourse();
                 case 'a', 'A' -> {
                     service.getStudentsByCourse(course).forEach(
                             student -> System.out.println(JsonMapper.toJsonString(student))
@@ -329,7 +335,9 @@ public class CLI {
 
         try {
             switch (scanner.nextInt()) {
-                case 0 -> throw new RuntimeException();
+                case 0 -> {
+                    return;
+                }
                 case 1 -> {
                     service.getAllBooks().forEach(
                             book -> System.out.println(JsonMapper.toJsonString(book))
@@ -366,16 +374,38 @@ public class CLI {
 
     private void assignEntities() throws RuntimeException {
         System.out.print("""
-                1. Assign student
-                2. Assign course
+                1. Assign student to course
+                2. Assign course to books
                 0. Exit
                 \nPick a command char:\s""");
-        switch (scanner.nextInt()) {
-            case 0 -> throw new RuntimeException();
-            case 1 -> {
+        try {
+            switch (scanner.nextInt()) {
+                case 0 -> {
+                    init();
+                    return;
+                }
+                case 1 -> {
+                    System.out.print("Student first name: ");
+                    String firstName = scanner.next();
 
+                    System.out.print("Student last name: ");
+                    String lastName = scanner.next();
+
+                    Student student = service.getStudentByFirstNameAndLastName(firstName, lastName);
+
+                    System.out.print("Course name: ");
+                    String courseName = scanner.next();
+
+                    List<Course> courses = service.getCoursesByName(courseName);
+
+                    service.assignCoursesToStudent(student, courses);
+                }
+                default -> displayErrorMessage("number");
             }
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
         }
+        assignEntities();
     }
 
     private void displayErrorMessage(String errType) {

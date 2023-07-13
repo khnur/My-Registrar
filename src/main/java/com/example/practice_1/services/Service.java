@@ -1,5 +1,6 @@
 package com.example.practice_1.services;
 
+import com.example.practice_1.embeddables.RegistrationId;
 import com.example.practice_1.models.Book;
 import com.example.practice_1.models.Course;
 import com.example.practice_1.models.Registration;
@@ -10,6 +11,7 @@ import com.example.practice_1.repos.RegistrationRepo;
 import com.example.practice_1.repos.StudentRepo;
 import lombok.RequiredArgsConstructor;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -22,7 +24,7 @@ public class Service {
     private final RegistrationRepo registrationRepo;
 
     public Student createStudent(Student student) throws RuntimeException {
-        if (studentRepo.existsByEmail(student.getEmail())) {
+        if (studentRepo.existsStudentByFirstNameAndLastName(student.getFirstName(), student.getLastName())) {
             throw new RuntimeException("Student with such email already exists");
         }
         return studentRepo.save(student);
@@ -191,6 +193,17 @@ public class Service {
             throw new RuntimeException("There is no book in this course");
         }
         return booksByCourse;
+    }
+
+
+    public void assignCoursesToStudent(Student student, List<Course> courses) throws RuntimeException {
+        LocalDateTime registeredTime = LocalDateTime.now();
+
+        for (Course course : courses) {
+            RegistrationId registrationId = new RegistrationId(student.getId(), course.getId());
+            Registration registration = new Registration(registrationId, student, course, registeredTime);
+            registrationRepo.save(registration);
+        }
     }
 
 }

@@ -37,4 +37,11 @@ public class Registration {
             columnDefinition = "TIMESTAMP WITHOUT TIME ZONE"
     )
     private LocalDateTime registeredTime;
+
+    public Registration(RegistrationId id, Student student, Course course, LocalDateTime registeredTime) {
+        this.id = id;
+        this.student = student;
+        this.course = course;
+        this.registeredTime = registeredTime;
+    }
 }

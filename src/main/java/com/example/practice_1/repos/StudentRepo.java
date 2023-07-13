@@ -10,11 +10,7 @@ import java.util.Optional;
 
 @Repository
 public interface StudentRepo extends JpaRepository<Student, Long> {
-    @Query("select s from Student s where s.email = ?1")
-    Optional<Student> findByEmail(String email);
-
-    @Query("SELECT CASE WHEN COUNT(s) > 0 THEN true ELSE false END FROM Student s WHERE s.email = ?1")
-    boolean existsByEmail(String email);
+    boolean existsStudentByFirstNameAndLastName(String firstName, String lastName);
 
     List<Student> findStudentsByFirstName(String firstName);
 
