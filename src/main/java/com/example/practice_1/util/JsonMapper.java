@@ -9,7 +9,7 @@ public class JsonMapper {
     public static String toJsonString(Object object) {
         mapper.enable(SerializationFeature.INDENT_OUTPUT);
         try {
-            return object.getClass().getSimpleName() + " " + mapper.writeValueAsString(object);
+            return "\n" + object.getClass().getSimpleName() + " " + mapper.writeValueAsString(object) + "\n";
         } catch (JsonProcessingException e) {
             e.printStackTrace();
             return object.toString();

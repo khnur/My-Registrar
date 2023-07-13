@@ -6,7 +6,11 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
+import java.time.Month;
+import java.time.MonthDay;
+import java.time.Year;
 import java.time.format.DateTimeFormatter;
+import java.util.Scanner;
 
 @Entity
 @Table
@@ -35,24 +39,37 @@ public class Book {
     @Column(nullable = false)
     private String author;
 
-    @Column(
-            name = "published_date",
-            nullable = false,
-            columnDefinition = "TIMESTAMP WITHOUT TIME ZONE"
-    )
-    private LocalDate publishedDate;
-
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(
             name = "course_id",
             referencedColumnName = "id"
     )
     private Course course;
 
-    public Book(String name, String author, LocalDate publishedDate) {
+    public Book(String name, String author) {
         this.name = name;
         this.author = author;
-        this.publishedDate = publishedDate;
+    }
+
+    public static Book getInstance(Scanner scanner) {
+        System.out.print("Name: ");
+        String name = scanner.next();
+
+        System.out.print("Author: ");
+        String author = scanner.next();
+
+//        LocalDate publishedDate = null;
+//        while (publishedDate == null) {
+//            System.out.print("Published Date (YYYY-MM-DD): ");
+//            try {
+//                publishedDate = LocalDate.parse(scanner.next());
+//            } catch (Exception e) {
+//                System.out.println("Entered incorrect for of date. Try again\n");
+//            }
+//        }
+
+        return new Book(name, author);
+
     }
     public static Book createRandomBook() {
         Faker faker = Faker.instance();
@@ -60,10 +77,6 @@ public class Book {
         String name = book.title();
         String author = book.author();
 
-        return new Book(
-                name,
-                author,
-                LocalDate.parse(faker.date().birthday().toString(), DateTimeFormatter.ofPattern("EEE MMM dd HH:mm:ss zzz yyyy"))
-        );
+        return new Book(name, author);
     }
 }
