@@ -5,11 +5,6 @@ import jakarta.persistence.*;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.time.LocalDate;
-import java.time.Month;
-import java.time.MonthDay;
-import java.time.Year;
-import java.time.format.DateTimeFormatter;
 import java.util.Scanner;
 
 @Entity
