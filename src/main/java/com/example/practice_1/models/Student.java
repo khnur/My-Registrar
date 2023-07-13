@@ -9,6 +9,7 @@ import lombok.ToString;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Scanner;
 
 @Entity
 @Table
@@ -56,6 +57,24 @@ public class Student {
         this.lastName = lastName;
         this.age = age;
         this.email = email;
+    }
+
+    public static Student getInstance(Scanner scanner) {
+        System.out.print("First Name: ");
+        String firstName = scanner.next();
+
+        System.out.print("Last Name: ");
+        String lastName = scanner.next();
+
+        System.out.print("Age: ");
+        int age = scanner.nextInt();
+
+        return new Student(
+                firstName,
+                lastName,
+                age,
+                firstName.toLowerCase() + '.' + lastName.toLowerCase() + "onelab.kz"
+        );
     }
 
     public static Student createRandomStudent() {

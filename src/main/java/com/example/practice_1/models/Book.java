@@ -1,10 +1,12 @@
 package com.example.practice_1.models;
 
+import com.github.javafaker.Faker;
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 
 @Entity
 @Table
@@ -51,5 +53,17 @@ public class Book {
         this.name = name;
         this.author = author;
         this.publishedDate = publishedDate;
+    }
+    public static Book createRandomBook() {
+        Faker faker = Faker.instance();
+        com.github.javafaker.Book book = faker.book();
+        String name = book.title();
+        String author = book.author();
+
+        return new Book(
+                name,
+                author,
+                LocalDate.parse(faker.date().birthday().toString(), DateTimeFormatter.ofPattern("EEE MMM dd HH:mm:ss zzz yyyy"))
+        );
     }
 }
