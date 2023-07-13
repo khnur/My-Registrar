@@ -2,13 +2,16 @@ package com.example.practice_1.services;
 
 import com.example.practice_1.models.Book;
 import com.example.practice_1.models.Course;
+import com.example.practice_1.models.Registration;
 import com.example.practice_1.models.Student;
 import com.example.practice_1.repos.BookRepo;
 import com.example.practice_1.repos.CourseRepo;
+import com.example.practice_1.repos.RegistrationRepo;
 import com.example.practice_1.repos.StudentRepo;
 import lombok.RequiredArgsConstructor;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @org.springframework.stereotype.Service
 @RequiredArgsConstructor
@@ -16,6 +19,7 @@ public class Service {
     private final StudentRepo studentRepo;
     private final CourseRepo courseRepo;
     private final BookRepo bookRepo;
+    private final RegistrationRepo registrationRepo;
 
     public Student createStudent(Student student) throws RuntimeException {
         if (studentRepo.existsByEmail(student.getEmail())) {
@@ -155,5 +159,38 @@ public class Service {
                 .orElseThrow(() -> new RuntimeException("There is no book with such name and author"));
     }
 
+    public List<Course> getCoursesByStudent(Student student) throws RuntimeException {
+        List<Course> courseList = registrationRepo.findCoursesByStudent(student);
+        if (courseList.isEmpty()) {
+            throw new RuntimeException("The student does not have any registered course");
+        }
+        return courseList;
+    }
+
+    public List<Book> getBooksByStudent(Student student) {
+        List<Course> courses = student.getRegistrations().stream()
+                .map(Registration::getCourse)
+                .collect(Collectors.toList());
+        if (courses.isEmpty()) {
+            throw new RuntimeException("The student does not have any book");
+        }
+        return bookRepo.findBooksByCourseIn(courses);
+    }
+
+    public List<Student> getStudentsByCourse(Course course) {
+        List<Student> studentsByCourse = registrationRepo.findStudentsByCourse(course);
+        if (studentsByCourse.isEmpty()) {
+            throw new RuntimeException("There is no student in this course");
+        }
+        return studentsByCourse;
+    }
+
+    public List<Book> getBooksByCourse(Course course) {
+        List<Book> booksByCourse = bookRepo.findBooksByCourse(course);
+        if (booksByCourse.isEmpty()) {
+            throw new RuntimeException("There is no book in this course");
+        }
+        return booksByCourse;
+    }
 
 }

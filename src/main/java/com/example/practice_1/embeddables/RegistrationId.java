@@ -5,10 +5,12 @@ import jakarta.persistence.Embeddable;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.io.Serializable;
+
 @Embeddable
 @Data
 @NoArgsConstructor
-public class RegistrationId {
+public class RegistrationId implements Serializable {
     @Column(name = "student_id")
     private Long studentId;
 

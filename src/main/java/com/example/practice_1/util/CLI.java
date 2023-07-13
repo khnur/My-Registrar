@@ -28,8 +28,8 @@ public class CLI {
                 """);
 
         while (true) {
-            System.out.println("""
-                    
+            System.out.print("""
+                                        
                     1. Create Entity(s)
                     2. Get Entity(s)
                     3. Assign Entity(s)
@@ -49,7 +49,7 @@ public class CLI {
                     }
                     default -> displayErrorMessage("number");
                 }
-            }  catch (Exception e) {
+            } catch (Exception e) {
                 System.out.println(e.getMessage());
                 scanner.nextLine();
             }
@@ -57,7 +57,7 @@ public class CLI {
     }
 
     private void createEntity() throws RuntimeException {
-        System.out.println("""
+        System.out.print("""
                 1. Create Student
                 2. Create Course
                 3. Create Book
@@ -88,6 +88,7 @@ public class CLI {
         if (command.length() > 1) {
             displayErrorMessage("char");
             createEntityFurther(entityClass);
+            return;
         }
 
         switch (command.charAt(0)) {
@@ -128,7 +129,7 @@ public class CLI {
     }
 
     private void getEntity() throws RuntimeException {
-        System.out.println("""
+        System.out.print("""
                 1. Get Student
                 2. Get Course
                 3. Get Book
@@ -148,7 +149,7 @@ public class CLI {
     }
 
     private void getEntityStudent() throws RuntimeException {
-        System.out.println("""
+        System.out.print("""
                 1. Get all students
                 2. Get student(s) by first name
                 3. Get student(s) by last name
@@ -156,62 +157,51 @@ public class CLI {
                 0. Exit
                 \nPick a command number:\s""");
 
-        switch (scanner.nextInt()) {
-            case 0 -> throw new RuntimeException();
-            case 1 -> {
-                try {
+        try {
+            switch (scanner.nextInt()) {
+                case 0 -> throw new RuntimeException();
+                case 1 -> {
                     service.getAllStudents().forEach(
                             student -> System.out.println(JsonMapper.toJsonString(student))
                     );
-                } catch (Exception e) {
-                    System.out.println(e.getMessage());
                 }
-            }
-            case 2 -> {
-                System.out.print("First name: ");
-                try {
+                case 2 -> {
+                    System.out.print("First name: ");
                     service.getStudentsByFirstName(scanner.next())
                             .forEach(
                                     student -> System.out.println(JsonMapper.toJsonString(student))
                             );
-                } catch (Exception e) {
-                    System.out.println(e.getMessage());
                 }
-            }
-            case 3 -> {
-                System.out.print("Last name: ");
-                try {
+                case 3 -> {
+                    System.out.print("Last name: ");
+
                     service.getStudentsByLastName(scanner.next()).forEach(
                             student -> System.out.println(JsonMapper.toJsonString(student))
                     );
-                } catch (Exception e) {
-                    System.out.println(e.getMessage());
                 }
-            }
 
-            case 4 -> {
-                System.out.print("First name: ");
-                String firstName = scanner.next();
+                case 4 -> {
+                    System.out.print("First name: ");
+                    String firstName = scanner.next();
 
-                System.out.print("Last name: ");
-                String lastName = scanner.next();
+                    System.out.print("Last name: ");
+                    String lastName = scanner.next();
 
-                try {
+
                     Student student = service.getStudentByFirstNameAndLastName(firstName, lastName);
                     System.out.println(JsonMapper.toJsonString(student));
                     getStudentsBooksAndCourses(student);
-                } catch (Exception e) {
-                    System.out.println(e.getMessage());
                 }
+                default -> displayErrorMessage("number");
             }
-            default -> displayErrorMessage("number");
-
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
         }
         getEntityStudent();
     }
 
     private void getStudentsBooksAndCourses(Student student) throws RuntimeException {
-        System.out.println("""
+        System.out.print("""
                 a. Get all assigned courses
                 b. Get all books
                 0. Exit
@@ -220,25 +210,34 @@ public class CLI {
         if (command.length() > 1) {
             displayErrorMessage("char");
             getStudentsBooksAndCourses(student);
+            return;
         }
 
-        switch (command.charAt(0)) {
-            case '0', 0, 'o', 'O' -> throw new RuntimeException();
-            case 'a', 'A' -> {
-
+        try {
+            switch (command.charAt(0)) {
+                case '0', 0, 'o', 'O' -> throw new RuntimeException();
+                case 'a', 'A' -> {
+                    service.getCoursesByStudent(student).forEach(
+                            course -> System.out.println(JsonMapper.toJsonString(course))
+                    );
+                }
+                case 'b', 'B' -> {
+                    service.getBooksByStudent(student).forEach(
+                            book -> System.out.println(JsonMapper.toJsonString(book))
+                    );
+                }
+                default -> {
+                    displayErrorMessage("char");
+                    getStudentsBooksAndCourses(student);
+                }
             }
-            case 'b', 'B' -> {
-
-            }
-            default -> {
-                displayErrorMessage("char");
-                getStudentsBooksAndCourses(student);
-            }
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
         }
     }
 
     private void getEntityCourse() throws RuntimeException {
-        System.out.println("""
+        System.out.print("""
                 1. Get all courses
                 2. Get course(s) by name
                 3. Get course(s) by university
@@ -246,64 +245,81 @@ public class CLI {
                 0. Exit
                 \nPick a command char:\s""");
 
-        switch (scanner.nextInt()) {
-            case 0 -> throw new RuntimeException();
-            case 1 -> {
-                try {
+        try {
+            switch (scanner.nextInt()) {
+                case 0 -> throw new RuntimeException();
+                case 1 -> {
                     service.getAllCourses().forEach(
                             course -> System.out.println(JsonMapper.toJsonString(course))
                     );
-                } catch (Exception e) {
-                    System.out.println(e.getMessage());
                 }
-            }
-            case 2 -> {
-                System.out.print("Name: ");
-                try {
+                case 2 -> {
+                    System.out.print("Name: ");
                     service.getCoursesByName(scanner.next()).forEach(
                             course -> System.out.println(JsonMapper.toJsonString(course))
                     );
-                } catch (Exception e) {
-                    System.out.println(e.getMessage());
+
                 }
-            }
-            case 3 -> {
-                System.out.print("University: ");
-                try {
+                case 3 -> {
+                    System.out.print("University: ");
                     service.getCoursesByUniversity(scanner.next()).forEach(
                             course -> System.out.println(JsonMapper.toJsonString(course))
                     );
-                } catch (Exception e) {
-                    System.out.println(e.getMessage());
                 }
-            }
-            case 4 -> {
-                System.out.print("Name: ");
-                String name = scanner.next();
+                case 4 -> {
+                    System.out.print("Name: ");
+                    String name = scanner.next();
 
-                System.out.print("University: ");
-                String university = scanner.next();
+                    System.out.print("University: ");
+                    String university = scanner.next();
 
-                try {
                     Course course = service.getCourseByNameAndUniversity(name, university);
                     System.out.println(JsonMapper.toJsonString(course));
                     getCoursesStudentsAndBooks(course);
-                } catch (Exception e) {
-                    System.out.println(e.getMessage());
                 }
+                default -> displayErrorMessage("number");
             }
-            default -> displayErrorMessage("number");
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
         }
         getEntityCourse();
     }
 
     private void getCoursesStudentsAndBooks(Course course) throws RuntimeException {
+        System.out.print("""
+                a. Get all students
+                b. Get all books
+                0. Exit
+                \nPick a command char:\s""");
+        String command = scanner.next();
+        if (command.length() > 1) {
+            displayErrorMessage("char");
+            getCoursesStudentsAndBooks(course);
+            return;
+        }
 
+        try {
+            switch (command.charAt(0)) {
+                case '0', 0, 'o', 'O' -> throw new RuntimeException();
+                case 'a', 'A' -> {
+                    service.getStudentsByCourse(course).forEach(
+                            student -> System.out.println(JsonMapper.toJsonString(student))
+                    );
+                }
+                case 'b', 'B' -> {
+                    service.getBooksByCourse(course).forEach(
+                            book -> System.out.println(JsonMapper.toJsonString(book))
+                    );
+                }
+            }
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+        }
     }
 
 
     private void getEntityBook() throws RuntimeException {
-        System.out.println("""
+        System.out.print("""
                 1. Get all books
                 2. Get book(s) by name
                 3. Get book(s) by author
@@ -311,58 +327,55 @@ public class CLI {
                 0. Exit
                 \nPick a command char:\s""");
 
-        switch (scanner.nextInt()) {
-            case 0 -> throw new RuntimeException();
-            case 1 -> {
-                try {
+        try {
+            switch (scanner.nextInt()) {
+                case 0 -> throw new RuntimeException();
+                case 1 -> {
                     service.getAllBooks().forEach(
                             book -> System.out.println(JsonMapper.toJsonString(book))
                     );
-                } catch (Exception e) {
-                    System.out.println(e.getMessage());
                 }
-            }
-            case 2 -> {
-                System.out.print("Name: ");
-                try {
+                case 2 -> {
+                    System.out.print("Name: ");
                     service.getBooksByName(scanner.next()).forEach(
                             book -> System.out.println(JsonMapper.toJsonString(book))
                     );
-                } catch (Exception e) {
-                    System.out.println(e.getMessage());
                 }
-            }
-            case 3 -> {
-                System.out.print("Author: ");
-                try {
+                case 3 -> {
+                    System.out.print("Author: ");
                     service.getBooksByAuthor(scanner.next()).forEach(
                             book -> System.out.println(JsonMapper.toJsonString(book))
                     );
-                } catch (Exception e) {
-                    System.out.println(e.getMessage());
                 }
-            }
-            case 4 -> {
-                System.out.print("Name: ");
-                String name = scanner.next();
+                case 4 -> {
+                    System.out.print("Name: ");
+                    String name = scanner.next();
 
-                System.out.print("Author: ");
-                String author = scanner.next();
+                    System.out.print("Author: ");
+                    String author = scanner.next();
 
-                try {
                     System.out.println(JsonMapper.toJsonString(service.getBookByNameAndAuthor(name, author)));
-                } catch (Exception e) {
-                    System.out.println(e.getMessage());
                 }
+                default -> displayErrorMessage("number");
             }
-            default -> displayErrorMessage("number");
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
         }
         getEntityBook();
     }
 
     private void assignEntities() throws RuntimeException {
+        System.out.print("""
+                1. Assign student
+                2. Assign course
+                0. Exit
+                \nPick a command char:\s""");
+        switch (scanner.nextInt()) {
+            case 0 -> throw new RuntimeException();
+            case 1 -> {
 
-
+            }
+        }
     }
 
     private void displayErrorMessage(String errType) {
