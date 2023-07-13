@@ -57,7 +57,7 @@ public class CLI {
                 1. Create Student
                 2. Create Course
                 3. Create Book
-                0. Exit
+                0. Back
                 \nPick a command number:\s""");
 
         switch (scanner.nextInt()) {
@@ -80,7 +80,7 @@ public class CLI {
         System.out.printf("""
                 a. Create Custom %1$s
                 b. Create Random %1$s(s)
-                0. Exit\s
+                0. Back
                 %nPick a command char:\s""", entityClass.getSimpleName());
 
         String command = scanner.next();
@@ -119,7 +119,7 @@ public class CLI {
                     service.createRandomBooks(n);
                 }
             }
-            case '0', 0, 'o', 'O' -> throw new RuntimeException();
+            case '0', 0, 'o', 'O' -> createEntity();
             default -> {
                 displayErrorMessage("char");
                 createEntityFurther(entityClass);
@@ -139,14 +139,10 @@ public class CLI {
             case 1 -> getEntityStudent();
             case 2 -> getEntityCourse();
             case 3 -> getEntityBook();
-            case 0 -> {
-                init();
-                return;
-            }
-            default -> displayErrorMessage("number");
+            case 0 -> init();
 
+            default -> displayErrorMessage("number");
         }
-        getEntity();
     }
 
     private void getEntityStudent() throws RuntimeException {
@@ -307,15 +303,16 @@ public class CLI {
         try {
             switch (command.charAt(0)) {
                 case '0', 0, 'o', 'O' -> getEntityCourse();
-                case 'a', 'A' -> {
-                    service.getStudentsByCourse(course).forEach(
-                            student -> System.out.println(JsonMapper.toJsonString(student))
-                    );
-                }
-                case 'b', 'B' -> {
-                    service.getBooksByCourse(course).forEach(
-                            book -> System.out.println(JsonMapper.toJsonString(book))
-                    );
+                case 'a', 'A' -> service.getStudentsByCourse(course).forEach(
+                        student -> System.out.println(JsonMapper.toJsonString(student))
+                );
+
+                case 'b', 'B' -> service.getBooksByCourse(course).forEach(
+                        book -> System.out.println(JsonMapper.toJsonString(book))
+                );
+                default -> {
+                    displayErrorMessage("char");
+                    getCoursesStudentsAndBooks(course);
                 }
             }
         } catch (Exception e) {
@@ -399,6 +396,22 @@ public class CLI {
                     List<Course> courses = service.getCoursesByName(courseName);
 
                     service.assignCoursesToStudent(student, courses);
+                }
+                case 2 -> {
+                    System.out.print("Course name: ");
+                    String courseName = scanner.next();
+
+                    System.out.print("Course university: ");
+                    String university = scanner.next();
+
+                    Course course = service.getCourseByNameAndUniversity(courseName, university);
+
+                    System.out.print("Book name: ");
+                    String bookName = scanner.next();
+
+                    List<Book> books = service.getBooksByName(bookName);
+
+                    service.assignBooksToCourse(course, books);
                 }
                 default -> displayErrorMessage("number");
             }

@@ -206,4 +206,12 @@ public class Service {
         }
     }
 
+    public void assignBooksToCourse(Course course, List<Book> books) throws RuntimeException {
+        course.setBooks(books);
+        for (Book book : books) {
+            book.setCourse(course);
+        }
+        courseRepo.save(course);
+    }
+
 }

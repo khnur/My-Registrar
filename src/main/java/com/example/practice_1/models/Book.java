@@ -39,7 +39,7 @@ public class Book {
     @Column(nullable = false)
     private String author;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne
     @JoinColumn(
             name = "course_id",
             referencedColumnName = "id"
