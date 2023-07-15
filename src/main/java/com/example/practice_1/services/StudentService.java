@@ -3,23 +3,25 @@ package com.example.practice_1.services;
 import com.example.practice_1.exceptions.StudentAlreadyExistsException;
 import com.example.practice_1.exceptions.StudentNotFoundException;
 import com.example.practice_1.models.Student;
-import com.example.practice_1.repos.StudentRepo;
-import lombok.RequiredArgsConstructor;
+import com.example.practice_1.tables.BookTable;
+import com.example.practice_1.tables.CourseTable;
+import com.example.practice_1.tables.StudentTable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.stream.IntStream;
 
 @Service
-@RequiredArgsConstructor
-public class StudentService {
-    private final StudentRepo studentRepo;
+public class StudentService extends AbstractService {
+    public StudentService(StudentTable studentData, CourseTable courseData, BookTable bookData) {
+        super(studentData, courseData, bookData);
+    }
 
     public void createStudent(Student student) {
-        if (studentRepo.existsStudentByFirstNameAndLastName(student.getFirstName(), student.getLastName())) {
+        if (studentData.existsStudentByFirstNameAndLastName(student.getFirstName(), student.getLastName())) {
             throw new StudentAlreadyExistsException("Student with such email already exists");
         }
-        studentRepo.save(student);
+        studentData.save(student);
     }
 
     public void createRandomStudents(int n) {
@@ -37,7 +39,7 @@ public class StudentService {
     }
 
     public List<Student> getAllStudents() {
-        List<Student> studentList = studentRepo.findAll();
+        List<Student> studentList = studentData.findAll();
         if (studentList.isEmpty()) {
             throw new StudentNotFoundException("There is no student");
         }
@@ -45,7 +47,7 @@ public class StudentService {
     }
 
     public List<Student> getStudentsByFirstName(String firstName) {
-        List<Student> studentList = studentRepo.findStudentsByFirstName(firstName);
+        List<Student> studentList = studentData.findStudentsByFirstName(firstName);
         if (studentList.isEmpty()) {
             throw new StudentNotFoundException("There is no student with such first name");
         }
@@ -53,7 +55,7 @@ public class StudentService {
     }
 
     public List<Student> getStudentsByLastName(String lastName) {
-        List<Student> studentList = studentRepo.findStudentsByLastName(lastName);
+        List<Student> studentList = studentData.findStudentsByLastName(lastName);
         if (studentList.isEmpty()) {
             throw new StudentNotFoundException("There is no student with such last name");
         }
@@ -61,7 +63,7 @@ public class StudentService {
     }
 
     public Student getStudentByFirstNameAndLastName(String firstName, String lastName) {
-        return studentRepo.findStudentByFirstNameAndLastName(firstName, lastName)
+        return studentData.findStudentByFirstNameAndLastName(firstName, lastName)
                 .orElseThrow(() -> new StudentNotFoundException("There is no student with such first and last name"));
     }
 }

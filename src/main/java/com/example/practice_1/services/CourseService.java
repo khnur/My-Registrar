@@ -4,23 +4,25 @@ import com.example.practice_1.exceptions.CourseAlreadyExistsException;
 import com.example.practice_1.exceptions.CourseNotFoundException;
 import com.example.practice_1.models.Book;
 import com.example.practice_1.models.Course;
-import com.example.practice_1.repos.CourseRepo;
-import lombok.RequiredArgsConstructor;
+import com.example.practice_1.tables.BookTable;
+import com.example.practice_1.tables.CourseTable;
+import com.example.practice_1.tables.StudentTable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.stream.IntStream;
 
 @Service
-@RequiredArgsConstructor
-public class CourseService {
-    private final CourseRepo courseRepo;
+public class CourseService extends AbstractService {
+    public CourseService(StudentTable studentData, CourseTable courseData, BookTable bookData) {
+        super(studentData, courseData, bookData);
+    }
 
     public void createCourse(Course course) {
-        if (courseRepo.existsByNameAndUniversity(course.getName(), course.getUniversity())) {
+        if (courseData.existsByNameAndUniversity(course.getName(), course.getUniversity())) {
             throw new CourseAlreadyExistsException("Course with such name and university already exists");
         }
-        courseRepo.save(course);
+        courseData.save(course);
     }
 
     public void createRandomCourses(int n) {
@@ -38,7 +40,7 @@ public class CourseService {
     }
 
     public List<Course> getAllCourses() {
-        List<Course> courseList = courseRepo.findAll();
+        List<Course> courseList = courseData.findAll();
         if (courseList.isEmpty()) {
             throw new CourseNotFoundException("There is no course");
         }
@@ -46,7 +48,7 @@ public class CourseService {
     }
 
     public List<Course> getCoursesByName(String name) {
-        List<Course> courseList = courseRepo.findCoursesByName(name);
+        List<Course> courseList = courseData.findCoursesByName(name);
         if (courseList.isEmpty()) {
             throw new CourseNotFoundException("There is no course with such name");
         }
@@ -54,7 +56,7 @@ public class CourseService {
     }
 
     public List<Course> getCoursesByUniversity(String university) {
-        List<Course> courseList = courseRepo.findCoursesByUniversity(university);
+        List<Course> courseList = courseData.findCoursesByUniversity(university);
         if (courseList.isEmpty()) {
             throw new CourseNotFoundException("There is no course with such university");
         }
@@ -62,7 +64,7 @@ public class CourseService {
     }
 
     public Course getCourseByNameAndUniversity(String name, String university) {
-        return courseRepo.findCourseByNameAndUniversity(name, university)
+        return courseData.findCourseByNameAndUniversity(name, university)
                 .orElseThrow(() -> new RuntimeException("There is no course with such name and university"));
     }
 
@@ -71,6 +73,6 @@ public class CourseService {
         for (Book book : books) {
             book.setCourse(course);
         }
-        courseRepo.save(course);
+        courseData.save(course);
     }
 }

@@ -6,23 +6,25 @@ import com.example.practice_1.models.Book;
 import com.example.practice_1.models.Course;
 import com.example.practice_1.models.Registration;
 import com.example.practice_1.models.Student;
-import com.example.practice_1.repos.BookRepo;
-import lombok.RequiredArgsConstructor;
+import com.example.practice_1.tables.BookTable;
+import com.example.practice_1.tables.CourseTable;
+import com.example.practice_1.tables.StudentTable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.stream.IntStream;
 
 @Service
-@RequiredArgsConstructor
-public class BookService {
-    private final BookRepo bookRepo;
+public class BookService extends AbstractService {
+    public BookService(StudentTable studentData, CourseTable courseData, BookTable bookData) {
+        super(studentData, courseData, bookData);
+    }
 
     public void createBook(Book book) {
-        if (bookRepo.existsByNameAndAuthor(book.getName(), book.getAuthor())) {
+        if (bookData.existsByNameAndAuthor(book.getName(), book.getAuthor())) {
             throw new BookAlreadyExistsException("Book with such name and author already exists");
         }
-        bookRepo.save(book);
+        bookData.save(book);
     }
 
     public void createRandomBooks(int n) {
@@ -40,7 +42,7 @@ public class BookService {
     }
 
     public List<Book> getAllBooks() {
-        List<Book> bookList = bookRepo.findAll();
+        List<Book> bookList = bookData.findAll();
         if (bookList.isEmpty()) {
             throw new BookNotFoundException("There is no book");
         }
@@ -48,7 +50,7 @@ public class BookService {
     }
 
     public List<Book> getBooksByName(String name) {
-        List<Book> bookList = bookRepo.findBooksByName(name);
+        List<Book> bookList = bookData.findBooksByName(name);
         if (bookList.isEmpty()) {
             throw new BookNotFoundException("There is no book with such name");
         }
@@ -56,7 +58,7 @@ public class BookService {
     }
 
     public List<Book> getBooksByAuthor(String author) {
-        List<Book> bookList = bookRepo.findBooksByAuthor(author);
+        List<Book> bookList = bookData.findBooksByAuthor(author);
         if (bookList.isEmpty()) {
             throw new BookNotFoundException("There is no book with such author");
         }
@@ -64,7 +66,7 @@ public class BookService {
     }
 
     public Book getBookByNameAndAuthor(String name, String author) {
-        return bookRepo.findBookByNameAndAuthor(name, author)
+        return bookData.findBookByNameAndAuthor(name, author)
                 .orElseThrow(() -> new BookNotFoundException("There is no book with such name and author"));
     }
 
@@ -75,11 +77,11 @@ public class BookService {
         if (courses.isEmpty()) {
             throw new BookNotFoundException("The student does not have any book");
         }
-        return bookRepo.findBooksByCourseIn(courses);
+        return bookData.findBooksByCourseIn(courses);
     }
 
     public List<Book> getBooksByCourse(Course course) {
-        List<Book> booksByCourse = bookRepo.findBooksByCourse(course);
+        List<Book> booksByCourse = bookData.findBooksByCourse(course);
         if (booksByCourse.isEmpty()) {
             throw new BookNotFoundException("There is no book in this course");
         }

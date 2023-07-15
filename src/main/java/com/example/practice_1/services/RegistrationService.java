@@ -6,20 +6,22 @@ import com.example.practice_1.exceptions.StudentNotFoundException;
 import com.example.practice_1.models.Course;
 import com.example.practice_1.models.Registration;
 import com.example.practice_1.models.Student;
-import com.example.practice_1.repos.RegistrationRepo;
-import lombok.RequiredArgsConstructor;
+import com.example.practice_1.tables.BookTable;
+import com.example.practice_1.tables.CourseTable;
+import com.example.practice_1.tables.StudentTable;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
-@RequiredArgsConstructor
-public class RegistrationService {
-    private final RegistrationRepo registrationRepo;
+public class RegistrationService extends AbstractService {
+    public RegistrationService(StudentTable studentData, CourseTable courseData, BookTable bookData) {
+        super(studentData, courseData, bookData);
+    }
 
     public List<Course> getCoursesByStudent(Student student) {
-        List<Course> courseList = registrationRepo.findCoursesByStudent(student);
+        List<Course> courseList = courseData.findCoursesByStudent(student);
         if (courseList.isEmpty()) {
             throw new CourseNotFoundException("The student does not have any registered course");
         }
@@ -27,7 +29,7 @@ public class RegistrationService {
     }
 
     public List<Student> getStudentsByCourse(Course course) {
-        List<Student> studentsByCourse = registrationRepo.findStudentsByCourse(course);
+        List<Student> studentsByCourse = studentData.findStudentsByCourse(course);
         if (studentsByCourse.isEmpty()) {
             throw new StudentNotFoundException("There is no student in this course");
         }
@@ -40,7 +42,9 @@ public class RegistrationService {
         for (Course course : courses) {
             RegistrationId registrationId = new RegistrationId(student.getId(), course.getId());
             Registration registration = new Registration(registrationId, student, course, registeredTime);
-            registrationRepo.save(registration);
+
+            course.getRegistrations().add(registration);
+            student.getRegistrations().add(registration);
         }
     }
 }

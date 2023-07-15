@@ -2,7 +2,6 @@ package com.example.practice_1.models;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.github.javafaker.Faker;
-import jakarta.persistence.*;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
@@ -11,43 +10,19 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 
-@Entity
-@Table
 @Data
 @NoArgsConstructor
 public class Student {
-    @Id
-    @GeneratedValue(
-            strategy = GenerationType.SEQUENCE,
-            generator = "student_seq"
-    )
-    @SequenceGenerator(
-            name = "student_seq",
-            sequenceName = "student_sequence",
-            allocationSize = 1
-    )
-    @Column(updatable = false)
     private Long id;
 
-    @Column(
-            name = "first_name",
-            nullable = false
-    )
     private String firstName;
 
-    @Column(name = "last_name")
     private String lastName;
 
-    @Column(nullable = false)
     private Integer age;
 
-    @Column(nullable = false)
     private String email;
 
-    @OneToMany(
-            mappedBy = "student",
-            cascade = CascadeType.ALL
-    )
     @ToString.Exclude
     @JsonIgnore
     private List<Registration> registrations = new ArrayList<>();
