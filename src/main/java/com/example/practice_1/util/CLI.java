@@ -15,6 +15,7 @@ import java.util.Scanner;
 @Lazy
 @RequiredArgsConstructor
 public class CLI {
+    public static final String ERR_TYPE_NUMBER = "number";
     private final Scanner scanner = new Scanner(System.in);
 
     private final StudentService studentService;
@@ -22,48 +23,59 @@ public class CLI {
     private final BookService bookService;
     private final RegistrationService registrationService;
 
+    private boolean running = false;
+
     public void init() {
+        running = true;
+
         System.out.println("""
                 ------------------------------
                 Welcome to My Registrar
                 ------------------------------
                 """);
 
-        while (true) {
-            System.out.print("""
+        while (running) {
+            mainMenu();
+        }
+        scanner.close();
+        System.out.println("Thank you. Have fun");
+        System.exit(0);
+    }
+
+    private void mainMenu() {
+        System.out.print("""
                                         
                     1. Create Entity(s)
                     2. Get Entity(s)
                     3. Assign Entity(s)
                     0. Exit
-                    \nPick a command number:\s""");
-            try {
-                switch (scanner.nextInt()) {
-                    case 1 -> createEntity();
-                    case 2 -> getEntity();
-                    case 3 -> assignEntities();
-                    case 0 -> {
-                        scanner.close();
-                        System.out.println("Thank you. Have fun");
-                        System.exit(0);
-                    }
-                    default -> displayErrorMessage("number");
-                }
-            } catch (Exception e) {
-                System.out.println(e.getMessage());
-                scanner.nextLine();
+                    
+                    Pick a command number:\s
+                    """);
+        try {
+            switch (scanner.nextInt()) {
+                case 1 -> createEntity();
+                case 2 -> getEntity();
+                case 3 -> assignEntities();
+                case 0 -> running = false;
+                default -> displayErrorMessage(ERR_TYPE_NUMBER);
             }
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+            scanner.nextLine();
         }
     }
 
     private void createEntity() throws RuntimeException {
         System.out.print("""
-                
+                                
                 1. Create Student
                 2. Create Course
                 3. Create Book
                 0. Back
-                \nPick a command number:\s""");
+                
+                Pick a command number:\s
+                """);
 
         switch (scanner.nextInt()) {
             case 0 -> {
@@ -73,21 +85,22 @@ public class CLI {
             case 1 -> createEntityFurther(Student.class);
             case 2 -> createEntityFurther(Course.class);
             case 3 -> createEntityFurther(Book.class);
-            default -> {
-                displayErrorMessage("number");
-            }
+            default -> displayErrorMessage(ERR_TYPE_NUMBER);
         }
+
         createEntity();
     }
 
 
     private void createEntityFurther(Class<?> entityClass) throws RuntimeException {
         System.out.printf("""
-                
+                                
                 a. Create Custom %1$s
                 b. Create Random %1$s(s)
                 0. Back
-                %nPick a command char:\s""", entityClass.getSimpleName());
+                
+                Pick a command char:\s
+                """, entityClass.getSimpleName());
 
         String command = scanner.next();
         if (command.length() > 1) {
@@ -135,12 +148,14 @@ public class CLI {
 
     private void getEntity() throws RuntimeException {
         System.out.print("""
-                
+                                
                 1. Get Student
                 2. Get Course
                 3. Get Book
                 0. Exit
-                \nPick a command number:\s""");
+                
+                Pick a command number:\s
+                """);
 
         switch (scanner.nextInt()) {
             case 1 -> getEntityStudent();
@@ -148,19 +163,21 @@ public class CLI {
             case 3 -> getEntityBook();
             case 0 -> init();
 
-            default -> displayErrorMessage("number");
+            default -> displayErrorMessage(ERR_TYPE_NUMBER);
         }
     }
 
     private void getEntityStudent() throws RuntimeException {
         System.out.print("""
-                
+                                
                 1. Get all students
                 2. Get student(s) by first name
                 3. Get student(s) by last name
                 4. Get student(s) by first and last names (with further features)
                 0. Exit
-                \nPick a command number:\s""");
+                
+                Pick a command number:\s
+                """);
 
         try {
             switch (scanner.nextInt()) {
@@ -200,7 +217,7 @@ public class CLI {
                     System.out.println(JsonMapper.toJsonString(student));
                     getStudentsBooksAndCourses(student);
                 }
-                default -> displayErrorMessage("number");
+                default -> displayErrorMessage(ERR_TYPE_NUMBER);
             }
         } catch (Exception e) {
             System.out.println(e.getMessage());
@@ -210,11 +227,13 @@ public class CLI {
 
     private void getStudentsBooksAndCourses(Student student) throws RuntimeException {
         System.out.print("""
-                
+                                
                 a. Get all assigned courses
                 b. Get all books
                 0. Exit
-                \nPick a command char:\s""");
+                
+                Pick a command char:\s
+                """);
         String command = scanner.next();
         if (command.length() > 1) {
             displayErrorMessage("char");
@@ -247,13 +266,15 @@ public class CLI {
 
     private void getEntityCourse() throws RuntimeException {
         System.out.print("""
-                
+                                
                 1. Get all courses
                 2. Get course(s) by name
                 3. Get course(s) by university
                 4. Get course(s) by name and university
                 0. Exit
-                \nPick a command char:\s""");
+                
+                Pick a command char:\s
+                """);
 
         try {
             switch (scanner.nextInt()) {
@@ -289,7 +310,7 @@ public class CLI {
                     System.out.println(JsonMapper.toJsonString(course));
                     getCoursesStudentsAndBooks(course);
                 }
-                default -> displayErrorMessage("number");
+                default -> displayErrorMessage(ERR_TYPE_NUMBER);
             }
         } catch (Exception e) {
             System.out.println(e.getMessage());
@@ -299,11 +320,13 @@ public class CLI {
 
     private void getCoursesStudentsAndBooks(Course course) throws RuntimeException {
         System.out.print("""
-                
+                                
                 a. Get all students
                 b. Get all books
                 0. Exit
-                \nPick a command char:\s""");
+                                
+                Pick a command char:\s
+                """);
         String command = scanner.next();
         if (command.length() > 1) {
             displayErrorMessage("char");
@@ -334,13 +357,15 @@ public class CLI {
 
     private void getEntityBook() throws RuntimeException {
         System.out.print("""
-                
+                                
                 1. Get all books
                 2. Get book(s) by name
                 3. Get book(s) by author
                 4. Get book by name and author
                 0. Exit
-                \nPick a command char:\s""");
+                                
+                Pick a command char:\s
+                """);
 
         try {
             switch (scanner.nextInt()) {
@@ -373,7 +398,7 @@ public class CLI {
 
                     System.out.println(JsonMapper.toJsonString(bookService.getBookByNameAndAuthor(name, author)));
                 }
-                default -> displayErrorMessage("number");
+                default -> displayErrorMessage(ERR_TYPE_NUMBER);
             }
         } catch (Exception e) {
             System.out.println(e.getMessage());
@@ -383,11 +408,13 @@ public class CLI {
 
     private void assignEntities() throws RuntimeException {
         System.out.print("""
-                
+                                
                 1. Assign student to course
                 2. Assign course to books
                 0. Exit
-                \nPick a command char:\s""");
+                                
+                Pick a command char:\s
+                """);
         try {
             switch (scanner.nextInt()) {
                 case 0 -> {
@@ -426,7 +453,7 @@ public class CLI {
 
                     courseService.assignBooksToCourse(course, books);
                 }
-                default -> displayErrorMessage("number");
+                default -> displayErrorMessage(ERR_TYPE_NUMBER);
             }
         } catch (Exception e) {
             System.out.println(e.getMessage());

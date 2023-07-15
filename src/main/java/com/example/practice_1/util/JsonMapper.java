@@ -15,4 +15,8 @@ public class JsonMapper {
             return object.toString();
         }
     }
+
+    private JsonMapper() {
+        throw new IllegalStateException("Json class");
+    }
 }

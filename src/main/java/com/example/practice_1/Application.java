@@ -15,9 +15,7 @@ public class Application {
 
     @Bean
     CommandLineRunner commandLineRunner(CLI cli) {
-        return args -> {
-            cli.init();
-        };
+        return args -> cli.init();
     }
 
 }
