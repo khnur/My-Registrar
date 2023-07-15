@@ -1,6 +1,5 @@
 package com.example.practice_1.models;
 
-import com.example.practice_1.services.Service;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.github.javafaker.Faker;
 import jakarta.persistence.*;

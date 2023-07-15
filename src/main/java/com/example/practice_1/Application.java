@@ -1,6 +1,5 @@
 package com.example.practice_1;
 
-import com.example.practice_1.services.Service;
 import com.example.practice_1.util.CLI;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
