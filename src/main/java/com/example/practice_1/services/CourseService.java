@@ -1,5 +1,7 @@
 package com.example.practice_1.services;
 
+import com.example.practice_1.exceptions.CourseAlreadyExistsException;
+import com.example.practice_1.exceptions.CourseNotFoundException;
 import com.example.practice_1.models.Book;
 import com.example.practice_1.models.Course;
 import com.example.practice_1.repos.CourseRepo;
@@ -7,59 +9,64 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.stream.IntStream;
 
 @Service
 @RequiredArgsConstructor
 public class CourseService {
     private final CourseRepo courseRepo;
 
-    public Course createCourse(Course course) throws RuntimeException {
+    public void createCourse(Course course) {
         if (courseRepo.existsByNameAndUniversity(course.getName(), course.getUniversity())) {
-            throw new RuntimeException("Course with such name and university already exists");
+            throw new CourseAlreadyExistsException("Course with such name and university already exists");
         }
-        return courseRepo.save(course);
+        courseRepo.save(course);
     }
 
     public void createRandomCourses(int n) {
-        for (int i = 0; i < n; ) {
-            try {
-                createCourse(Course.createRandomCourse());
-                i++;
-            } catch (Exception ignored) {
-            }
-        }
+        IntStream.range(0, n)
+                .filter(i -> {
+                    try {
+                        createCourse(Course.createRandomCourse());
+                        return true;
+                    } catch (Exception ignored) {
+                        return false;
+                    }
+                })
+                .forEach(i -> {
+                });
     }
 
-    public List<Course> getAllCourses() throws RuntimeException {
+    public List<Course> getAllCourses() {
         List<Course> courseList = courseRepo.findAll();
         if (courseList.isEmpty()) {
-            throw new RuntimeException("There is no course");
+            throw new CourseNotFoundException("There is no course");
         }
         return courseList;
     }
 
-    public List<Course> getCoursesByName(String name) throws RuntimeException {
+    public List<Course> getCoursesByName(String name) {
         List<Course> courseList = courseRepo.findCoursesByName(name);
         if (courseList.isEmpty()) {
-            throw new RuntimeException("There is no course with such name");
+            throw new CourseNotFoundException("There is no course with such name");
         }
         return courseList;
     }
 
-    public List<Course> getCoursesByUniversity(String university) throws RuntimeException {
+    public List<Course> getCoursesByUniversity(String university) {
         List<Course> courseList = courseRepo.findCoursesByUniversity(university);
         if (courseList.isEmpty()) {
-            throw new RuntimeException("There is no course with such university");
+            throw new CourseNotFoundException("There is no course with such university");
         }
         return courseList;
     }
 
-    public Course getCourseByNameAndUniversity(String name, String university) throws RuntimeException {
+    public Course getCourseByNameAndUniversity(String name, String university) {
         return courseRepo.findCourseByNameAndUniversity(name, university)
                 .orElseThrow(() -> new RuntimeException("There is no course with such name and university"));
     }
 
-    public void assignBooksToCourse(Course course, List<Book> books) throws RuntimeException {
+    public void assignBooksToCourse(Course course, List<Book> books) {
         course.setBooks(books);
         for (Book book : books) {
             book.setCourse(course);

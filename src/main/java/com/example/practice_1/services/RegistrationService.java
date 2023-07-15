@@ -1,6 +1,8 @@
 package com.example.practice_1.services;
 
 import com.example.practice_1.embeddables.RegistrationId;
+import com.example.practice_1.exceptions.CourseNotFoundException;
+import com.example.practice_1.exceptions.StudentNotFoundException;
 import com.example.practice_1.models.Course;
 import com.example.practice_1.models.Registration;
 import com.example.practice_1.models.Student;
@@ -16,10 +18,10 @@ import java.util.List;
 public class RegistrationService {
     private final RegistrationRepo registrationRepo;
 
-    public List<Course> getCoursesByStudent(Student student) throws RuntimeException {
+    public List<Course> getCoursesByStudent(Student student) {
         List<Course> courseList = registrationRepo.findCoursesByStudent(student);
         if (courseList.isEmpty()) {
-            throw new RuntimeException("The student does not have any registered course");
+            throw new CourseNotFoundException("The student does not have any registered course");
         }
         return courseList;
     }
@@ -27,12 +29,12 @@ public class RegistrationService {
     public List<Student> getStudentsByCourse(Course course) {
         List<Student> studentsByCourse = registrationRepo.findStudentsByCourse(course);
         if (studentsByCourse.isEmpty()) {
-            throw new RuntimeException("There is no student in this course");
+            throw new StudentNotFoundException("There is no student in this course");
         }
         return studentsByCourse;
     }
 
-    public void assignCoursesToStudent(Student student, List<Course> courses) throws RuntimeException {
+    public void assignCoursesToStudent(Student student, List<Course> courses) {
         LocalDateTime registeredTime = LocalDateTime.now();
 
         for (Course course : courses) {

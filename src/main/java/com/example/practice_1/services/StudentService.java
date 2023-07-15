@@ -1,60 +1,67 @@
 package com.example.practice_1.services;
 
+import com.example.practice_1.exceptions.StudentAlreadyExistsException;
+import com.example.practice_1.exceptions.StudentNotFoundException;
 import com.example.practice_1.models.Student;
 import com.example.practice_1.repos.StudentRepo;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.stream.IntStream;
 
 @Service
 @RequiredArgsConstructor
 public class StudentService {
     private final StudentRepo studentRepo;
 
-    public Student createStudent(Student student) throws RuntimeException {
+    public void createStudent(Student student) {
         if (studentRepo.existsStudentByFirstNameAndLastName(student.getFirstName(), student.getLastName())) {
-            throw new RuntimeException("Student with such email already exists");
+            throw new StudentAlreadyExistsException("Student with such email already exists");
         }
-        return studentRepo.save(student);
+        studentRepo.save(student);
     }
 
     public void createRandomStudents(int n) {
-        for (int i = 0; i < n; ) {
-            try {
-                createStudent(Student.createRandomStudent());
-                i++;
-            } catch (Exception ignored) {
-            }
-        }
+        IntStream.range(0, n)
+                .filter(i -> {
+                    try {
+                        createStudent(Student.createRandomStudent());
+                        return true;
+                    } catch (Exception ignored) {
+                        return false;
+                    }
+                })
+                .forEach(i -> {
+                });
     }
 
-    public List<Student> getAllStudents() throws RuntimeException {
+    public List<Student> getAllStudents() {
         List<Student> studentList = studentRepo.findAll();
         if (studentList.isEmpty()) {
-            throw new RuntimeException("There is no student");
+            throw new StudentNotFoundException("There is no student");
         }
         return studentList;
     }
 
-    public List<Student> getStudentsByFirstName(String firstName) throws RuntimeException {
+    public List<Student> getStudentsByFirstName(String firstName) {
         List<Student> studentList = studentRepo.findStudentsByFirstName(firstName);
         if (studentList.isEmpty()) {
-            throw new RuntimeException("There is no student with such first name");
+            throw new StudentNotFoundException("There is no student with such first name");
         }
         return studentList;
     }
 
-    public List<Student> getStudentsByLastName(String lastName) throws RuntimeException {
+    public List<Student> getStudentsByLastName(String lastName) {
         List<Student> studentList = studentRepo.findStudentsByLastName(lastName);
         if (studentList.isEmpty()) {
-            throw new RuntimeException("There is no student with such last name");
+            throw new StudentNotFoundException("There is no student with such last name");
         }
         return studentList;
     }
 
-    public Student getStudentByFirstNameAndLastName(String firstName, String lastName) throws RuntimeException {
+    public Student getStudentByFirstNameAndLastName(String firstName, String lastName) {
         return studentRepo.findStudentByFirstNameAndLastName(firstName, lastName)
-                .orElseThrow(() -> new RuntimeException("There is no student with such first and last name"));
+                .orElseThrow(() -> new StudentNotFoundException("There is no student with such first and last name"));
     }
 }

@@ -9,7 +9,7 @@
 		<relativePath/> <!-- lookup parent from repository -->
 	</parent>
 	<groupId>com.example</groupId>
-	<artifactId>practice_1</artifactId>
+	<artifactId>MyRegistrar</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
 	<name>practice_1</name>
 	<description>First OneLab practice project for Spring Boot</description>
