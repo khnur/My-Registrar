@@ -18,21 +18,21 @@ public abstract class AbstractTable<T> {
 
     protected List<T> findListByFirst(String first) {
         return map.entrySet().stream()
-                .filter(entry -> entry.getKey().startsWith(first + "#"))
+                .filter(entry -> entry.getKey().startsWith(first.toLowerCase() + "#"))
                 .map(Map.Entry::getValue)
                 .toList();
     }
 
     protected List<T> findListBySecond(String second) {
         return map.entrySet().stream()
-                .filter(entry -> entry.getKey().endsWith("#" + second))
+                .filter(entry -> entry.getKey().endsWith("#" + second.toLowerCase()))
                 .map(Map.Entry::getValue)
                 .toList();
     }
 
     protected Optional<T> findByFirstAndSecond(String first, String second) {
         return map.entrySet().stream()
-                .filter(entry -> entry.getKey().equals(first + "#" + second))
+                .filter(entry -> entry.getKey().equals(toHash(first, second)))
                 .map(Map.Entry::getValue)
                 .findFirst();
     }
