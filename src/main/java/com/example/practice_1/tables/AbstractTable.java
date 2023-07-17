@@ -12,13 +12,15 @@ public abstract class AbstractTable<T> {
     protected final String tableName;
     protected final Class<T> clazz;
     protected final JdbcTemplate jdbcTemplate;
-    protected final Map<String, T> map = new HashMap<>();
 
     private final List<String> columnNames;
+
+    private final BeanPropertyRowMapper<T> beanPropertyRowMapper;
 
     protected AbstractTable(Class<T> clazz) {
         this.tableName = clazz.getSimpleName().toLowerCase();
         this.clazz = clazz;
+        this.beanPropertyRowMapper = new BeanPropertyRowMapper<>(clazz);
 
         try {
             jdbcTemplate = new JdbcTemplate(DataBase.getDataSource());
@@ -45,32 +47,31 @@ public abstract class AbstractTable<T> {
 
         Integer count = jdbcTemplate.queryForObject(sql, Integer.class, first, second);
 
-        System.out.println(sql);
-        System.out.println(count);
-        System.out.println();
-
         return count != null && count > 0;
     }
 
     protected List<T> findListByFirst(String first) {
-        return map.entrySet().stream()
-                .filter(entry -> entry.getKey().startsWith(first.toLowerCase() + "#"))
-                .map(Map.Entry::getValue)
-                .toList();
+        String sql = "SELECT * FROM " + tableName + " WHERE " +
+                columnNames.get(1) + " = ?";
+        return jdbcTemplate.query(sql, beanPropertyRowMapper, first);
     }
 
     protected List<T> findListBySecond(String second) {
-        return map.entrySet().stream()
-                .filter(entry -> entry.getKey().endsWith("#" + second.toLowerCase()))
-                .map(Map.Entry::getValue)
-                .toList();
+        String sql = "SELECT * FROM " + tableName + " WHERE " +
+                columnNames.get(2) + " = ?";
+        return jdbcTemplate.query(sql, beanPropertyRowMapper, second);
     }
 
     protected Optional<T> findByFirstAndSecond(String first, String second) {
-        return map.entrySet().stream()
-                .filter(entry -> entry.getKey().equals(toHash(first, second)))
-                .map(Map.Entry::getValue)
-                .findFirst();
+        String sql = "SELECT * FROM " + tableName + " WHERE " +
+                columnNames.get(1) + " = ? AND " + columnNames.get(2) + " = ?";
+
+        List<T> records = jdbcTemplate.query(sql, beanPropertyRowMapper, first, second);
+
+        if (records.isEmpty()) {
+            return Optional.empty();
+        }
+        return Optional.of(records.get(0));
     }
 
     protected String toHash(String first, String second) {
@@ -92,7 +93,7 @@ public abstract class AbstractTable<T> {
         jdbcTemplate.execute(createTableSql.toString());
     }
 
-    private boolean tableExists() { ////
+    private boolean tableExists() {
         String sql = "SELECT 1 FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_NAME = ?";
 
         List<Integer> result = jdbcTemplate.queryForList(sql, Integer.class, tableName);
@@ -165,9 +166,6 @@ public abstract class AbstractTable<T> {
                     )).append(")");
 
             Object[] fieldValues = getObjects(object);
-
-            System.out.println(sql);
-            System.out.println(Arrays.toString(fieldValues));
 
             jdbcTemplate.update(sql.toString(), fieldValues);
         }
