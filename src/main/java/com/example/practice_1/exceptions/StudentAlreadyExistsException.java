@@ -1,7 +1,0 @@
-package com.example.practice_1.exceptions;
-
-public class StudentAlreadyExistsException extends RuntimeException {
-    public StudentAlreadyExistsException(String message) {
-        super(message);
-    }
-}

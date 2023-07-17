@@ -1,0 +1,7 @@
+package com.example.myregistrar.exceptions;
+
+public class CourseNotFoundException extends RuntimeException {
+    public CourseNotFoundException(String message) {
+        super(message);
+    }
+}
