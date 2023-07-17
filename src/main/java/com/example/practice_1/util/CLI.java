@@ -3,19 +3,25 @@ package com.example.practice_1.util;
 import com.example.practice_1.models.Book;
 import com.example.practice_1.models.Course;
 import com.example.practice_1.models.Student;
-import com.example.practice_1.services.*;
+import com.example.practice_1.services.BookService;
+import com.example.practice_1.services.CourseService;
+import com.example.practice_1.services.RegistrationService;
+import com.example.practice_1.services.StudentService;
 import lombok.RequiredArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
 import java.util.Scanner;
+import java.util.stream.IntStream;
 
 @Component
 @Lazy
 @RequiredArgsConstructor
 public class CLI {
-    public static final String ERR_TYPE_NUMBER = "number";
+    private static final Logger logger = LoggerFactory.getLogger(CLI.class);
     private final Scanner scanner = new Scanner(System.in);
 
     private final StudentService studentService;
@@ -28,64 +34,55 @@ public class CLI {
     public void init() {
         running = true;
 
-        System.out.println("""
-                ------------------------------
-                Welcome to My Registrar
-                ------------------------------
-                """);
+        logger.info("------------------------------");
+        logger.info("Welcome to My Registrar");
+        logger.info("------------------------------");
 
         while (running) {
             mainMenu();
         }
         scanner.close();
-        System.out.println("Thank you. Have fun");
+        logger.info("Thank you. Have fun");
         System.exit(0);
     }
 
     private void mainMenu() {
-        System.out.print("""
-                                        
-                    1. Create Entity(s)
-                    2. Get Entity(s)
-                    3. Assign Entity(s)
-                    0. Exit
-                    
-                    Pick a command number:\s
-                    """);
+        displayMenu(
+                "Create Entity(s)",
+                "Get Entity(s)",
+                "Assign Entity(s)"
+        );
+
         try {
             switch (scanner.nextInt()) {
                 case 1 -> createEntity();
                 case 2 -> getEntity();
                 case 3 -> assignEntities();
                 case 0 -> running = false;
-                default -> displayErrorMessage(ERR_TYPE_NUMBER);
+                default -> displayErrorMessage();
             }
         } catch (Exception e) {
-            System.out.println(e.getMessage());
+            logger.error(e.getMessage());
             scanner.nextLine();
         }
     }
 
     private void createEntity() throws RuntimeException {
-        System.out.print("""
-                                
-                1. Create Student
-                2. Create Course
-                3. Create Book
-                0. Back
-                
-                Pick a command number:\s
-                """);
+        displayMenu(
+                "Create Student",
+                "Create Course",
+                "Create Book"
+        );
 
         switch (scanner.nextInt()) {
             case 0 -> {
-                init();
+                mainMenu();
                 return;
             }
             case 1 -> createEntityFurther(Student.class);
             case 2 -> createEntityFurther(Course.class);
             case 3 -> createEntityFurther(Book.class);
-            default -> displayErrorMessage(ERR_TYPE_NUMBER);
+            default -> displayErrorMessage();
         }
 
         createEntity();
@@ -93,24 +90,13 @@ public class CLI {
 
 
     private void createEntityFurther(Class<?> entityClass) throws RuntimeException {
-        System.out.printf("""
-                                
-                a. Create Custom %1$s
-                b. Create Random %1$s(s)
-                0. Back
-                
-                Pick a command char:\s
-                """, entityClass.getSimpleName());
+        displayMenu(
+                String.format("Create Custom %1$s", entityClass.getSimpleName()),
+                String.format("Create Random %1$s", entityClass.getSimpleName())
+        );
 
-        String command = scanner.next();
-        if (command.length() > 1) {
-            displayErrorMessage("char");
-            createEntityFurther(entityClass);
-            return;
-        }
-
-        switch (command.charAt(0)) {
-            case 'a', 'A' -> {
+        switch (scanner.nextInt()) {
+            case 1 -> {
                 if (Student.class.isAssignableFrom(entityClass)) {
                     studentService.createStudent(Student.getInstance(scanner));
                 } else if (Course.class.isAssignableFrom(entityClass)) {
@@ -119,14 +105,14 @@ public class CLI {
                     bookService.createBook(Book.getInstance(scanner));
                 }
             }
-            case 'b', 'B' -> {
+            case 2 -> {
                 int n;
                 do {
-                    System.out.print("How many: ");
+                    logger.info("How many: ");
                     n = scanner.nextInt();
 
                     if (n < 0 || n > 100) {
-                        System.out.println("Invalid amount or it is too large\n");
+                        logger.error("Invalid amount or it is too large\n");
                     }
                 } while (n < 0 || n > 100);
 
@@ -138,46 +124,38 @@ public class CLI {
                     bookService.createRandomBooks(n);
                 }
             }
-            case '0', 0, 'o', 'O' -> createEntity();
+            case 0 -> createEntity();
             default -> {
-                displayErrorMessage("char");
+                displayErrorMessage();
                 createEntityFurther(entityClass);
             }
         }
     }
 
     private void getEntity() throws RuntimeException {
-        System.out.print("""
-                                
-                1. Get Student
-                2. Get Course
-                3. Get Book
-                0. Exit
-                
-                Pick a command number:\s
-                """);
+        displayMenu(
+                "Get Student(s)",
+                "Get Course(s)",
+                "Get Book(s)"
+        );
 
         switch (scanner.nextInt()) {
             case 1 -> getEntityStudent();
             case 2 -> getEntityCourse();
             case 3 -> getEntityBook();
-            case 0 -> init();
+            case 0 -> mainMenu();
 
-            default -> displayErrorMessage(ERR_TYPE_NUMBER);
+            default -> displayErrorMessage();
         }
     }
 
     private void getEntityStudent() throws RuntimeException {
-        System.out.print("""
-                                
-                1. Get all students
-                2. Get student(s) by first name
-                3. Get student(s) by last name
-                4. Get student(s) by first and last names (with further features)
-                0. Exit
-                
-                Pick a command number:\s
-                """);
+        displayMenu(
+                "Get all students",
+                "Get student(s) by first name",
+                "Get student(s) by last name",
+                "Get student(s) by first and last names (with further features)"
+        );
 
         try {
             switch (scanner.nextInt()) {
@@ -187,94 +165,78 @@ public class CLI {
 
                 case 1 -> {
                     studentService.getAllStudents().forEach(
-                            student -> System.out.println(JsonMapper.toJsonString(student))
+                            student -> logger.info(JsonMapper.toJsonString(student))
                     );
                 }
                 case 2 -> {
-                    System.out.print("First name: ");
+                    logger.info("First name: ");
                     studentService.getStudentsByFirstName(scanner.next())
                             .forEach(
-                                    student -> System.out.println(JsonMapper.toJsonString(student))
+                                    student -> logger.info(JsonMapper.toJsonString(student))
                             );
                 }
                 case 3 -> {
-                    System.out.print("Last name: ");
+                    logger.info("Last name: ");
 
                     studentService.getStudentsByLastName(scanner.next()).forEach(
-                            student -> System.out.println(JsonMapper.toJsonString(student))
+                            student -> logger.info(JsonMapper.toJsonString(student))
                     );
                 }
 
                 case 4 -> {
-                    System.out.print("First name: ");
+                    logger.info("First name: ");
                     String firstName = scanner.next();
 
-                    System.out.print("Last name: ");
+                    logger.info("Last name: ");
                     String lastName = scanner.next();
 
-
                     Student student = studentService.getStudentByFirstNameAndLastName(firstName, lastName);
-                    System.out.println(JsonMapper.toJsonString(student));
+                    logger.info(JsonMapper.toJsonString(student));
+
                     getStudentsBooksAndCourses(student);
                 }
-                default -> displayErrorMessage(ERR_TYPE_NUMBER);
+                default -> displayErrorMessage();
             }
         } catch (Exception e) {
-            System.out.println(e.getMessage());
+            logger.error(e.getMessage());
         }
         getEntityStudent();
     }
 
     private void getStudentsBooksAndCourses(Student student) throws RuntimeException {
-        System.out.print("""
-                                
-                a. Get all assigned courses
-                b. Get all books
-                0. Exit
-                
-                Pick a command char:\s
-                """);
-        String command = scanner.next();
-        if (command.length() > 1) {
-            displayErrorMessage("char");
-            getStudentsBooksAndCourses(student);
-            return;
-        }
+        displayMenu(
+                "Get all assigned courses",
+                "Get all books"
+        );
 
         try {
-            switch (command.charAt(0)) {
-                case '0', 0, 'o', 'O' -> getEntityStudent();
-                case 'a', 'A' -> {
-                    registrationService.getCoursesByStudent(student).forEach(
-                            course -> System.out.println(JsonMapper.toJsonString(course))
-                    );
-                }
-                case 'b', 'B' -> {
-                    bookService.getBooksByStudent(student).forEach(
-                            book -> System.out.println(JsonMapper.toJsonString(book))
-                    );
-                }
+            switch (scanner.nextInt()) {
+                case 0 -> getEntityStudent();
+                case 1 -> registrationService.getCoursesByStudent(student).forEach(
+                        course -> logger.info(JsonMapper.toJsonString(course))
+                );
+
+                case 2 -> bookService.getBooksByStudent(student).forEach(
+                        book -> logger.info(JsonMapper.toJsonString(book))
+                );
+
                 default -> {
-                    displayErrorMessage("char");
+                    displayErrorMessage();
                     getStudentsBooksAndCourses(student);
                 }
             }
         } catch (Exception e) {
-            System.out.println(e.getMessage());
+            logger.error(e.getMessage());
         }
     }
 
     private void getEntityCourse() throws RuntimeException {
-        System.out.print("""
-                                
-                1. Get all courses
-                2. Get course(s) by name
-                3. Get course(s) by university
-                4. Get course(s) by name and university
-                0. Exit
-                
-                Pick a command char:\s
-                """);
+        displayMenu(
+                "Get all courses",
+                "Get course(s) by name",
+                "Get course(s) by university",
+                "Get course(s) by name and university"
+        );
 
         try {
             switch (scanner.nextInt()) {
@@ -283,89 +245,76 @@ public class CLI {
                 }
                 case 1 -> {
                     courseService.getAllCourses().forEach(
-                            course -> System.out.println(JsonMapper.toJsonString(course))
+                            course -> logger.info(JsonMapper.toJsonString(course))
                     );
                 }
                 case 2 -> {
-                    System.out.print("Name: ");
+                    logger.info("Name: ");
                     courseService.getCoursesByName(scanner.next()).forEach(
-                            course -> System.out.println(JsonMapper.toJsonString(course))
+                            course -> logger.info(JsonMapper.toJsonString(course))
                     );
 
                 }
                 case 3 -> {
-                    System.out.print("University: ");
+                    logger.info("University: ");
                     courseService.getCoursesByUniversity(scanner.next()).forEach(
-                            course -> System.out.println(JsonMapper.toJsonString(course))
+                            course -> logger.info(JsonMapper.toJsonString(course))
                     );
                 }
                 case 4 -> {
-                    System.out.print("Name: ");
+                    logger.info("Name: ");
                     String name = scanner.next();
 
-                    System.out.print("University: ");
+                    logger.info("University: ");
                     String university = scanner.next();
 
                     Course course = courseService.getCourseByNameAndUniversity(name, university);
-                    System.out.println(JsonMapper.toJsonString(course));
+                    logger.info(JsonMapper.toJsonString(course));
+
                     getCoursesStudentsAndBooks(course);
                 }
-                default -> displayErrorMessage(ERR_TYPE_NUMBER);
+                default -> displayErrorMessage();
             }
         } catch (Exception e) {
-            System.out.println(e.getMessage());
+            logger.error(e.getMessage());
         }
         getEntityCourse();
     }
 
     private void getCoursesStudentsAndBooks(Course course) throws RuntimeException {
-        System.out.print("""
-                                
-                a. Get all students
-                b. Get all books
-                0. Exit
-                                
-                Pick a command char:\s
-                """);
-        String command = scanner.next();
-        if (command.length() > 1) {
-            displayErrorMessage("char");
-            getCoursesStudentsAndBooks(course);
-            return;
-        }
+        displayMenu(
+                "Get all students",
+                "Get all books"
+        );
 
         try {
-            switch (command.charAt(0)) {
-                case '0', 0, 'o', 'O' -> getEntityCourse();
-                case 'a', 'A' -> registrationService.getStudentsByCourse(course).forEach(
-                        student -> System.out.println(JsonMapper.toJsonString(student))
+            switch (scanner.nextInt()) {
+                case 0 -> getEntityCourse();
+                case 1 -> registrationService.getStudentsByCourse(course).forEach(
+                        student -> logger.info(JsonMapper.toJsonString(student))
                 );
 
-                case 'b', 'B' -> bookService.getBooksByCourse(course).forEach(
-                        book -> System.out.println(JsonMapper.toJsonString(book))
+                case 2 -> bookService.getBooksByCourse(course).forEach(
+                        book -> logger.info(JsonMapper.toJsonString(book))
                 );
                 default -> {
-                    displayErrorMessage("char");
+                    displayErrorMessage();
                     getCoursesStudentsAndBooks(course);
                 }
             }
         } catch (Exception e) {
-            System.out.println(e.getMessage());
+            logger.error(e.getMessage());
         }
     }
 
 
     private void getEntityBook() throws RuntimeException {
-        System.out.print("""
-                                
-                1. Get all books
-                2. Get book(s) by name
-                3. Get book(s) by author
-                4. Get book by name and author
-                0. Exit
-                                
-                Pick a command char:\s
-                """);
+        displayMenu(
+                "Get all books",
+                "Get book(s) by name",
+                "Get book(s) by author",
+                "Get book by name and author"
+        );
 
         try {
             switch (scanner.nextInt()) {
@@ -374,63 +323,60 @@ public class CLI {
                 }
                 case 1 -> {
                     bookService.getAllBooks().forEach(
-                            book -> System.out.println(JsonMapper.toJsonString(book))
+                            book -> logger.info(JsonMapper.toJsonString(book))
                     );
                 }
                 case 2 -> {
-                    System.out.print("Name: ");
+                    logger.info("Name: ");
                     bookService.getBooksByName(scanner.next()).forEach(
-                            book -> System.out.println(JsonMapper.toJsonString(book))
+                            book -> logger.info(JsonMapper.toJsonString(book))
                     );
                 }
                 case 3 -> {
-                    System.out.print("Author: ");
+                    logger.info("Author: ");
                     bookService.getBooksByAuthor(scanner.next()).forEach(
-                            book -> System.out.println(JsonMapper.toJsonString(book))
+                            book -> logger.info(JsonMapper.toJsonString(book))
                     );
                 }
                 case 4 -> {
-                    System.out.print("Name: ");
+                    logger.info("Name: ");
                     String name = scanner.next();
 
-                    System.out.print("Author: ");
+                    logger.info("Author: ");
                     String author = scanner.next();
 
-                    System.out.println(JsonMapper.toJsonString(bookService.getBookByNameAndAuthor(name, author)));
+                    logger.info(JsonMapper.toJsonString(bookService.getBookByNameAndAuthor(name, author)));
                 }
-                default -> displayErrorMessage(ERR_TYPE_NUMBER);
+                default -> displayErrorMessage();
             }
         } catch (Exception e) {
-            System.out.println(e.getMessage());
+            logger.error(e.getMessage());
         }
         getEntityBook();
     }
 
     private void assignEntities() throws RuntimeException {
-        System.out.print("""
-                                
-                1. Assign student to course
-                2. Assign course to books
-                0. Exit
-                                
-                Pick a command char:\s
-                """);
+        displayMenu(
+                "Assign student to course",
+                "Assign course to books"
+        );
+
         try {
             switch (scanner.nextInt()) {
                 case 0 -> {
-                    init();
+                    mainMenu();
                     return;
                 }
                 case 1 -> {
-                    System.out.print("Student first name: ");
+                    logger.info("Student first name: ");
                     String firstName = scanner.next();
 
-                    System.out.print("Student last name: ");
+                    logger.info("Student last name: ");
                     String lastName = scanner.next();
 
                     Student student = studentService.getStudentByFirstNameAndLastName(firstName, lastName);
 
-                    System.out.print("Course name: ");
+                    logger.info("Course name: ");
                     String courseName = scanner.next();
 
                     List<Course> courses = courseService.getCoursesByName(courseName);
@@ -438,30 +384,38 @@ public class CLI {
                     registrationService.assignCoursesToStudent(student, courses);
                 }
                 case 2 -> {
-                    System.out.print("Course name: ");
+                    logger.info("Course name: ");
                     String courseName = scanner.next();
 
-                    System.out.print("Course university: ");
+                    logger.info("Course university: ");
                     String university = scanner.next();
 
                     Course course = courseService.getCourseByNameAndUniversity(courseName, university);
 
-                    System.out.print("Book name: ");
+                    logger.info("Book name: ");
                     String bookName = scanner.next();
 
                     List<Book> books = bookService.getBooksByName(bookName);
 
                     courseService.assignBooksToCourse(course, books);
                 }
-                default -> displayErrorMessage(ERR_TYPE_NUMBER);
+                default -> displayErrorMessage();
             }
         } catch (Exception e) {
-            System.out.println(e.getMessage());
+            logger.error(e.getMessage());
         }
         assignEntities();
     }
 
-    private void displayErrorMessage(String errType) {
-        System.out.println("Invalid command " + errType + " picked. Try again\n");
+    private void displayErrorMessage() {
+        logger.error("Invalid command number picked. Try again\n");
+    }
+
+    private void displayMenu(String... options) {
+        logger.info("");
+        IntStream.range(0, options.length)
+                .forEach(i -> logger.info(String.format("%d. %s", i + 1, options[i])));
+        logger.info("0. Back\n");
+        logger.info("Pick a command char: ");
     }
 }

@@ -12,7 +12,7 @@
 	<artifactId>MyRegistrar</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
 	<name>practice_1</name>
-	<description>First OneLab practice project for Spring Boot</description>
+	<description>Second OneLab practice project for Spring Boot</description>
 	<properties>
 		<java.version>17</java.version>
 	</properties>
@@ -28,6 +28,17 @@
 			<groupId>org.projectlombok</groupId>
 			<artifactId>lombok</artifactId>
 			<optional>true</optional>
+		</dependency>
+
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-jdbc</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>com.h2database</groupId>
+			<artifactId>h2</artifactId>
+			<scope>runtime</scope>
 		</dependency>
 
 		<dependency>

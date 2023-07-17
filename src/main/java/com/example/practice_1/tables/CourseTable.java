@@ -11,8 +11,12 @@ import java.util.Optional;
 @Repository
 public class CourseTable extends AbstractTable<Course> {
 
+    protected CourseTable() {
+        super(Course.class);
+    }
+
     public boolean existsByNameAndUniversity(String name, String university) {
-        return super.existsByFistAndSecond(name, university);
+        return super.existsByFirstAndSecond(name, university);
     }
 
     public List<Course> findCoursesByName(String name) {
@@ -34,6 +38,6 @@ public class CourseTable extends AbstractTable<Course> {
     }
 
     public void save(Course course) {
-        map.put(toHash(course.getName(), course.getUniversity()), course);
+        super.save(course, course.getName(), course.getUniversity());
     }
 }

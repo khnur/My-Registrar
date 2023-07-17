@@ -6,8 +6,13 @@ import com.fasterxml.jackson.databind.SerializationFeature;
 
 public class JsonMapper {
     private static final ObjectMapper mapper = new ObjectMapper();
-    public static String toJsonString(Object object) {
+
+    static {
         mapper.enable(SerializationFeature.INDENT_OUTPUT);
+        mapper.setDateFormat(DateMapper.DATE_FORMAT);
+    }
+
+    public static String toJsonString(Object object) {
         try {
             return "\n" + object.getClass().getSimpleName() + " " + mapper.writeValueAsString(object) + "\n";
         } catch (JsonProcessingException e) {
@@ -17,6 +22,6 @@ public class JsonMapper {
     }
 
     private JsonMapper() {
-        throw new IllegalStateException("Json class");
+        throw new IllegalStateException("JsonMapper class created");
     }
 }

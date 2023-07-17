@@ -10,8 +10,12 @@ import java.util.stream.Collectors;
 
 @Repository
 public class BookTable extends AbstractTable<Book> {
+    public BookTable() {
+        super(Book.class);
+    }
+
     public boolean existsByNameAndAuthor(String name, String author) {
-        return super.existsByFistAndSecond(name, author);
+        return super.existsByFirstAndSecond(name, author);
     }
 
     public List<Book> findBooksByName(String name) {
@@ -33,10 +37,10 @@ public class BookTable extends AbstractTable<Book> {
     public List<Book> findBooksByCourseIn(List<Course> courses) {
         return courses.stream()
                 .flatMap(course -> course.getBooks().stream())
-                .collect(Collectors.toList());
+                .toList();
     }
 
     public void save(Book book) {
-        map.put(toHash(book.getName(), book.getAuthor()), book);
+        super.save(book, book.getName(), book.getAuthor());
     }
 }

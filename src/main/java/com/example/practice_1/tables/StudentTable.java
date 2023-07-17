@@ -10,8 +10,12 @@ import java.util.Optional;
 
 @Repository
 public class StudentTable extends AbstractTable<Student> {
+    protected StudentTable() {
+        super(Student.class);
+    }
+
     public boolean existsStudentByFirstNameAndLastName(String firstName, String lastName) {
-        return super.existsByFistAndSecond(firstName, lastName);
+        return super.existsByFirstAndSecond(firstName, lastName);
     }
 
     public List<Student> findStudentsByFirstName(String firstName) {
@@ -33,6 +37,6 @@ public class StudentTable extends AbstractTable<Student> {
     }
 
     public void save(Student student) {
-        map.put(toHash(student.getFirstName(), student.getLastName()), student);
+        super.save(student, student.getFirstName(), student.getLastName());
     }
 }
