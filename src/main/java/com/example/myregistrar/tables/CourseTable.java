@@ -3,6 +3,7 @@ package com.example.myregistrar.tables;
 import com.example.myregistrar.models.Course;
 import com.example.myregistrar.models.Registration;
 import com.example.myregistrar.models.Student;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
@@ -11,8 +12,8 @@ import java.util.Optional;
 @Component
 public class CourseTable extends AbstractTable<Course> {
 
-    protected CourseTable() {
-        super(Course.class);
+    protected CourseTable(JdbcTemplate jdbcTemplate) {
+        super(Course.class, jdbcTemplate);
     }
 
     public boolean existsByNameAndUniversity(String name, String university) {

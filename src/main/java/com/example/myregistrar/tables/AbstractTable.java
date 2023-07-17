@@ -1,6 +1,5 @@
 package com.example.myregistrar.tables;
 
-import com.example.myregistrar.util.DataBase;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
@@ -25,16 +24,18 @@ public abstract class AbstractTable<T> {
 
     private long idIncrement = 0;
 
-    protected AbstractTable(Class<T> clazz) {
+    protected AbstractTable(Class<T> clazz, JdbcTemplate jdbcTemplate) {
         this.tableName = clazz.getSimpleName().toLowerCase();
         this.clazz = clazz;
         this.beanPropertyRowMapper = new BeanPropertyRowMapper<>(clazz);
 
-        try {
-            jdbcTemplate = new JdbcTemplate(DataBase.getDataSource());
-        } catch (ClassNotFoundException e) {
-            throw new RuntimeException("DataSource Not Found");
-        }
+        this.jdbcTemplate = jdbcTemplate;
+
+//        try {
+//            jdbcTemplate = new JdbcTemplate(DataBase.getDataSource());
+//        } catch (ClassNotFoundException e) {
+//            throw new RuntimeException("DataSource Not Found");
+//        }
 
         columnNames = Arrays.stream(clazz.getDeclaredFields())
                 .filter(field -> getColumnType(field.getType()) != null)

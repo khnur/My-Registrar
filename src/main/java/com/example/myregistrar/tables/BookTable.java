@@ -2,6 +2,7 @@ package com.example.myregistrar.tables;
 
 import com.example.myregistrar.models.Book;
 import com.example.myregistrar.models.Course;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
@@ -9,8 +10,8 @@ import java.util.Optional;
 
 @Component
 public class BookTable extends AbstractTable<Book> {
-    public BookTable() {
-        super(Book.class);
+    public BookTable(JdbcTemplate jdbcTemplate) {
+        super(Book.class, jdbcTemplate);
     }
 
     public boolean existsByNameAndAuthor(String name, String author) {
