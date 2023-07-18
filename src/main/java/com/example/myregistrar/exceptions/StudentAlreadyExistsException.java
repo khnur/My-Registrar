@@ -1,4 +1,4 @@
-package com.example.practice_1.exceptions;
+package com.example.myregistrar.exceptions;
 
 public class StudentAlreadyExistsException extends RuntimeException {
     public StudentAlreadyExistsException(String message) {

@@ -1,6 +1,6 @@
-package com.example.practice_1.models;
+package com.example.myregistrar.models;
 
-import com.example.practice_1.embeddables.RegistrationId;
+import com.example.myregistrar.embeddables.RegistrationId;
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.NoArgsConstructor;

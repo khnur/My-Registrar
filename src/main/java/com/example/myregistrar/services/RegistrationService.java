@@ -1,12 +1,12 @@
-package com.example.practice_1.services;
+package com.example.myregistrar.services;
 
-import com.example.practice_1.embeddables.RegistrationId;
-import com.example.practice_1.exceptions.CourseNotFoundException;
-import com.example.practice_1.exceptions.StudentNotFoundException;
-import com.example.practice_1.models.Course;
-import com.example.practice_1.models.Registration;
-import com.example.practice_1.models.Student;
-import com.example.practice_1.repos.RegistrationRepo;
+import com.example.myregistrar.embeddables.RegistrationId;
+import com.example.myregistrar.exceptions.CourseNotFoundException;
+import com.example.myregistrar.exceptions.StudentNotFoundException;
+import com.example.myregistrar.models.Course;
+import com.example.myregistrar.models.Registration;
+import com.example.myregistrar.models.Student;
+import com.example.myregistrar.repos.RegistrationRepo;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 

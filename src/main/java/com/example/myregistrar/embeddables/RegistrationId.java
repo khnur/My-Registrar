@@ -1,4 +1,4 @@
-package com.example.practice_1.embeddables;
+package com.example.myregistrar.embeddables;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Embeddable;

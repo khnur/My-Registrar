@@ -1,9 +1,9 @@
-package com.example.practice_1.util;
+package com.example.myregistrar.util;
 
-import com.example.practice_1.models.Book;
-import com.example.practice_1.models.Course;
-import com.example.practice_1.models.Student;
-import com.example.practice_1.services.*;
+import com.example.myregistrar.models.Book;
+import com.example.myregistrar.models.Course;
+import com.example.myregistrar.models.Student;
+import com.example.myregistrar.services.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;

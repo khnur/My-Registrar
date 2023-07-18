@@ -1,4 +1,4 @@
-package com.example.practice_1.exceptions;
+package com.example.myregistrar.exceptions;
 
 public class StudentNotFoundException extends RuntimeException {
     public StudentNotFoundException(String message) {

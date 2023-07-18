@@ -1,4 +1,4 @@
-package com.example.practice_1.models;
+package com.example.myregistrar.models;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.github.javafaker.Faker;

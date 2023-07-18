@@ -1,7 +1,6 @@
-package com.example.practice_1.repos;
+package com.example.myregistrar.repos;
 
-import com.example.practice_1.models.Course;
-import com.example.practice_1.models.Student;
+import com.example.myregistrar.models.Course;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;

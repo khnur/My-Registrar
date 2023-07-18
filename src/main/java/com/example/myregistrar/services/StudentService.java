@@ -1,9 +1,9 @@
-package com.example.practice_1.services;
+package com.example.myregistrar.services;
 
-import com.example.practice_1.exceptions.StudentAlreadyExistsException;
-import com.example.practice_1.exceptions.StudentNotFoundException;
-import com.example.practice_1.models.Student;
-import com.example.practice_1.repos.StudentRepo;
+import com.example.myregistrar.exceptions.StudentAlreadyExistsException;
+import com.example.myregistrar.exceptions.StudentNotFoundException;
+import com.example.myregistrar.models.Student;
+import com.example.myregistrar.repos.StudentRepo;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 

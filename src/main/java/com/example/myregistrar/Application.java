@@ -1,6 +1,6 @@
-package com.example.practice_1;
+package com.example.myregistrar;
 
-import com.example.practice_1.util.CLI;
+import com.example.myregistrar.util.CLI;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;

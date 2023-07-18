@@ -1,9 +1,9 @@
-package com.example.practice_1.repos;
+package com.example.myregistrar.repos;
 
-import com.example.practice_1.embeddables.RegistrationId;
-import com.example.practice_1.models.Course;
-import com.example.practice_1.models.Registration;
-import com.example.practice_1.models.Student;
+import com.example.myregistrar.embeddables.RegistrationId;
+import com.example.myregistrar.models.Course;
+import com.example.myregistrar.models.Registration;
+import com.example.myregistrar.models.Student;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;

@@ -1,10 +1,10 @@
-package com.example.practice_1.services;
+package com.example.myregistrar.services;
 
-import com.example.practice_1.exceptions.CourseAlreadyExistsException;
-import com.example.practice_1.exceptions.CourseNotFoundException;
-import com.example.practice_1.models.Book;
-import com.example.practice_1.models.Course;
-import com.example.practice_1.repos.CourseRepo;
+import com.example.myregistrar.exceptions.CourseAlreadyExistsException;
+import com.example.myregistrar.exceptions.CourseNotFoundException;
+import com.example.myregistrar.models.Book;
+import com.example.myregistrar.models.Course;
+import com.example.myregistrar.repos.CourseRepo;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 

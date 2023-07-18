@@ -1,4 +1,4 @@
-package com.example.practice_1.util;
+package com.example.myregistrar.util;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;

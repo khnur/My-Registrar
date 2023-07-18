@@ -1,12 +1,12 @@
-package com.example.practice_1.services;
+package com.example.myregistrar.services;
 
-import com.example.practice_1.exceptions.BookAlreadyExistsException;
-import com.example.practice_1.exceptions.BookNotFoundException;
-import com.example.practice_1.models.Book;
-import com.example.practice_1.models.Course;
-import com.example.practice_1.models.Registration;
-import com.example.practice_1.models.Student;
-import com.example.practice_1.repos.BookRepo;
+import com.example.myregistrar.exceptions.BookAlreadyExistsException;
+import com.example.myregistrar.exceptions.BookNotFoundException;
+import com.example.myregistrar.models.Book;
+import com.example.myregistrar.models.Course;
+import com.example.myregistrar.models.Registration;
+import com.example.myregistrar.models.Student;
+import com.example.myregistrar.repos.BookRepo;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
