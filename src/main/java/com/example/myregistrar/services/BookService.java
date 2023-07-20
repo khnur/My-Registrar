@@ -4,7 +4,6 @@ import com.example.myregistrar.exceptions.BookAlreadyExistsException;
 import com.example.myregistrar.exceptions.BookNotFoundException;
 import com.example.myregistrar.models.Book;
 import com.example.myregistrar.models.Course;
-import com.example.myregistrar.models.Registration;
 import com.example.myregistrar.models.Student;
 import com.example.myregistrar.repositories.BookRepo;
 import lombok.RequiredArgsConstructor;

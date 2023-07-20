@@ -5,13 +5,11 @@ import com.example.myregistrar.exceptions.CourseNotFoundException;
 import com.example.myregistrar.models.Book;
 import com.example.myregistrar.models.Course;
 import com.example.myregistrar.models.Student;
-import com.example.myregistrar.repositories.BookRepo;
 import com.example.myregistrar.repositories.CourseRepo;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.HashSet;
 import java.util.List;
 import java.util.stream.IntStream;
 
@@ -20,7 +18,6 @@ import java.util.stream.IntStream;
 @RequiredArgsConstructor
 public class CourseService {
     private final CourseRepo courseRepo;
-    private final BookRepo bookRepo;
 
     public void createCourse(Course course) {
         if (courseRepo.existsByNameAndUniversity(course.getName(), course.getUniversity())) {
