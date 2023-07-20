@@ -14,10 +14,12 @@ import java.util.List;
 import java.util.Scanner;
 
 @Entity
-@Table(name = "students")
+@Table
 @Data
 @NoArgsConstructor
 public class Student {
+    private static final String DOMAIN = "@onelab.kz";
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column
@@ -50,10 +52,13 @@ public class Student {
     @Column(nullable = false)
     private String email;
 
-    @ManyToMany(cascade = {
-            CascadeType.PERSIST,
-            CascadeType.REMOVE
-    })
+    @ManyToMany(
+            cascade = {
+                    CascadeType.PERSIST,
+                    CascadeType.REMOVE
+            },
+            fetch = FetchType.EAGER
+    )
     @JoinTable(
             name = "student_course",
             joinColumns = @JoinColumn(name = "student_id", referencedColumnName = "id"),
@@ -63,13 +68,16 @@ public class Student {
     @JsonIgnore
     private List<Course> courses = new ArrayList<>();
 
-    public Student(String firstName, String lastName, Date birthDate, Integer age, String gender, String email) {
-        this.firstName = firstName.trim();
-        this.lastName = lastName.trim();
+    public Student(String firstName, String lastName, Date birthDate, String gender) {
+        firstName = firstName.trim();
+        lastName = lastName.trim();
+
+        this.firstName = firstName;
+        this.lastName = lastName;
         this.birthDate = birthDate;
-        this.age = age;
+        this.age = DateMapper.GET_AGE(birthDate);
         this.gender = gender.trim();
-        this.email = email.trim();
+        this.email = firstName.toLowerCase() + '.' + lastName.toLowerCase() + DOMAIN;
     }
 
     public static Student getInstance(Scanner scanner) {
@@ -89,8 +97,6 @@ public class Student {
             }
         }
 
-        int age = DateMapper.GET_AGE(birthDate);
-
         String gender = null;
 
         while (gender == null) {
@@ -107,9 +113,8 @@ public class Student {
             }
         }
 
-        String email = firstName.toLowerCase() + '.' + lastName.toLowerCase() + "@onelab.kz";
 
-        return new Student(firstName, lastName, birthDate, age, gender, email);
+        return new Student(firstName, lastName, birthDate, gender);
     }
 
     public static Student createRandomStudent() {
@@ -118,10 +123,8 @@ public class Student {
         String firstName = faker.name().firstName();
         String lastName = faker.name().lastName();
         Date date = faker.date().birthday();
-        int age = DateMapper.GET_AGE(date);
         String gender = faker.random().nextInt(5) % 2 == 0 ? "Male" : "Female";
-        String email = firstName.toLowerCase() + '.' + lastName.toLowerCase() + "@onelab.kz";
 
-        return new Student(firstName, lastName, date, age, gender, email);
+        return new Student(firstName, lastName, date, gender);
     }
 }

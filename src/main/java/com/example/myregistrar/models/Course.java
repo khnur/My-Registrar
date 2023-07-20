@@ -12,7 +12,7 @@ import java.util.List;
 import java.util.Scanner;
 
 @Entity
-@Table(name = "courses")
+@Table
 @Data
 @NoArgsConstructor
 public class Course {
@@ -41,10 +41,7 @@ public class Course {
 
     @ManyToMany(
             mappedBy = "courses",
-            cascade = {
-                    CascadeType.PERSIST,
-                    CascadeType.REMOVE
-            }
+            cascade = CascadeType.ALL
     )
     @ToString.Exclude
     @JsonIgnore

@@ -12,7 +12,7 @@ import java.util.Date;
 import java.util.Scanner;
 
 @Entity
-@Table(name = "books")
+@Table
 @Data
 @NoArgsConstructor
 public class Book {

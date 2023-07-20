@@ -274,18 +274,13 @@ public class CLI {
 
     private void getCoursesStudentsAndBooks(Course course) throws RuntimeException {
         displayMenu(
-                "Get all students",
                 "Get all books"
         );
 
         try {
             switch (scanner.nextInt()) {
                 case 0 -> getEntityCourse();
-                case 1 -> studentService.getStudentsByCourse(course).forEach(
-                        student -> log.info(JsonMapper.toJsonString(student))
-                );
-
-                case 2 -> bookService.getBooksByCourse(course).forEach(
+                case 1 -> bookService.getBooksByCourse(course).forEach(
                         book -> log.info(JsonMapper.toJsonString(book))
                 );
                 default -> {
@@ -345,8 +340,9 @@ public class CLI {
 
     private void assignEntities() throws RuntimeException {
         displayMenu(
-                "Assign student to course",
-                "Assign course to books"
+                "Assign students to course by first name",
+                "Assign students to course by last name",
+                "Assign books to course"
         );
 
         try {
@@ -356,19 +352,32 @@ public class CLI {
                     return;
                 }
                 case 1 -> {
+                    String name = getUserInput("Course name: ");
+
+                    String university = getUserInput("Course university: ");
+
+                    Course course = courseService.getCourseByNameAndUniversity(name, university);
+
                     String firstName = getUserInput("Student first name: ");
+
+                    List<Student> students = studentService.getStudentsByFirstName(firstName);
+
+                    courseService.assignStudentsToCourse(course, students);
+                }
+                case 2 -> {
+                    String name = getUserInput("Course name: ");
+
+                    String university = getUserInput("Course university: ");
+
+                    Course course = courseService.getCourseByNameAndUniversity(name, university);
 
                     String lastName = getUserInput("Student last name: ");
 
-                    Student student = studentService.getStudentByFirstNameAndLastName(firstName, lastName);
+                    List<Student> students = studentService.getStudentsByLastName(lastName);
 
-                    String courseName = getUserInput("Course name: ");
-
-                    List<Course> courses = courseService.getCoursesByName(courseName);
-
-                    studentService.assignCoursesToStudent(student, courses);
+                    courseService.assignStudentsToCourse(course, students);
                 }
-                case 2 -> {
+                case 3 -> {
                     String courseName = getUserInput("Course name: ");
 
                     String university = getUserInput("University: ");

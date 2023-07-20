@@ -2,6 +2,7 @@ package com.example.myregistrar;
 
 import com.example.myregistrar.models.Book;
 import com.example.myregistrar.models.Course;
+import com.example.myregistrar.models.Student;
 import com.example.myregistrar.services.BookService;
 import com.example.myregistrar.services.CourseService;
 import com.example.myregistrar.services.StudentService;
@@ -32,14 +33,39 @@ public class Application {
             BookService bookService
     ) {
         return args -> {
-            Course course = new Course(
-                    "aaa",
-                    "bbb",
-                    "wdafdsfd",
-                    "wdefsvfd",
-                    7
-            );
-            List<Book> books = List.of(
+            List.of(
+                    new Student(
+                            "aaa",
+                            "bbb",
+                            DateMapper.DATE_FORMAT.parse("1234-14-74"),
+                            "M"
+                    ),
+                    new Student(
+                            "aaa",
+                            "ppp",
+                            DateMapper.DATE_FORMAT.parse("1234-14-74"),
+                            "M"
+                    )
+            ).forEach(studentService::createStudent);
+
+            List.of(
+                    new Course(
+                            "aaa",
+                            "bbb",
+                            "wdafdsfd",
+                            "wdefsvfd",
+                            7
+                    ),
+                    new Course(
+                            "aaa",
+                            "ppp",
+                            "wdafdsfd",
+                            "wdefsvfd",
+                            7
+                    )
+            ).forEach(courseService::createCourse);
+
+            List.of(
                     new Book(
                             "nnn",
                             "mmm",
@@ -54,19 +80,17 @@ public class Application {
                             DateMapper.DATE_FORMAT.parse("1234-14-74"),
                             "qwfewrf"
                     )
-            );
-
-            courseService.createCourse(course);
-            books.forEach(bookService::createBook);
+            ).forEach(bookService::createBook);
 
             courseService.assignBooksToCourse(
                     courseService.getCourseByNameAndUniversity("aaa", "bbb"),
                     bookService.getBooksByName("nnn")
             );
 
-            bookService.getBooksByCourse(courseService.getCourseByNameAndUniversity("aaa", "bbb"))
-                            .forEach(book -> System.out.println(JsonMapper.toJsonString(book)));
-
+            courseService.assignStudentsToCourse(
+                    courseService.getCourseByNameAndUniversity("aaa", "bbb"),
+                    studentService.getAllStudents()
+            );
 
             cli.init();
         };

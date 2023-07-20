@@ -2,11 +2,11 @@ package com.example.myregistrar.services;
 
 import com.example.myregistrar.exceptions.StudentAlreadyExistsException;
 import com.example.myregistrar.exceptions.StudentNotFoundException;
-import com.example.myregistrar.models.Course;
 import com.example.myregistrar.models.Student;
 import com.example.myregistrar.repositories.StudentRepo;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.stream.IntStream;
@@ -16,6 +16,7 @@ import java.util.stream.IntStream;
 public class StudentService {
     private final StudentRepo studentRepo;
 
+    @Transactional
     public void createStudent(Student student) {
         if (studentRepo.existsStudentByFirstNameAndLastName(student.getFirstName(), student.getLastName())) {
             throw new StudentAlreadyExistsException("Student with such name and last name already exists");
@@ -23,6 +24,7 @@ public class StudentService {
         studentRepo.save(student);
     }
 
+    @Transactional
     public void createRandomStudents(int n) {
         IntStream.range(0, n)
                 .filter(i -> {
@@ -66,19 +68,4 @@ public class StudentService {
                 .orElseThrow(() -> new StudentNotFoundException("There is no student with such first and last name"));
     }
 
-    public List<Student> getStudentsByCourse(Course course) {
-        List<Student> students = course.getStudents().stream().toList();
-        if (students.isEmpty()) {
-            throw new StudentNotFoundException("The course does not have any student");
-        }
-        return students;
-    }
-
-    public void assignCoursesToStudent(Student student, List<Course> courses) {
-        courses.forEach(course -> {
-            student.getCourses().add(course);
-            course.getStudents().add(student);
-        });
-        studentRepo.save(student);
-    }
 }

@@ -8,6 +8,7 @@ import com.example.myregistrar.models.Student;
 import com.example.myregistrar.repositories.BookRepo;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.stream.IntStream;
@@ -17,6 +18,7 @@ import java.util.stream.IntStream;
 public class BookService {
     private final BookRepo bookRepo;
 
+    @Transactional
     public void createBook(Book book) {
         if (bookRepo.existsByNameAndAuthor(book.getName(), book.getAuthor())) {
             throw new BookAlreadyExistsException("Book with such name and author already exists");
@@ -24,6 +26,7 @@ public class BookService {
         bookRepo.save(book);
     }
 
+    @Transactional
     public void createRandomBooks(int n) {
         IntStream.range(0, n)
                 .filter(i -> {
@@ -68,7 +71,7 @@ public class BookService {
     }
 
     public List<Book> getBooksByStudent(Student student) {
-        List<Course> courses = student.getCourses().stream().toList();
+        List<Course> courses = student.getCourses();
         if (courses.isEmpty()) {
             throw new BookNotFoundException("The student does not have any book");
         }

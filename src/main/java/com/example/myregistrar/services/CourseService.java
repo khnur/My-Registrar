@@ -14,11 +14,11 @@ import java.util.List;
 import java.util.stream.IntStream;
 
 @Service
-@Transactional
 @RequiredArgsConstructor
 public class CourseService {
     private final CourseRepo courseRepo;
 
+    @Transactional
     public void createCourse(Course course) {
         if (courseRepo.existsByNameAndUniversity(course.getName(), course.getUniversity())) {
             throw new CourseAlreadyExistsException("Course with such name and university already exists");
@@ -26,6 +26,7 @@ public class CourseService {
         courseRepo.save(course);
     }
 
+    @Transactional
     public void createRandomCourses(int n) {
         IntStream.range(0, n)
                 .filter(i -> {
@@ -70,16 +71,24 @@ public class CourseService {
     }
 
     public List<Course> getCoursesByStudent(Student student) {
-        List<Course> courses = student.getCourses().stream().toList();
+        List<Course> courses = student.getCourses();
         if (courses.isEmpty()) {
             throw new CourseNotFoundException("The student does not have any course");
         }
         return courses;
     }
 
+    @Transactional
     public void assignBooksToCourse(Course course, List<Book> books) {
         course.getBooks().addAll(books);
         books.forEach(book -> book.setCourse(course));
+        courseRepo.save(course);
+    }
+
+    @Transactional
+    public void assignStudentsToCourse(Course course, List<Student> students) {
+        course.setStudents(students);
+        students.forEach(student -> student.getCourses().add(course));
         courseRepo.save(course);
     }
 }
