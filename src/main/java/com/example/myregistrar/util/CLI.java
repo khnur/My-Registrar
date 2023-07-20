@@ -1,15 +1,13 @@
 package com.example.myregistrar.util;
 
-import com.example.myregistrar.services.CourseService;
 import com.example.myregistrar.models.Book;
 import com.example.myregistrar.models.Course;
 import com.example.myregistrar.models.Student;
 import com.example.myregistrar.services.BookService;
-import com.example.myregistrar.services.RegistrationService;
+import com.example.myregistrar.services.CourseService;
 import com.example.myregistrar.services.StudentService;
 import lombok.RequiredArgsConstructor;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
 
@@ -20,29 +18,28 @@ import java.util.stream.IntStream;
 @Component
 @Lazy
 @RequiredArgsConstructor
+@Slf4j
 public class CLI {
-    private static final Logger logger = LoggerFactory.getLogger(CLI.class);
     private final Scanner scanner = new Scanner(System.in);
 
     private final StudentService studentService;
     private final CourseService courseService;
     private final BookService bookService;
-    private final RegistrationService registrationService;
 
     private boolean running = false;
 
     public void init() {
         running = true;
 
-        logger.info("------------------------------");
-        logger.info("Welcome to My Registrar");
-        logger.info("------------------------------");
+        log.info("------------------------------");
+        log.info("Welcome to My Registrar");
+        log.info("------------------------------");
 
         while (running) {
             mainMenu();
         }
         scanner.close();
-        logger.info("Thank you. Have fun");
+        log.info("Thank you. Have fun");
         System.exit(0);
     }
 
@@ -62,7 +59,7 @@ public class CLI {
                 default -> displayErrorMessage();
             }
         } catch (Exception e) {
-            logger.error(e.getMessage());
+            log.error(e.getMessage());
             scanner.nextLine();
         }
     }
@@ -108,11 +105,11 @@ public class CLI {
             case 2 -> {
                 int n;
                 do {
-                    logger.info("How many: ");
+                    log.info("How many: ");
                     n = scanner.nextInt();
 
                     if (n < 0 || n > 100) {
-                        logger.error("Invalid amount or it is too large\n");
+                        log.error("Invalid amount or it is too large\n");
                     }
                 } while (n < 0 || n > 100);
 
@@ -164,20 +161,20 @@ public class CLI {
                 }
 
                 case 1 -> studentService.getAllStudents().forEach(
-                        student -> logger.info(JsonMapper.toJsonString(student))
+                        student -> log.info(JsonMapper.toJsonString(student))
                 );
 
                 case 2 -> {
                     String firstName = getUserInput("First name: ");
                     studentService.getStudentsByFirstName(firstName)
                             .forEach(
-                                    student -> logger.info(JsonMapper.toJsonString(student))
+                                    student -> log.info(JsonMapper.toJsonString(student))
                             );
                 }
                 case 3 -> {
                     String lastName = getUserInput("Last name: ");
                     studentService.getStudentsByLastName(lastName).forEach(
-                            student -> logger.info(JsonMapper.toJsonString(student))
+                            student -> log.info(JsonMapper.toJsonString(student))
                     );
                 }
 
@@ -187,14 +184,14 @@ public class CLI {
                     String lastName = getUserInput("Last name: ");
 
                     Student student = studentService.getStudentByFirstNameAndLastName(firstName, lastName);
-                    logger.info(JsonMapper.toJsonString(student));
+                    log.info(JsonMapper.toJsonString(student));
 
                     getStudentsBooksAndCourses(student);
                 }
                 default -> displayErrorMessage();
             }
         } catch (Exception e) {
-            logger.error(e.getMessage());
+            log.error(e.getMessage());
             scanner.nextLine();
         }
         getEntityStudent();
@@ -209,12 +206,12 @@ public class CLI {
         try {
             switch (scanner.nextInt()) {
                 case 0 -> getEntityStudent();
-                case 1 -> registrationService.getCoursesByStudent(student).forEach(
-                        course -> logger.info(JsonMapper.toJsonString(course))
+                case 1 -> courseService.getCoursesByStudent(student).forEach(
+                        course -> log.info(JsonMapper.toJsonString(course))
                 );
 
                 case 2 -> bookService.getBooksByStudent(student).forEach(
-                        book -> logger.info(JsonMapper.toJsonString(book))
+                        book -> log.info(JsonMapper.toJsonString(book))
                 );
 
                 default -> {
@@ -223,7 +220,7 @@ public class CLI {
                 }
             }
         } catch (Exception e) {
-            logger.error(e.getMessage());
+            log.error(e.getMessage());
         }
     }
 
@@ -241,20 +238,20 @@ public class CLI {
                     return;
                 }
                 case 1 -> courseService.getAllCourses().forEach(
-                        course -> logger.info(JsonMapper.toJsonString(course))
+                        course -> log.info(JsonMapper.toJsonString(course))
                 );
 
                 case 2 -> {
                     String name = getUserInput("Name: ");
                     courseService.getCoursesByName(name).forEach(
-                            course -> logger.info(JsonMapper.toJsonString(course))
+                            course -> log.info(JsonMapper.toJsonString(course))
                     );
 
                 }
                 case 3 -> {
                     String university = getUserInput("University: ");
                     courseService.getCoursesByUniversity(university).forEach(
-                            course -> logger.info(JsonMapper.toJsonString(course))
+                            course -> log.info(JsonMapper.toJsonString(course))
                     );
                 }
                 case 4 -> {
@@ -262,14 +259,14 @@ public class CLI {
                     String university = getUserInput("University: ");
 
                     Course course = courseService.getCourseByNameAndUniversity(name, university);
-                    logger.info(JsonMapper.toJsonString(course));
+                    log.info(JsonMapper.toJsonString(course));
 
                     getCoursesStudentsAndBooks(course);
                 }
                 default -> displayErrorMessage();
             }
         } catch (Exception e) {
-            logger.error(e.getMessage());
+            log.error(e.getMessage());
             scanner.nextLine();
         }
         getEntityCourse();
@@ -284,12 +281,12 @@ public class CLI {
         try {
             switch (scanner.nextInt()) {
                 case 0 -> getEntityCourse();
-                case 1 -> registrationService.getStudentsByCourse(course).forEach(
-                        student -> logger.info(JsonMapper.toJsonString(student))
+                case 1 -> studentService.getStudentsByCourse(course).forEach(
+                        student -> log.info(JsonMapper.toJsonString(student))
                 );
 
                 case 2 -> bookService.getBooksByCourse(course).forEach(
-                        book -> logger.info(JsonMapper.toJsonString(book))
+                        book -> log.info(JsonMapper.toJsonString(book))
                 );
                 default -> {
                     displayErrorMessage();
@@ -297,7 +294,7 @@ public class CLI {
                 }
             }
         } catch (Exception e) {
-            logger.error(e.getMessage());
+            log.error(e.getMessage());
         }
     }
 
@@ -316,31 +313,31 @@ public class CLI {
                     return;
                 }
                 case 1 -> bookService.getAllBooks().forEach(
-                        book -> logger.info(JsonMapper.toJsonString(book))
+                        book -> log.info(JsonMapper.toJsonString(book))
                 );
 
                 case 2 -> {
                     String name = getUserInput("Name: ");
                     bookService.getBooksByName(name).forEach(
-                            book -> logger.info(JsonMapper.toJsonString(book))
+                            book -> log.info(JsonMapper.toJsonString(book))
                     );
                 }
                 case 3 -> {
                     String author = getUserInput("Author: ");
                     bookService.getBooksByAuthor(author).forEach(
-                            book -> logger.info(JsonMapper.toJsonString(book))
+                            book -> log.info(JsonMapper.toJsonString(book))
                     );
                 }
                 case 4 -> {
                     String name = getUserInput("Name: ");
                     String author = getUserInput("Author: ");
 
-                    logger.info(JsonMapper.toJsonString(bookService.getBookByNameAndAuthor(name, author)));
+                    log.info(JsonMapper.toJsonString(bookService.getBookByNameAndAuthor(name, author)));
                 }
                 default -> displayErrorMessage();
             }
         } catch (Exception e) {
-            logger.error(e.getMessage());
+            log.error(e.getMessage());
             scanner.nextLine();
         }
         getEntityBook();
@@ -369,7 +366,7 @@ public class CLI {
 
                     List<Course> courses = courseService.getCoursesByName(courseName);
 
-                    registrationService.assignCoursesToStudent(student, courses);
+                    studentService.assignCoursesToStudent(student, courses);
                 }
                 case 2 -> {
                     String courseName = getUserInput("Course name: ");
@@ -387,26 +384,26 @@ public class CLI {
                 default -> displayErrorMessage();
             }
         } catch (Exception e) {
-            logger.error(e.getMessage());
+            log.error(e.getMessage());
             scanner.nextLine();
         }
         assignEntities();
     }
 
     private void displayErrorMessage() {
-        logger.error("Invalid command number picked. Try again\n");
+        log.error("Invalid command number picked. Try again\n");
     }
 
     private void displayMenu(String... options) {
-        logger.info("");
+        log.info("");
         IntStream.range(0, options.length)
-                .forEach(i -> logger.info(String.format("%d. %s", i + 1, options[i])));
-        logger.info("0. Back\n");
-        logger.info("Pick a command number: ");
+                .forEach(i -> log.info(String.format("%d. %s", i + 1, options[i])));
+        log.info("0. Back\n");
+        log.info("Pick a command number: ");
     }
 
     private String getUserInput(String prompt) {
-        logger.info(prompt);
+        log.info(prompt);
         return scanner.next();
     }
 }

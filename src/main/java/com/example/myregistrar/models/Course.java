@@ -2,6 +2,7 @@ package com.example.myregistrar.models;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.github.javafaker.Faker;
+import jakarta.persistence.*;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
@@ -10,26 +11,51 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 
+@Entity
+@Table(name = "courses")
 @Data
 @NoArgsConstructor
 public class Course {
-    private long id;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column
+    private Long id;
 
+    @Column(nullable = false)
     private String name;
 
+    @Column(nullable = false)
     private String university;
 
+    @Column(nullable = false)
     private String department;
 
+    @Column
     private String instructor;
 
+    @Column(
+            name = "credit_hours",
+            nullable = false
+    )
     private Integer creditHours;
 
-
+    @ManyToMany(
+            mappedBy = "courses",
+            cascade = {
+                    CascadeType.PERSIST,
+                    CascadeType.REMOVE
+            }
+    )
     @ToString.Exclude
     @JsonIgnore
-    private List<Registration> registrations = new ArrayList<>();
+    private List<Student> students = new ArrayList<>();
 
+    @OneToMany(
+            mappedBy = "course",
+            orphanRemoval = true,
+            cascade = CascadeType.ALL,
+            fetch = FetchType.EAGER
+    )
     @ToString.Exclude
     @JsonIgnore
     private List<Book> books = new ArrayList<>();

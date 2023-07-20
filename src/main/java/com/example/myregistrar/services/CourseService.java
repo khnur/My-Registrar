@@ -4,25 +4,29 @@ import com.example.myregistrar.exceptions.CourseAlreadyExistsException;
 import com.example.myregistrar.exceptions.CourseNotFoundException;
 import com.example.myregistrar.models.Book;
 import com.example.myregistrar.models.Course;
-import com.example.myregistrar.tables.BookTable;
-import com.example.myregistrar.tables.CourseTable;
-import com.example.myregistrar.tables.StudentTable;
+import com.example.myregistrar.models.Student;
+import com.example.myregistrar.repositories.BookRepo;
+import com.example.myregistrar.repositories.CourseRepo;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
+import java.util.HashSet;
 import java.util.List;
 import java.util.stream.IntStream;
 
 @Service
-public class CourseService extends AbstractService {
-    public CourseService(StudentTable studentData, CourseTable courseData, BookTable bookData) {
-        super(studentData, courseData, bookData);
-    }
+@Transactional
+@RequiredArgsConstructor
+public class CourseService {
+    private final CourseRepo courseRepo;
+    private final BookRepo bookRepo;
 
     public void createCourse(Course course) {
-        if (courseData.existsByNameAndUniversity(course.getName(), course.getUniversity())) {
+        if (courseRepo.existsByNameAndUniversity(course.getName(), course.getUniversity())) {
             throw new CourseAlreadyExistsException("Course with such name and university already exists");
         }
-        courseData.save(course);
+        courseRepo.save(course);
     }
 
     public void createRandomCourses(int n) {
@@ -40,7 +44,7 @@ public class CourseService extends AbstractService {
     }
 
     public List<Course> getAllCourses() {
-        List<Course> courseList = courseData.findAll();
+        List<Course> courseList = courseRepo.findAll();
         if (courseList.isEmpty()) {
             throw new CourseNotFoundException("There is no course");
         }
@@ -48,7 +52,7 @@ public class CourseService extends AbstractService {
     }
 
     public List<Course> getCoursesByName(String name) {
-        List<Course> courseList = courseData.findCoursesByName(name.trim());
+        List<Course> courseList = courseRepo.findCoursesByName(name.trim());
         if (courseList.isEmpty()) {
             throw new CourseNotFoundException("There is no course with such name");
         }
@@ -56,7 +60,7 @@ public class CourseService extends AbstractService {
     }
 
     public List<Course> getCoursesByUniversity(String university) {
-        List<Course> courseList = courseData.findCoursesByUniversity(university.trim());
+        List<Course> courseList = courseRepo.findCoursesByUniversity(university.trim());
         if (courseList.isEmpty()) {
             throw new CourseNotFoundException("There is no course with such university");
         }
@@ -64,15 +68,21 @@ public class CourseService extends AbstractService {
     }
 
     public Course getCourseByNameAndUniversity(String name, String university) {
-        return courseData.findCourseByNameAndUniversity(name.trim(), university.trim())
+        return courseRepo.findCourseByNameAndUniversity(name.trim(), university.trim())
                 .orElseThrow(() -> new RuntimeException("There is no course with such name and university"));
     }
 
-    public void assignBooksToCourse(Course course, List<Book> books) {
-        course.setBooks(books);
-        for (Book book : books) {
-            book.setCourse(course);
+    public List<Course> getCoursesByStudent(Student student) {
+        List<Course> courses = student.getCourses().stream().toList();
+        if (courses.isEmpty()) {
+            throw new CourseNotFoundException("The student does not have any course");
         }
-        courseData.save(course);
+        return courses;
+    }
+
+    public void assignBooksToCourse(Course course, List<Book> books) {
+        course.getBooks().addAll(books);
+        books.forEach(book -> book.setCourse(course));
+        courseRepo.save(course);
     }
 }

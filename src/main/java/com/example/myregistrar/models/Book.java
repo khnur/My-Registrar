@@ -3,6 +3,7 @@ package com.example.myregistrar.models;
 import com.example.myregistrar.util.DateMapper;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.github.javafaker.Faker;
+import jakarta.persistence.*;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
@@ -10,21 +11,38 @@ import lombok.ToString;
 import java.util.Date;
 import java.util.Scanner;
 
+@Entity
+@Table(name = "books")
 @Data
 @NoArgsConstructor
 public class Book {
-    private long id;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column
+    private Long id;
 
+    @Column(nullable = false)
     private String name;
 
+    @Column(nullable = false)
     private String author;
 
+    @Column
     private String genre;
 
+    @Temporal(TemporalType.DATE)
+    @Column(name = "published_date")
     private Date publishedDate;
 
+    @Column
     private String publisher;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(
+            name = "course_id",
+            referencedColumnName = "id",
+            foreignKey = @ForeignKey(name = "course_book_fk")
+    )
     @ToString.Exclude
     @JsonIgnore
     private Course course;
