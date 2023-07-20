@@ -7,6 +7,7 @@ import jakarta.persistence.*;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
+import lombok.extern.slf4j.Slf4j;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -17,6 +18,7 @@ import java.util.Scanner;
 @Table
 @Data
 @NoArgsConstructor
+@Slf4j
 public class Student {
     private static final String DOMAIN = "@onelab.kz";
 
@@ -81,26 +83,26 @@ public class Student {
     }
 
     public static Student getInstance(Scanner scanner) {
-        System.out.print("First Name: ");
+        log.info("First Name: ");
         String firstName = scanner.next();
 
-        System.out.print("Last Name: ");
+        log.info("Last Name: ");
         String lastName = scanner.next();
 
         Date birthDate = null;
         while (birthDate == null) {
-            System.out.print("Birth Date (" + DateMapper.PATTERN + "): ");
+            log.info("Birth Date (" + DateMapper.PATTERN + "): ");
             try {
                 birthDate = DateMapper.DATE_FORMAT.parse(scanner.next().trim());
             } catch (Exception e) {
-                System.out.println("Entered incorrect for of date. Try again\n");
+                log.error("Entered incorrect for of date. Try again\n");
             }
         }
 
         String gender = null;
 
         while (gender == null) {
-            System.out.print("Gender: ");
+            log.info("Gender: ");
             gender = scanner.next();
 
             if (gender.startsWith("M") || gender.startsWith("m")) {
@@ -109,10 +111,9 @@ public class Student {
                 gender = "Female";
             } else {
                 gender = null;
-                System.out.println("Entered invalid format of gender. Try again\n");
+                log.error("Entered invalid format of gender. Try again\n");
             }
         }
-
 
         return new Student(firstName, lastName, birthDate, gender);
     }

@@ -1,11 +1,13 @@
 package com.example.myregistrar.services;
 
+import com.example.myregistrar.dtos.CourseDto;
 import com.example.myregistrar.exceptions.CourseAlreadyExistsException;
 import com.example.myregistrar.exceptions.CourseNotFoundException;
 import com.example.myregistrar.models.Book;
 import com.example.myregistrar.models.Course;
 import com.example.myregistrar.models.Student;
 import com.example.myregistrar.repositories.CourseRepo;
+import com.example.myregistrar.util.entity_dto_mappers.CourseMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -24,6 +26,12 @@ public class CourseService {
             throw new CourseAlreadyExistsException("Course with such name and university already exists");
         }
         courseRepo.save(course);
+    }
+
+    @Transactional
+    public void createCourse(CourseDto courseDto) {
+        Course course = CourseMapper.INSTANCE.courseDtoToCourse(courseDto);
+        createCourse(course);
     }
 
     @Transactional

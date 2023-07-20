@@ -1,9 +1,11 @@
 package com.example.myregistrar.services;
 
+import com.example.myregistrar.dtos.StudentDto;
 import com.example.myregistrar.exceptions.StudentAlreadyExistsException;
 import com.example.myregistrar.exceptions.StudentNotFoundException;
 import com.example.myregistrar.models.Student;
 import com.example.myregistrar.repositories.StudentRepo;
+import com.example.myregistrar.util.entity_dto_mappers.StudentMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -22,6 +24,12 @@ public class StudentService {
             throw new StudentAlreadyExistsException("Student with such name and last name already exists");
         }
         studentRepo.save(student);
+    }
+
+    @Transactional
+    public void createStudent(StudentDto studentDto) {
+        Student student = StudentMapper.INSTANCE.studentDtoToStudent(studentDto);
+        createStudent(student);
     }
 
     @Transactional

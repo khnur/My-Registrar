@@ -1,11 +1,13 @@
 package com.example.myregistrar.services;
 
+import com.example.myregistrar.dtos.BookDto;
 import com.example.myregistrar.exceptions.BookAlreadyExistsException;
 import com.example.myregistrar.exceptions.BookNotFoundException;
 import com.example.myregistrar.models.Book;
 import com.example.myregistrar.models.Course;
 import com.example.myregistrar.models.Student;
 import com.example.myregistrar.repositories.BookRepo;
+import com.example.myregistrar.util.entity_dto_mappers.BookMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -24,6 +26,12 @@ public class BookService {
             throw new BookAlreadyExistsException("Book with such name and author already exists");
         }
         bookRepo.save(book);
+    }
+
+    @Transactional
+    public void createBook(BookDto bookDto) {
+        Book book = BookMapper.INSTANCE.bookDtoToBook(bookDto);
+        createBook(book);
     }
 
     @Transactional

@@ -1,5 +1,8 @@
 package com.example.myregistrar;
 
+import com.example.myregistrar.dtos.BookDto;
+import com.example.myregistrar.dtos.CourseDto;
+import com.example.myregistrar.dtos.StudentDto;
 import com.example.myregistrar.models.Book;
 import com.example.myregistrar.models.Course;
 import com.example.myregistrar.models.Student;
@@ -34,13 +37,13 @@ public class Application {
     ) {
         return args -> {
             List.of(
-                    new Student(
+                    new StudentDto(
                             "aaa",
                             "bbb",
                             DateMapper.DATE_FORMAT.parse("1234-14-74"),
                             "M"
                     ),
-                    new Student(
+                    new StudentDto(
                             "aaa",
                             "ppp",
                             DateMapper.DATE_FORMAT.parse("1234-14-74"),
@@ -49,14 +52,14 @@ public class Application {
             ).forEach(studentService::createStudent);
 
             List.of(
-                    new Course(
+                    new CourseDto(
                             "aaa",
                             "bbb",
                             "wdafdsfd",
                             "wdefsvfd",
                             7
                     ),
-                    new Course(
+                    new CourseDto(
                             "aaa",
                             "ppp",
                             "wdafdsfd",
@@ -66,14 +69,14 @@ public class Application {
             ).forEach(courseService::createCourse);
 
             List.of(
-                    new Book(
+                    new BookDto(
                             "nnn",
                             "mmm",
                             "mmm",
                             DateMapper.DATE_FORMAT.parse("1234-14-74"),
                             "qwfewrf"
                     ),
-                    new Book(
+                    new BookDto(
                             "nnn",
                             "qqq",
                             "mmm",

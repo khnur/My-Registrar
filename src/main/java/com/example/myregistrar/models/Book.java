@@ -7,6 +7,7 @@ import jakarta.persistence.*;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
+import lombok.extern.slf4j.Slf4j;
 
 import java.util.Date;
 import java.util.Scanner;
@@ -15,6 +16,7 @@ import java.util.Scanner;
 @Table
 @Data
 @NoArgsConstructor
+@Slf4j
 public class Book {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -56,26 +58,26 @@ public class Book {
     }
 
     public static Book getInstance(Scanner scanner) {
-        System.out.print("Name: ");
+        log.info("Name: ");
         String name = scanner.next();
 
-        System.out.print("Author: ");
+        log.info("Author: ");
         String author = scanner.next();
 
-        System.out.print("Genre: ");
+        log.info("Genre: ");
         String genre = scanner.next();
 
         Date publishedDate = null;
         while (publishedDate == null) {
-            System.out.print("Published Date (" + DateMapper.PATTERN + "): ");
+            log.info("Published Date (" + DateMapper.PATTERN + "): ");
             try {
                 publishedDate = DateMapper.DATE_FORMAT.parse(scanner.next().trim());
             } catch (Exception e) {
-                System.out.println("Entered incorrect for of date. Try again\n");
+                log.error("Entered incorrect for of date. Try again\n");
             }
         }
 
-        System.out.print("Publisher: ");
+        log.info("Publisher: ");
         String publisher = scanner.next();
 
         return new Book(name, author, genre, publishedDate, publisher);
