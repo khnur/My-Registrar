@@ -135,7 +135,7 @@ public class Application {
                     courseService.getCourseByNameAndUniversity("bbb", "ppp")
             );
 
-//            cli.init();
+            cli.init();
         };
     }
 }
