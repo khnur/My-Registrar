@@ -3,6 +3,8 @@ package com.example.myregistrar.services.service_impls;
 import com.example.myregistrar.dtos.BookDto;
 import com.example.myregistrar.exceptions.BookAlreadyExistsException;
 import com.example.myregistrar.exceptions.BookNotFoundException;
+import com.example.myregistrar.exceptions.CourseNotFoundException;
+import com.example.myregistrar.exceptions.StudentNotFoundException;
 import com.example.myregistrar.models.Book;
 import com.example.myregistrar.models.Course;
 import com.example.myregistrar.models.Student;
@@ -10,6 +12,7 @@ import com.example.myregistrar.repositories.BookRepo;
 import com.example.myregistrar.services.BookService;
 import com.example.myregistrar.util.entity_dto_mappers.BookMapper;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -19,12 +22,17 @@ import java.util.stream.IntStream;
 @Service
 @Transactional(readOnly = true)
 @RequiredArgsConstructor
+@Slf4j
 public class BookServiceImpl implements BookService {
     private final BookRepo bookRepo;
 
     @Transactional
     @Override
     public void createBook(Book book) {
+        if (book == null) {
+            log.error("The book is null");
+            return;
+        }
         if (bookRepo.existsByNameAndAuthor(book.getName(), book.getAuthor())) {
             throw new BookAlreadyExistsException("Book with such name and author already exists");
         }
@@ -87,6 +95,11 @@ public class BookServiceImpl implements BookService {
 
     @Override
     public List<Book> getBooksByStudent(Student student) {
+        if (student == null) {
+            log.error("The student is null");
+            throw new StudentNotFoundException("The student is null");
+        }
+
         List<Course> courses = student.getCourses();
         if (courses.isEmpty()) {
             throw new BookNotFoundException("The student does not have any book");
@@ -96,6 +109,11 @@ public class BookServiceImpl implements BookService {
 
     @Override
     public List<Book> getBooksByCourse(Course course) {
+        if (course == null) {
+            log.error("The course is null");
+            throw new CourseNotFoundException("The course is null");
+        }
+
         List<Book> booksByCourse = bookRepo.findBooksByCourse(course);
         if (booksByCourse.isEmpty()) {
             throw new BookNotFoundException("There is no book in this course");

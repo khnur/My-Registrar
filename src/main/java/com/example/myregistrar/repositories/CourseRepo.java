@@ -1,6 +1,7 @@
 package com.example.myregistrar.repositories;
 
 import com.example.myregistrar.models.Course;
+import com.example.myregistrar.models.CoursePreRequisite;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

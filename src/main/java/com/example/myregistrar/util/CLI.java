@@ -270,7 +270,10 @@ public class CLI {
 
     private void getCoursesStudentsAndBooks(Course course) throws RuntimeException {
         displayMenu(
-                "Get all books"
+                "Get all books",
+                "Get All Pre-Requisite courses",
+                "Add a Pre-Requisite course",
+                "Delete a Pre-Requisite course"
         );
 
         try {
@@ -279,6 +282,27 @@ public class CLI {
                 case 1 -> bookService.getBooksByCourse(course).forEach(
                         book -> log.info(JsonMapper.toJsonString(book))
                 );
+                case 2 -> courseService.getCoursePreRequisitesFromCourse(course).forEach(
+                        coursePreReq -> log.info(JsonMapper.toJsonString(coursePreReq))
+                );
+                case 3 -> {
+                    String name = getUserInput("Course name: ");
+                    String university = getUserInput("University name: ");
+
+                    Course coursePreReq = courseService.getCourseByNameAndUniversity(name, university);
+                    log.info(JsonMapper.toJsonString(coursePreReq));
+
+                    courseService.assignCoursePreRequisiteCourse(course, coursePreReq);
+                }
+                case 4 -> {
+                    String name = getUserInput("Course name: ");
+                    String university = getUserInput("University name: ");
+
+                    Course coursePreReq = courseService.getCourseByNameAndUniversity(name, university);
+                    log.info(JsonMapper.toJsonString(coursePreReq));
+
+                    courseService.removeCoursePreRequisiteFromCourse(course, coursePreReq);
+                }
                 default -> {
                     displayErrorMessage();
                     getCoursesStudentsAndBooks(course);

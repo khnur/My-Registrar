@@ -8,6 +8,7 @@ import com.example.myregistrar.repositories.StudentRepo;
 import com.example.myregistrar.services.StudentService;
 import com.example.myregistrar.util.entity_dto_mappers.StudentMapper;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -17,12 +18,17 @@ import java.util.stream.IntStream;
 @Service
 @Transactional(readOnly = true)
 @RequiredArgsConstructor
+@Slf4j
 public class StudentServiceImpl implements StudentService {
     private final StudentRepo studentRepo;
 
     @Transactional
     @Override
     public void createStudent(Student student) {
+        if (student == null) {
+            log.error("The student is null");
+            return;
+        }
         if (studentRepo.existsStudentByFirstNameAndLastName(student.getFirstName(), student.getLastName())) {
             throw new StudentAlreadyExistsException("Student with such name and last name already exists");
         }

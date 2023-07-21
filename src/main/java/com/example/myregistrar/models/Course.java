@@ -44,7 +44,8 @@ public class Course {
 
     @ManyToMany(
             mappedBy = "courses",
-            cascade = CascadeType.ALL
+            cascade = CascadeType.ALL,
+            fetch = FetchType.EAGER
     )
     @ToString.Exclude
     @JsonIgnore
@@ -59,6 +60,15 @@ public class Course {
     @ToString.Exclude
     @JsonIgnore
     private List<Book> books = new ArrayList<>();
+
+    @OneToMany(
+            mappedBy = "course",
+            cascade = CascadeType.ALL,
+            orphanRemoval = true
+    )
+    @ToString.Exclude
+    @JsonIgnore
+    private List<CoursePreRequisite> coursePreRequisiteList = new ArrayList<>();
 
     public Course(String name, String university, String department, String instructor, Integer creditHours) {
         this.name = name;

@@ -3,11 +3,14 @@ package com.example.myregistrar;
 import com.example.myregistrar.dtos.BookDto;
 import com.example.myregistrar.dtos.CourseDto;
 import com.example.myregistrar.dtos.StudentDto;
+import com.example.myregistrar.models.Course;
 import com.example.myregistrar.services.BookService;
 import com.example.myregistrar.services.CourseService;
 import com.example.myregistrar.services.StudentService;
 import com.example.myregistrar.util.CLI;
 import com.example.myregistrar.util.DateMapper;
+import com.example.myregistrar.util.JsonMapper;
+import com.example.myregistrar.util.entity_dto_mappers.CourseMapper;
 import org.springframework.boot.ApplicationRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -47,13 +50,27 @@ public class Application {
             List.of(
                     new CourseDto(
                             "aaa",
-                            "bbb",
+                            "ppp",
                             "wdafdsfd",
                             "wdefsvfd",
                             7
                     ),
                     new CourseDto(
-                            "aaa",
+                            "bbb",
+                            "ppp",
+                            "wdafdsfd",
+                            "wdefsvfd",
+                            7
+                    ),
+                    new CourseDto(
+                            "qqq",
+                            "ppp",
+                            "wdafdsfd",
+                            "wdefsvfd",
+                            7
+                    ),
+                    new CourseDto(
+                            "www",
                             "ppp",
                             "wdafdsfd",
                             "wdefsvfd",
@@ -79,14 +96,43 @@ public class Application {
             ).forEach(bookService::createBook);
 
             courseService.assignBooksToCourse(
-                    courseService.getCourseByNameAndUniversity("aaa", "bbb"),
+                    courseService.getCourseByNameAndUniversity("aaa", "ppp"),
                     bookService.getBooksByName("nnn")
             );
 
             courseService.assignStudentsToCourse(
-                    courseService.getCourseByNameAndUniversity("aaa", "bbb"),
+                    courseService.getCourseByNameAndUniversity("aaa", "ppp"),
                     studentService.getAllStudents()
             );
+
+
+
+            courseService.assignCoursePreRequisiteCourse(
+                    courseService.getCourseByNameAndUniversity("aaa", "ppp"),
+                    courseService.getCourseByNameAndUniversity("bbb", "ppp")
+            );
+
+            courseService.assignCoursePreRequisiteCourse(
+                    courseService.getCourseByNameAndUniversity("aaa", "ppp"),
+                    courseService.getCourseByNameAndUniversity("qqq", "ppp")
+            );
+
+            courseService.assignCoursePreRequisiteCourse(
+                    courseService.getCourseByNameAndUniversity("qqq", "ppp"),
+                    courseService.getCourseByNameAndUniversity("www", "ppp")
+            );
+
+//            courseService.removeCoursePreRequisiteFromCourse(
+//                    courseService.getCourseByNameAndUniversity("aaa", "ppp"),
+//                    courseService.getCourseByNameAndUniversity("bbb", "ppp")
+//            );
+
+            courseService.getCoursePreRequisitesFromCourse(
+                    courseService.getCourseByNameAndUniversity("aaa", "ppp")
+            ).forEach(course -> {
+                CourseDto courseDto = CourseMapper.INSTANCE.courseToCourseDto(course);
+                System.out.println(JsonMapper.toJsonString(courseDto));
+            });
 
             cli.init();
         };

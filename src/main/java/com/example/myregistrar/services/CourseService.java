@@ -27,4 +27,10 @@ public interface CourseService {
     void assignBooksToCourse(Course course, List<Book> books);
 
     void assignStudentsToCourse(Course course, List<Student> students);
+
+    void removeCoursePreRequisiteFromCourse(Course course, Course coursePreReq);
+
+    void assignCoursePreRequisiteCourse(Course course, Course coursePreReq);
+
+    List<Course> getCoursePreRequisitesFromCourse(Course course);
 }
