@@ -1,5 +1,6 @@
 package com.example.myregistrar.models;
 
+import com.example.myregistrar.util.ConsoleInput;
 import com.example.myregistrar.util.DateMapper;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.github.javafaker.Faker;
@@ -9,8 +10,8 @@ import lombok.NoArgsConstructor;
 import lombok.ToString;
 import lombok.extern.slf4j.Slf4j;
 
+import java.io.IOException;
 import java.util.Date;
-import java.util.Scanner;
 
 @Entity
 @Table
@@ -50,35 +51,35 @@ public class Book {
     private Course course;
 
     public Book(String name, String author, String genre, Date publishedDate, String publisher) {
-        this.name = name.trim();
-        this.author = author.trim();
-        this.genre = genre.trim();
+        this.name = name;
+        this.author = author;
+        this.genre = genre;
         this.publishedDate = publishedDate;
-        this.publisher = publisher.trim();
+        this.publisher = publisher;
     }
 
-    public static Book getInstance(Scanner scanner) {
+    public static Book getInstance() throws IOException {
         log.info("Name: ");
-        String name = scanner.next();
+        String name = ConsoleInput.readLine();
 
         log.info("Author: ");
-        String author = scanner.next();
+        String author = ConsoleInput.readLine();
 
         log.info("Genre: ");
-        String genre = scanner.next();
+        String genre = ConsoleInput.readLine();
 
         Date publishedDate = null;
         while (publishedDate == null) {
             log.info("Published Date (" + DateMapper.PATTERN + "): ");
             try {
-                publishedDate = DateMapper.DATE_FORMAT.parse(scanner.next().trim());
+                publishedDate = DateMapper.DATE_FORMAT.parse(ConsoleInput.readLine());
             } catch (Exception e) {
                 log.error("Entered incorrect for of date. Try again\n");
             }
         }
 
         log.info("Publisher: ");
-        String publisher = scanner.next();
+        String publisher = ConsoleInput.readLine();
 
         return new Book(name, author, genre, publishedDate, publisher);
 

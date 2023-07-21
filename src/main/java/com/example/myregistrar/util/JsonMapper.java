@@ -14,7 +14,7 @@ public class JsonMapper {
 
     public static String toJsonString(Object object) {
         try {
-            return "\n" + object.getClass().getSimpleName() + " " + mapper.writeValueAsString(object) + "\n";
+            return "\n" + object.getClass().getSimpleName() + " " + mapper.writeValueAsString(object);
         } catch (JsonProcessingException e) {
             e.printStackTrace();
             return object.toString();

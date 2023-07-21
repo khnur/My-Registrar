@@ -1,6 +1,5 @@
 package com.example.myregistrar.dtos;
 
-import com.example.myregistrar.models.Course;
 import com.example.myregistrar.util.DateMapper;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Data;
@@ -24,14 +23,11 @@ public class StudentDto {
     private List<CourseDto> courseDtoList = new ArrayList<>();
 
     public StudentDto(String firstName, String lastName, Date birthDate, String gender) {
-        firstName = firstName.trim();
-        lastName = lastName.trim();
-
         this.firstName = firstName;
         this.lastName = lastName;
         this.birthDate = birthDate;
         this.age = DateMapper.GET_AGE(birthDate);
-        this.gender = gender.trim();
-        this.email = firstName.toLowerCase() + '.' + lastName.toLowerCase();
+        this.gender = gender;
+        this.email = firstName.toLowerCase() + '.' + lastName.toLowerCase() + "@onelab.kz";
     }
 }

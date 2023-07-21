@@ -1,96 +1,28 @@
 package com.example.myregistrar.services;
 
 import com.example.myregistrar.dtos.BookDto;
-import com.example.myregistrar.exceptions.BookAlreadyExistsException;
-import com.example.myregistrar.exceptions.BookNotFoundException;
 import com.example.myregistrar.models.Book;
 import com.example.myregistrar.models.Course;
 import com.example.myregistrar.models.Student;
-import com.example.myregistrar.repositories.BookRepo;
-import com.example.myregistrar.util.entity_dto_mappers.BookMapper;
-import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-import java.util.stream.IntStream;
 
-@Service
-@RequiredArgsConstructor
-public class BookService {
-    private final BookRepo bookRepo;
+public interface BookService {
+    void createBook(Book book);
 
-    @Transactional
-    public void createBook(Book book) {
-        if (bookRepo.existsByNameAndAuthor(book.getName(), book.getAuthor())) {
-            throw new BookAlreadyExistsException("Book with such name and author already exists");
-        }
-        bookRepo.save(book);
-    }
+    void createBook(BookDto bookDto);
 
-    @Transactional
-    public void createBook(BookDto bookDto) {
-        Book book = BookMapper.INSTANCE.bookDtoToBook(bookDto);
-        createBook(book);
-    }
+    void createRandomBooks(int n);
 
-    @Transactional
-    public void createRandomBooks(int n) {
-        IntStream.range(0, n)
-                .filter(i -> {
-                    try {
-                        createBook(Book.createRandomBook());
-                        return true;
-                    } catch (Exception ignored) {
-                        return false;
-                    }
-                })
-                .forEach(i -> {
-                });
-    }
+    List<Book> getAllBooks();
 
-    public List<Book> getAllBooks() {
-        List<Book> bookList = bookRepo.findAll();
-        if (bookList.isEmpty()) {
-            throw new BookNotFoundException("There is no book");
-        }
-        return bookList;
-    }
+    List<Book> getBooksByName(String name);
 
-    public List<Book> getBooksByName(String name) {
-        List<Book> bookList = bookRepo.findBooksByName(name.trim());
-        if (bookList.isEmpty()) {
-            throw new BookNotFoundException("There is no book with such name");
-        }
-        return bookList;
-    }
+    List<Book> getBooksByAuthor(String author);
 
-    public List<Book> getBooksByAuthor(String author) {
-        List<Book> bookList = bookRepo.findBooksByAuthor(author.trim());
-        if (bookList.isEmpty()) {
-            throw new BookNotFoundException("There is no book with such author");
-        }
-        return bookList;
-    }
+    Book getBookByNameAndAuthor(String name, String author);
 
-    public Book getBookByNameAndAuthor(String name, String author) {
-        return bookRepo.findBookByNameAndAuthor(name.trim(), author.trim())
-                .orElseThrow(() -> new BookNotFoundException("There is no book with such name and author"));
-    }
+    List<Book> getBooksByStudent(Student student);
 
-    public List<Book> getBooksByStudent(Student student) {
-        List<Course> courses = student.getCourses();
-        if (courses.isEmpty()) {
-            throw new BookNotFoundException("The student does not have any book");
-        }
-        return bookRepo.findBooksByCourseIn(courses);
-    }
-
-    public List<Book> getBooksByCourse(Course course) {
-        List<Book> booksByCourse = bookRepo.findBooksByCourse(course);
-        if (booksByCourse.isEmpty()) {
-            throw new BookNotFoundException("There is no book in this course");
-        }
-        return booksByCourse;
-    }
+    List<Book> getBooksByCourse(Course course);
 }

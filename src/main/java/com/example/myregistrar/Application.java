@@ -3,18 +3,12 @@ package com.example.myregistrar;
 import com.example.myregistrar.dtos.BookDto;
 import com.example.myregistrar.dtos.CourseDto;
 import com.example.myregistrar.dtos.StudentDto;
-import com.example.myregistrar.models.Book;
-import com.example.myregistrar.models.Course;
-import com.example.myregistrar.models.Student;
 import com.example.myregistrar.services.BookService;
 import com.example.myregistrar.services.CourseService;
 import com.example.myregistrar.services.StudentService;
 import com.example.myregistrar.util.CLI;
 import com.example.myregistrar.util.DateMapper;
-import com.example.myregistrar.util.JsonMapper;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.ApplicationRunner;
-import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
@@ -22,7 +16,6 @@ import org.springframework.context.annotation.Bean;
 import java.util.List;
 
 @SpringBootApplication
-@Slf4j
 public class Application {
     public static void main(String[] args) {
         SpringApplication.run(Application.class, args);
@@ -98,12 +91,4 @@ public class Application {
             cli.init();
         };
     }
-
-    @Bean
-    CommandLineRunner commandLineRunner() {
-        return args -> {
-
-        };
-    }
-
 }

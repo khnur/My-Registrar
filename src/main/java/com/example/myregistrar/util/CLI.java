@@ -11,8 +11,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
 
+import java.io.IOException;
 import java.util.List;
-import java.util.Scanner;
 import java.util.stream.IntStream;
 
 @Component
@@ -20,7 +20,6 @@ import java.util.stream.IntStream;
 @RequiredArgsConstructor
 @Slf4j
 public class CLI {
-    private final Scanner scanner = new Scanner(System.in);
 
     private final StudentService studentService;
     private final CourseService courseService;
@@ -28,7 +27,7 @@ public class CLI {
 
     private boolean running = false;
 
-    public void init() {
+    public void init() throws IOException {
         running = true;
 
         log.info("------------------------------");
@@ -38,7 +37,7 @@ public class CLI {
         while (running) {
             mainMenu();
         }
-        scanner.close();
+        ConsoleInput.close();
         log.info("Thank you. Have fun");
         System.exit(0);
     }
@@ -51,7 +50,7 @@ public class CLI {
         );
 
         try {
-            switch (scanner.nextInt()) {
+            switch (ConsoleInput.readInt()) {
                 case 1 -> createEntity();
                 case 2 -> getEntity();
                 case 3 -> assignEntities();
@@ -60,18 +59,17 @@ public class CLI {
             }
         } catch (Exception e) {
             log.error(e.getMessage());
-            scanner.nextLine();
         }
     }
 
-    private void createEntity() throws RuntimeException {
+    private void createEntity() throws Exception {
         displayMenu(
                 "Create Student",
                 "Create Course",
                 "Create Book"
         );
 
-        switch (scanner.nextInt()) {
+        switch (ConsoleInput.readInt()) {
             case 0 -> {
                 mainMenu();
                 return;
@@ -86,27 +84,27 @@ public class CLI {
     }
 
 
-    private void createEntityFurther(Class<?> entityClass) throws RuntimeException {
+    private void createEntityFurther(Class<?> entityClass) throws Exception {
         displayMenu(
                 String.format("Create Custom %1$s", entityClass.getSimpleName()),
                 String.format("Create Random %1$s", entityClass.getSimpleName())
         );
 
-        switch (scanner.nextInt()) {
+        switch (ConsoleInput.readInt()) {
             case 1 -> {
                 if (Student.class.isAssignableFrom(entityClass)) {
-                    studentService.createStudent(Student.getInstance(scanner));
+                    studentService.createStudent(Student.getInstance());
                 } else if (Course.class.isAssignableFrom(entityClass)) {
-                    courseService.createCourse(Course.getInstance(scanner));
+                    courseService.createCourse(Course.getInstance());
                 } else if (Book.class.isAssignableFrom(entityClass)) {
-                    bookService.createBook(Book.getInstance(scanner));
+                    bookService.createBook(Book.getInstance());
                 }
             }
             case 2 -> {
                 int n;
                 do {
                     log.info("How many: ");
-                    n = scanner.nextInt();
+                    n = ConsoleInput.readInt();
 
                     if (n < 0 || n > 100) {
                         log.error("Invalid amount or it is too large\n");
@@ -129,14 +127,14 @@ public class CLI {
         }
     }
 
-    private void getEntity() throws RuntimeException {
+    private void getEntity() throws RuntimeException, IOException {
         displayMenu(
                 "Get Student(s)",
                 "Get Course(s)",
                 "Get Book(s)"
         );
 
-        switch (scanner.nextInt()) {
+        switch (ConsoleInput.readInt()) {
             case 1 -> getEntityStudent();
             case 2 -> getEntityCourse();
             case 3 -> getEntityBook();
@@ -155,7 +153,7 @@ public class CLI {
         );
 
         try {
-            switch (scanner.nextInt()) {
+            switch (ConsoleInput.readInt()) {
                 case 0 -> {
                     return;
                 }
@@ -192,7 +190,6 @@ public class CLI {
             }
         } catch (Exception e) {
             log.error(e.getMessage());
-            scanner.nextLine();
         }
         getEntityStudent();
     }
@@ -204,7 +201,7 @@ public class CLI {
         );
 
         try {
-            switch (scanner.nextInt()) {
+            switch (ConsoleInput.readInt()) {
                 case 0 -> getEntityStudent();
                 case 1 -> courseService.getCoursesByStudent(student).forEach(
                         course -> log.info(JsonMapper.toJsonString(course))
@@ -233,7 +230,7 @@ public class CLI {
         );
 
         try {
-            switch (scanner.nextInt()) {
+            switch (ConsoleInput.readInt()) {
                 case 0 -> {
                     return;
                 }
@@ -267,7 +264,6 @@ public class CLI {
             }
         } catch (Exception e) {
             log.error(e.getMessage());
-            scanner.nextLine();
         }
         getEntityCourse();
     }
@@ -278,7 +274,7 @@ public class CLI {
         );
 
         try {
-            switch (scanner.nextInt()) {
+            switch (ConsoleInput.readInt()) {
                 case 0 -> getEntityCourse();
                 case 1 -> bookService.getBooksByCourse(course).forEach(
                         book -> log.info(JsonMapper.toJsonString(book))
@@ -303,7 +299,7 @@ public class CLI {
         );
 
         try {
-            switch (scanner.nextInt()) {
+            switch (ConsoleInput.readInt()) {
                 case 0 -> {
                     return;
                 }
@@ -333,7 +329,6 @@ public class CLI {
             }
         } catch (Exception e) {
             log.error(e.getMessage());
-            scanner.nextLine();
         }
         getEntityBook();
     }
@@ -346,7 +341,7 @@ public class CLI {
         );
 
         try {
-            switch (scanner.nextInt()) {
+            switch (ConsoleInput.readInt()) {
                 case 0 -> {
                     mainMenu();
                     return;
@@ -394,7 +389,6 @@ public class CLI {
             }
         } catch (Exception e) {
             log.error(e.getMessage());
-            scanner.nextLine();
         }
         assignEntities();
     }
@@ -411,8 +405,8 @@ public class CLI {
         log.info("Pick a command number: ");
     }
 
-    private String getUserInput(String prompt) {
+    private String getUserInput(String prompt) throws IOException {
         log.info(prompt);
-        return scanner.next();
+        return ConsoleInput.readLine();
     }
 }

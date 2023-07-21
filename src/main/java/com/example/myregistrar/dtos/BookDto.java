@@ -1,6 +1,5 @@
 package com.example.myregistrar.dtos;
 
-import com.example.myregistrar.models.Course;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Data;
 import lombok.ToString;
@@ -17,13 +16,13 @@ public class BookDto {
     private String publisher;
     @ToString.Exclude
     @JsonIgnore
-    private Course course;
+    private CourseDto courseDto;
 
     public BookDto(String name, String author, String genre, Date publishedDate, String publisher) {
-        this.name = name.trim();
-        this.author = author.trim();
-        this.genre = genre.trim();
+        this.name = name;
+        this.author = author;
+        this.genre = genre;
         this.publishedDate = publishedDate;
-        this.publisher = publisher.trim();
+        this.publisher = publisher;
     }
 }

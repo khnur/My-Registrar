@@ -1,5 +1,6 @@
 package com.example.myregistrar.models;
 
+import com.example.myregistrar.util.ConsoleInput;
 import com.example.myregistrar.util.DateMapper;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.github.javafaker.Faker;
@@ -9,10 +10,10 @@ import lombok.NoArgsConstructor;
 import lombok.ToString;
 import lombok.extern.slf4j.Slf4j;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.util.Scanner;
 
 @Entity
 @Table
@@ -71,29 +72,26 @@ public class Student {
     private List<Course> courses = new ArrayList<>();
 
     public Student(String firstName, String lastName, Date birthDate, String gender) {
-        firstName = firstName.trim();
-        lastName = lastName.trim();
-
         this.firstName = firstName;
         this.lastName = lastName;
         this.birthDate = birthDate;
         this.age = DateMapper.GET_AGE(birthDate);
-        this.gender = gender.trim();
+        this.gender = gender;
         this.email = firstName.toLowerCase() + '.' + lastName.toLowerCase() + DOMAIN;
     }
 
-    public static Student getInstance(Scanner scanner) {
+    public static Student getInstance() throws IOException {
         log.info("First Name: ");
-        String firstName = scanner.next();
+        String firstName = ConsoleInput.readLine();
 
         log.info("Last Name: ");
-        String lastName = scanner.next();
+        String lastName = ConsoleInput.readLine();
 
         Date birthDate = null;
         while (birthDate == null) {
             log.info("Birth Date (" + DateMapper.PATTERN + "): ");
             try {
-                birthDate = DateMapper.DATE_FORMAT.parse(scanner.next().trim());
+                birthDate = DateMapper.DATE_FORMAT.parse(ConsoleInput.readLine());
             } catch (Exception e) {
                 log.error("Entered incorrect for of date. Try again\n");
             }
@@ -103,7 +101,7 @@ public class Student {
 
         while (gender == null) {
             log.info("Gender: ");
-            gender = scanner.next();
+            gender = ConsoleInput.readLine();
 
             if (gender.startsWith("M") || gender.startsWith("m")) {
                 gender = "Male";

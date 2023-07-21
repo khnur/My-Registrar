@@ -1,5 +1,6 @@
 package com.example.myregistrar.models;
 
+import com.example.myregistrar.util.ConsoleInput;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.github.javafaker.Faker;
 import jakarta.persistence.*;
@@ -8,9 +9,9 @@ import lombok.NoArgsConstructor;
 import lombok.ToString;
 import lombok.extern.slf4j.Slf4j;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Scanner;
 
 @Entity
 @Table
@@ -60,31 +61,31 @@ public class Course {
     private List<Book> books = new ArrayList<>();
 
     public Course(String name, String university, String department, String instructor, Integer creditHours) {
-        this.name = name.trim();
-        this.university = university.trim();
-        this.department = department.trim();
-        this.instructor = instructor.trim();
+        this.name = name;
+        this.university = university;
+        this.department = department;
+        this.instructor = instructor;
         this.creditHours = creditHours;
     }
 
-    public static Course getInstance(Scanner scanner) {
+    public static Course getInstance() throws IOException {
         log.info("Name: ");
-        String name = scanner.next();
+        String name = ConsoleInput.readLine();
 
         log.info("University: ");
-        String university = scanner.next();
+        String university = ConsoleInput.readLine();
 
         log.info("Department: ");
-        String department = scanner.next();
+        String department = ConsoleInput.readLine();
 
         log.info("Instructor: ");
-        String instructor = scanner.next();
+        String instructor = ConsoleInput.readLine();
 
         Integer creditHours = null;
         while (creditHours == null) {
             log.info("Credit hours (ECT : 4 - 12): ");
             try {
-                int temp = scanner.nextInt();
+                int temp = ConsoleInput.readInt();
 
                 if (temp >= 4 && temp <= 12) {
                     creditHours = temp;
@@ -93,7 +94,6 @@ public class Course {
                 }
             } catch (Exception e) {
                 log.error(e.getMessage());
-                scanner.nextLine();
             }
         }
 

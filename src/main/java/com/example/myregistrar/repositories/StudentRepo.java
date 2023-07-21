@@ -3,18 +3,15 @@ package com.example.myregistrar.repositories;
 import com.example.myregistrar.models.Student;
 import jakarta.persistence.EntityManager;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.*;
-import org.springframework.data.repository.query.FluentQuery;
-import org.springframework.data.repository.query.QueryByExampleExecutor;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.function.Function;
 
 @Repository
 @RequiredArgsConstructor
-public class StudentRepo implements QueryByExampleExecutor<Student> {
+public class StudentRepo {
     private final EntityManager entityManager;
 
     public boolean existsStudentByFirstNameAndLastName(String firstName, String lastName) {
@@ -53,50 +50,12 @@ public class StudentRepo implements QueryByExampleExecutor<Student> {
                 .findFirst();
     }
 
-    public <S extends Student> void save(S student) {
+    @Modifying
+    public void save(Student student) {
         if (student.getId() == null) {
             entityManager.persist(student);
         } else {
             entityManager.merge(student);
         }
-    }
-
-    @Override
-    public <S extends Student> Optional<S> findOne(Example<S> example) {
-        S student = entityManager.find(example.getProbeType(), example.getProbe().getId());
-        return Optional.ofNullable(student);
-    }
-
-    @Override
-    public <S extends Student> Iterable<S> findAll(Example<S> example) {
-        String query = "SELECT * FROM " + example.getProbeType().getSimpleName();
-        return entityManager.createQuery(query, example.getProbeType()).getResultList();
-    }
-
-    @Override
-    public <S extends Student> Iterable<S> findAll(Example<S> example, Sort sort) {
-        return null;
-    }
-
-    @Override
-    public <S extends Student> Page<S> findAll(Example<S> example, Pageable pageable) {
-        return null;
-    }
-
-    @Override
-    public <S extends Student> long count(Example<S> example) {
-        String query = "SELECT count(*) FROM " + example.getProbeType().getSimpleName();
-        return entityManager.createQuery(query, long.class)
-                .getSingleResult();
-    }
-
-    @Override
-    public <S extends Student> boolean exists(Example<S> example) {
-        return entityManager.find(example.getProbeType(), example.getProbe().getId()) != null;
-    }
-
-    @Override
-    public <S extends Student, R> R findBy(Example<S> example, Function<FluentQuery.FetchableFluentQuery<S>, R> queryFunction) {
-        return null;
     }
 }
