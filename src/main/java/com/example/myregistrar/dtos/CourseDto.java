@@ -3,12 +3,14 @@ package com.example.myregistrar.dtos;
 import com.example.myregistrar.models.CoursePreRequisite;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 import lombok.ToString;
 
 import java.util.ArrayList;
 import java.util.List;
 
 @Data
+@NoArgsConstructor
 public class CourseDto {
     private Long id;
 

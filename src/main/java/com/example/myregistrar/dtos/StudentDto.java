@@ -3,6 +3,7 @@ package com.example.myregistrar.dtos;
 import com.example.myregistrar.util.DateMapper;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 import lombok.ToString;
 
 import java.util.ArrayList;
@@ -10,6 +11,7 @@ import java.util.Date;
 import java.util.List;
 
 @Data
+@NoArgsConstructor
 public class StudentDto {
     private Long id;
     private String firstName;

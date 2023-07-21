@@ -32,6 +32,10 @@ public class Application {
             BookService bookService
     ) {
         return args -> {
+            studentService.createRandomStudents(8);
+            courseService.createRandomCourses(7);
+            bookService.createRandomBooks(10);
+
             List.of(
                     new StudentDto(
                             "aaa",
@@ -106,7 +110,6 @@ public class Application {
             );
 
 
-
             courseService.assignCoursePreRequisiteCourse(
                     courseService.getCourseByNameAndUniversity("aaa", "ppp"),
                     courseService.getCourseByNameAndUniversity("bbb", "ppp")
@@ -122,19 +125,17 @@ public class Application {
                     courseService.getCourseByNameAndUniversity("www", "ppp")
             );
 
-//            courseService.removeCoursePreRequisiteFromCourse(
-//                    courseService.getCourseByNameAndUniversity("aaa", "ppp"),
-//                    courseService.getCourseByNameAndUniversity("bbb", "ppp")
-//            );
+            courseService.assignCoursePreRequisiteCourse(
+                    courseService.getCourseByNameAndUniversity("www", "ppp"),
+                    courseService.getCourseByNameAndUniversity("bbb", "ppp")
+            );
 
-            courseService.getCoursePreRequisitesFromCourse(
-                    courseService.getCourseByNameAndUniversity("aaa", "ppp")
-            ).forEach(course -> {
-                CourseDto courseDto = CourseMapper.INSTANCE.courseToCourseDto(course);
-                System.out.println(JsonMapper.toJsonString(courseDto));
-            });
+            courseService.removeCoursePreRequisiteFromCourse(
+                    courseService.getCourseByNameAndUniversity("aaa", "ppp"),
+                    courseService.getCourseByNameAndUniversity("bbb", "ppp")
+            );
 
-            cli.init();
+//            cli.init();
         };
     }
 }

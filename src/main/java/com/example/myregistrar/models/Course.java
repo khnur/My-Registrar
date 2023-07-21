@@ -64,7 +64,8 @@ public class Course {
     @OneToMany(
             mappedBy = "course",
             cascade = CascadeType.ALL,
-            orphanRemoval = true
+            orphanRemoval = true,
+            fetch = FetchType.EAGER
     )
     @ToString.Exclude
     @JsonIgnore
