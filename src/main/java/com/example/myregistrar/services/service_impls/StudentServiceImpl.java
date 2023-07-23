@@ -31,7 +31,7 @@ public class StudentServiceImpl implements StudentService {
     }
 
     @Override
-    public void createRandomStudents(int n) {
+    public void generateRandomStudents(int n) {
         IntStream.range(0, n)
                 .filter(i -> {
                     try {

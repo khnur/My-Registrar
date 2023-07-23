@@ -1,6 +1,5 @@
 package com.example.myregistrar.services.service_impls;
 
-import com.example.myregistrar.dtos.CourseDto;
 import com.example.myregistrar.embeddables.CoursePreRequisiteId;
 import com.example.myregistrar.exceptions.CourseAlreadyExistsException;
 import com.example.myregistrar.exceptions.CourseNotFoundException;
@@ -20,8 +19,6 @@ import org.mockito.MockitoAnnotations;
 import org.slf4j.Logger;
 
 import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.GregorianCalendar;
 import java.util.List;
 
 import static org.mockito.Mockito.*;
@@ -59,7 +56,7 @@ public class CourseServiceImplTest {
     public void testCreateRandomCourses() throws Exception {
         when(courseRepo.existsByNameAndUniversity(anyString(), anyString())).thenReturn(true);
 
-        courseServiceImpl.createRandomCourses(5);
+        courseServiceImpl.generateRandomCourses(5);
 
         verify(courseRepo, times(5)).save(any(Course.class));
     }

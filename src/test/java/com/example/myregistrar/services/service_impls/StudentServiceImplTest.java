@@ -1,6 +1,5 @@
 package com.example.myregistrar.services.service_impls;
 
-import com.example.myregistrar.dtos.StudentDto;
 import com.example.myregistrar.exceptions.StudentAlreadyExistsException;
 import com.example.myregistrar.models.Student;
 import com.example.myregistrar.repositories.StudentRepo;
@@ -13,10 +12,7 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.slf4j.Logger;
 
-import java.text.ParseException;
 import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.GregorianCalendar;
 import java.util.List;
 
 import static org.mockito.Mockito.*;
@@ -52,7 +48,7 @@ public class StudentServiceImplTest {
     public void testCreateRandomStudents() throws Exception {
         when(studentRepo.existsStudentByFirstNameAndLastName(anyString(), anyString())).thenReturn(true);
 
-        studentServiceImpl.createRandomStudents(0);
+        studentServiceImpl.generateRandomStudents(0);
     }
 
     @Test

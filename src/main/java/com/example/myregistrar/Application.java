@@ -9,9 +9,11 @@ import com.example.myregistrar.services.StudentService;
 import com.example.myregistrar.util.CLI;
 import com.example.myregistrar.util.DateMapper;
 import org.springframework.boot.ApplicationRunner;
+import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
+import org.springframework.kafka.core.KafkaTemplate;
 
 import java.util.List;
 
@@ -22,6 +24,13 @@ public class Application {
     }
 
     @Bean
+    CommandLineRunner commandLineRunner(KafkaTemplate<String, String> kafkaTemplate) {
+        return args -> {
+            kafkaTemplate.send("registrar", "Hello Me");
+        };
+    }
+
+    @Bean
     ApplicationRunner applicationRunner(
             CLI cli,
             StudentService studentService,
@@ -29,9 +38,9 @@ public class Application {
             BookService bookService
     ) {
         return args -> {
-            studentService.createRandomStudents(8);
-            courseService.createRandomCourses(7);
-            bookService.createRandomBooks(10);
+            studentService.generateRandomStudents(8);
+            courseService.generateRandomCourses(7);
+            bookService.generateRandomBooks(10);
 
             List.of(
                     new StudentDto(
@@ -132,7 +141,7 @@ public class Application {
                     courseService.getCourseByNameAndUniversity("bbb", "ppp")
             );
 
-            cli.init();
+//            cli.init();
         };
     }
 }

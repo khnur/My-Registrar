@@ -1,6 +1,5 @@
 package com.example.myregistrar.services.service_impls;
 
-import com.example.myregistrar.dtos.BookDto;
 import com.example.myregistrar.exceptions.BookAlreadyExistsException;
 import com.example.myregistrar.models.Book;
 import com.example.myregistrar.models.Course;
@@ -15,10 +14,7 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.slf4j.Logger;
 
-import java.text.ParseException;
 import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.GregorianCalendar;
 import java.util.List;
 
 import static org.mockito.Mockito.*;
@@ -60,7 +56,7 @@ public class BookServiceImplTest {
     public void testCreateRandomBooks() throws Exception {
         when(bookRepo.existsByNameAndAuthor(anyString(), anyString())).thenReturn(false);
 
-        bookServiceImpl.createRandomBooks(5);
+        bookServiceImpl.generateRandomBooks(5);
 
         verify(bookRepo, times(5)).save(any(Book.class));
     }

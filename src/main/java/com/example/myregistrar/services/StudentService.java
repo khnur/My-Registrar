@@ -7,7 +7,7 @@ import java.util.List;
 public interface StudentService {
     void createStudent(Student student);
 
-    void createRandomStudents(int n);
+    void generateRandomStudents(int n);
 
     List<Student> getAllStudents();
 

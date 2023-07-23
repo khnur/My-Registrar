@@ -47,7 +47,7 @@ public class CourseServiceImpl implements CourseService {
     }
 
     @Override
-    public void createRandomCourses(int n) {
+    public void generateRandomCourses(int n) {
         IntStream.range(0, n)
                 .filter(i -> {
                     try {

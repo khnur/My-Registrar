@@ -115,11 +115,11 @@ public class CLI {
                 } while (n < 0 || n > 100);
 
                 if (Student.class.isAssignableFrom(entityClass)) {
-                    studentService.createRandomStudents(n);
+                    studentService.generateRandomStudents(n);
                 } else if (Course.class.isAssignableFrom(entityClass)) {
-                    courseService.createRandomCourses(n);
+                    courseService.generateRandomCourses(n);
                 } else if (Book.class.isAssignableFrom(entityClass)) {
-                    bookService.createRandomBooks(n);
+                    bookService.generateRandomBooks(n);
                 }
             }
             case 0 -> createEntity();

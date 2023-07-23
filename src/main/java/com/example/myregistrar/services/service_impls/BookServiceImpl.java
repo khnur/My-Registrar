@@ -41,7 +41,7 @@ public class BookServiceImpl implements BookService {
     }
 
     @Override
-    public void createRandomBooks(int n) {
+    public void generateRandomBooks(int n) {
         IntStream.range(0, n)
                 .filter(i -> {
                     try {

@@ -1,6 +1,5 @@
 package com.example.myregistrar.services;
 
-import com.example.myregistrar.dtos.BookDto;
 import com.example.myregistrar.models.Book;
 import com.example.myregistrar.models.Course;
 import com.example.myregistrar.models.Student;
@@ -10,7 +9,7 @@ import java.util.List;
 public interface BookService {
     void createBook(Book book);
 
-    void createRandomBooks(int n);
+    void generateRandomBooks(int n);
 
     List<Book> getAllBooks();
 
