@@ -56,20 +56,6 @@ public class CourseServiceImplTest {
     }
 
     @Test
-    public void testCreateCourse2() throws Exception {
-        when(courseRepo.existsByNameAndUniversity(anyString(), anyString())).thenReturn(true);
-
-        courseServiceImpl.createCourse(new CourseDto("nameDto", "university", "department", "instructor", Integer.valueOf(0)));
-    }
-
-    @Test(expected = CourseAlreadyExistsException.class)
-    public void testCreateCourse2_CourseAlreadyExistsException() {
-        when(courseRepo.existsByNameAndUniversity(anyString(), anyString())).thenReturn(true);
-
-        courseServiceImpl.createCourse(new CourseDto("nameDto", "university", "department", "instructor", Integer.valueOf(0)));
-    }
-
-    @Test
     public void testCreateRandomCourses() throws Exception {
         when(courseRepo.existsByNameAndUniversity(anyString(), anyString())).thenReturn(true);
 

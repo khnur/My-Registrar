@@ -1,8 +1,9 @@
 package com.example.myregistrar.repositories;
 
 import com.example.myregistrar.models.Course;
-import com.example.myregistrar.models.CoursePreRequisite;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -14,4 +15,7 @@ public interface CourseRepo extends JpaRepository<Course, Long> {
     List<Course> findCoursesByName(String name);
     List<Course> findCoursesByUniversity(String university);
     Optional<Course> findCourseByNameAndUniversity(String name, String university);
+
+    @Query("SELECT c FROM Course c JOIN c.students s WHERE s.id = :studentId")
+    List<Course> findCoursesByStudentId(@Param("studentId") Long studentId);
 }

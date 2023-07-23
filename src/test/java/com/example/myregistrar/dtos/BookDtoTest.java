@@ -44,7 +44,7 @@ public class BookDtoTest {
         bookDto.setGenre(genre);
         bookDto.setPublishedDate(publishedDate);
         bookDto.setPublisher(publisher);
-        bookDto.setCourseDto(new CourseDto("Course1", "University1", "Department1", "Instructor1", 3));
+        bookDto.setCourse(new CourseDto("Course1", "University1", "Department1", "Instructor1", 3));
 
         Assert.assertEquals(id, bookDto.getId());
         Assert.assertEquals(name, bookDto.getName());
@@ -52,7 +52,7 @@ public class BookDtoTest {
         Assert.assertEquals(genre, bookDto.getGenre());
         Assert.assertEquals(publishedDate, bookDto.getPublishedDate());
         Assert.assertEquals(publisher, bookDto.getPublisher());
-        Assert.assertEquals("Course1", bookDto.getCourseDto().getName());
+        Assert.assertEquals("Course1", bookDto.getCourse().getName());
     }
 
     @Test
@@ -87,7 +87,7 @@ public class BookDtoTest {
 
     @Test
     public void testSetCourseDto() throws Exception {
-        bookDto.setCourseDto(new CourseDto("name", "university", "department", "instructor", Integer.valueOf(0)));
+        bookDto.setCourse(new CourseDto("name", "university", "department", "instructor", Integer.valueOf(0)));
     }
 
     @Test

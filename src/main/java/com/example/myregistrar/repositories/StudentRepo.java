@@ -1,5 +1,6 @@
 package com.example.myregistrar.repositories;
 
+import com.example.myregistrar.exceptions.StudentNotFoundException;
 import com.example.myregistrar.models.Student;
 import jakarta.persistence.EntityManager;
 import lombok.RequiredArgsConstructor;
@@ -25,7 +26,7 @@ public class StudentRepo {
 
     public List<Student> findStudentsByFirstName(String firstName) {
         String query = "SELECT s FROM " + Student.class.getSimpleName()
-                + " s WHERE s.first_name = ?1";
+                + " s WHERE s.firstName = ?1";
         return entityManager.createQuery(query, Student.class)
                 .setParameter(1, firstName)
                 .getResultList();
@@ -33,7 +34,7 @@ public class StudentRepo {
 
     public List<Student> findStudentsByLastName(String lastName) {
         String query = "SELECT s FROM " + Student.class.getSimpleName()
-                + " s WHERE s.last_name = ?1";
+                + " s WHERE s.lastName = ?1";
         return entityManager.createQuery(query, Student.class)
                 .setParameter(1, lastName)
                 .getResultList();
@@ -48,6 +49,32 @@ public class StudentRepo {
                 .getResultList()
                 .stream()
                 .findFirst();
+    }
+
+    public List<Student> findStudentsByCourseId(Long courseId) {
+        String query = "SELECT s FROM " + Student.class.getSimpleName()
+                + " s JOIN s.courses c WHERE c.id = :courseId";
+        return entityManager.createQuery(query, Student.class)
+                .setParameter("courseId", courseId)
+                .getResultList();
+    }
+
+    public Student findStudentById(Long id) {
+        Student student = entityManager.find(Student.class, id);
+        if (student == null) {
+            throw new StudentNotFoundException("There is no student with such id");
+        }
+        return student;
+    }
+
+    @Modifying
+    public void deleteStudent(Student student) {
+        if (student.getId() == null) {
+            throw new StudentNotFoundException("There is no student with such properties in database");
+        } else {
+            entityManager.remove(student);
+            entityManager.flush();
+        }
     }
 
     @Modifying

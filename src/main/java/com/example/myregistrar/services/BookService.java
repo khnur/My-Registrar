@@ -10,8 +10,6 @@ import java.util.List;
 public interface BookService {
     void createBook(Book book);
 
-    void createBook(BookDto bookDto);
-
     void createRandomBooks(int n);
 
     List<Book> getAllBooks();

@@ -10,8 +10,6 @@ import java.util.List;
 public interface CourseService {
     void createCourse(Course course);
 
-    void createCourse(CourseDto courseDto);
-
     void createRandomCourses(int n);
 
     List<Course> getAllCourses();

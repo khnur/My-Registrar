@@ -9,8 +9,8 @@ import com.example.myregistrar.models.Book;
 import com.example.myregistrar.models.Course;
 import com.example.myregistrar.models.Student;
 import com.example.myregistrar.repositories.BookRepo;
+import com.example.myregistrar.repositories.CourseRepo;
 import com.example.myregistrar.services.BookService;
-import com.example.myregistrar.util.entity_dto_mappers.BookMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -25,6 +25,7 @@ import java.util.stream.IntStream;
 @Slf4j
 public class BookServiceImpl implements BookService {
     private final BookRepo bookRepo;
+    private final CourseRepo courseRepo;
 
     @Transactional
     @Override
@@ -40,17 +41,11 @@ public class BookServiceImpl implements BookService {
     }
 
     @Override
-    public void createBook(BookDto bookDto) {
-        Book book = BookMapper.INSTANCE.bookDtoToBook(bookDto);
-        createBook(book);
-    }
-
-    @Override
     public void createRandomBooks(int n) {
         IntStream.range(0, n)
                 .filter(i -> {
                     try {
-                        createBook(Book.createRandomBook());
+                        createBook(BookDto.createRandomBookDto().toBook());
                         return true;
                     } catch (Exception ignored) {
                         return false;
@@ -100,11 +95,7 @@ public class BookServiceImpl implements BookService {
             throw new StudentNotFoundException("The student is null");
         }
 
-        List<Course> courses = student.getCourses();
-        if (courses.isEmpty()) {
-            throw new BookNotFoundException("The student does not have any book");
-        }
-        return bookRepo.findBooksByCourseIn(courses);
+        return bookRepo.findBooksByStudentId(student.getId());
     }
 
     @Override
@@ -114,7 +105,7 @@ public class BookServiceImpl implements BookService {
             throw new CourseNotFoundException("The course is null");
         }
 
-        List<Book> booksByCourse = bookRepo.findBooksByCourse(course);
+        List<Book> booksByCourse = bookRepo.findBooksByCourseId(course.getId());
         if (booksByCourse.isEmpty()) {
             throw new BookNotFoundException("There is no book in this course");
         }

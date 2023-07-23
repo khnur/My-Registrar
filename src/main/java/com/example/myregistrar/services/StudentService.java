@@ -1,14 +1,11 @@
 package com.example.myregistrar.services;
 
-import com.example.myregistrar.dtos.StudentDto;
 import com.example.myregistrar.models.Student;
 
 import java.util.List;
 
 public interface StudentService {
     void createStudent(Student student);
-
-    void createStudent(StudentDto studentDto);
 
     void createRandomStudents(int n);
 

@@ -55,7 +55,7 @@ public class AnnotatedAdvice {
         try {
             result = joinPoint.proceed();
         } catch (Throwable ex) {
-            log.error("Exception occurred in method: {}, Exception: {}", methodName, ex.getMessage());
+            log.error("Exception occurred in method: {}, Exception: {}", methodName, ex.getMessage(), ex);
         }
 
         log.info("Exiting method: {}", methodName);

@@ -6,7 +6,6 @@ import com.example.myregistrar.exceptions.StudentNotFoundException;
 import com.example.myregistrar.models.Student;
 import com.example.myregistrar.repositories.StudentRepo;
 import com.example.myregistrar.services.StudentService;
-import com.example.myregistrar.util.entity_dto_mappers.StudentMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -25,10 +24,6 @@ public class StudentServiceImpl implements StudentService {
     @Transactional
     @Override
     public void createStudent(Student student) {
-        if (student == null) {
-            log.error("The student is null");
-            return;
-        }
         if (studentRepo.existsStudentByFirstNameAndLastName(student.getFirstName(), student.getLastName())) {
             throw new StudentAlreadyExistsException("Student with such name and last name already exists");
         }
@@ -36,17 +31,11 @@ public class StudentServiceImpl implements StudentService {
     }
 
     @Override
-    public void createStudent(StudentDto studentDto) {
-        Student student = StudentMapper.INSTANCE.studentDtoToStudent(studentDto);
-        createStudent(student);
-    }
-
-    @Override
     public void createRandomStudents(int n) {
         IntStream.range(0, n)
                 .filter(i -> {
                     try {
-                        createStudent(Student.createRandomStudent());
+                        createStudent(StudentDto.createRandomStudentDto().toStudent());
                         return true;
                     } catch (Exception ignored) {
                         return false;

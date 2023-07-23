@@ -57,26 +57,6 @@ public class BookServiceImplTest {
     }
 
     @Test
-    public void testCreateBookDto() throws Exception {
-        when(bookRepo.existsByNameAndAuthor(anyString(), anyString())).thenReturn(true);
-
-        BookDto bookDto = new BookDto("nameDto", "author", "genre", DateMapper.DATE_FORMAT.parse("1247-74-77"), "publisher");
-        try {
-            bookServiceImpl.createBook(bookDto);
-        } catch (BookAlreadyExistsException e) {
-            Assert.fail("Expected BookAlreadyExistsException not thrown.");
-        }
-    }
-
-    @Test(expected = BookAlreadyExistsException.class)
-    public void testCreateBookDto_BookAlreadyExistsException() throws Exception {
-        when(bookRepo.existsByNameAndAuthor(anyString(), anyString())).thenReturn(true);
-
-        BookDto bookDto = new BookDto("nameDto", "author", "genre", DateMapper.DATE_FORMAT.parse("1247-74-77"), "publisher");
-        bookServiceImpl.createBook(bookDto);
-    }
-
-    @Test
     public void testCreateRandomBooks() throws Exception {
         when(bookRepo.existsByNameAndAuthor(anyString(), anyString())).thenReturn(false);
 

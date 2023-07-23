@@ -1,8 +1,10 @@
 package com.example.myregistrar.dtos;
 
 import com.example.myregistrar.embeddables.CoursePreRequisiteId;
+import com.example.myregistrar.models.Book;
 import com.example.myregistrar.models.Course;
 import com.example.myregistrar.models.CoursePreRequisite;
+import com.example.myregistrar.models.Student;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -11,8 +13,6 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
 import java.util.*;
-
-import static org.mockito.Mockito.*;
 
 public class CourseDtoTest {
     @Mock
@@ -86,17 +86,25 @@ public class CourseDtoTest {
 
     @Test
     public void testSetStudentDtoList() throws Exception {
-        courseDto.setStudentDtoList(List.of(new StudentDto("firstName", "lastName", new GregorianCalendar(2023, Calendar.JULY, 21, 17, 3).getTime(), "gender")));
+        courseDto.setStudentDtoList(List.of(new Student("firstName", "lastName", new GregorianCalendar(2023, Calendar.JULY, 21, 17, 3).getTime(), "gender")));
     }
 
     @Test
     public void testSetBookDtoList() throws Exception {
-        courseDto.setBookDtoList(List.of(new BookDto("name", "author", "genre", new GregorianCalendar(2023, Calendar.JULY, 21, 17, 3).getTime(), "publisher")));
+        courseDto.setBookDtoList(List.of(
+                new Book("name", "author", "genre",
+                        new GregorianCalendar(2023, Calendar.JULY, 21, 17, 3).getTime(), "publisher")));
     }
 
     @Test
     public void testSetCoursePreRequisiteList() throws Exception {
-        courseDto.setCoursePreRequisiteList(List.of(new CoursePreRequisite(new CoursePreRequisiteId(Long.valueOf(1), Long.valueOf(1)), new Course("name", "university", "department", "instructor", Integer.valueOf(0)), new Course("name", "university", "department", "instructor", Integer.valueOf(0)))));
+        courseDto.setCoursePreRequisiteList(List.of(
+                new CoursePreRequisite(
+                        new CoursePreRequisiteId(Long.valueOf(1), Long.valueOf(1)),
+                        new Course("name", "university", "department", "instructor", Integer.valueOf(0)),
+                        new Course("name", "university", "department", "instructor", Integer.valueOf(0))
+                ))
+        );
     }
 
     @Test
@@ -134,8 +142,8 @@ public class CourseDtoTest {
     public void testStudentDtoList() {
         CourseDto courseDto = new CourseDto();
 
-        List<StudentDto> studentDtos = new ArrayList<>();
-        studentDtos.add(new StudentDto("John", "Doe", new Date(), "Male"));
+        List<Student> studentDtos = new ArrayList<>();
+        studentDtos.add(new Student("John", "Doe", new Date(), "Male"));
 
         courseDto.setStudentDtoList(studentDtos);
 
@@ -146,8 +154,8 @@ public class CourseDtoTest {
     public void testBookDtoList() {
         CourseDto courseDto = new CourseDto();
 
-        List<BookDto> bookDtos = new ArrayList<>();
-        bookDtos.add(new BookDto("Book1", "Author1", "Fiction", new Date(), "Publisher1"));
+        List<Book> bookDtos = new ArrayList<>();
+        bookDtos.add(new Book("Book1", "Author1", "Fiction", new Date(), "Publisher1"));
 
         courseDto.setBookDtoList(bookDtos);
 

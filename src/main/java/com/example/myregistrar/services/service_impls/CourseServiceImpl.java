@@ -9,10 +9,11 @@ import com.example.myregistrar.models.Book;
 import com.example.myregistrar.models.Course;
 import com.example.myregistrar.models.CoursePreRequisite;
 import com.example.myregistrar.models.Student;
+import com.example.myregistrar.repositories.BookRepo;
 import com.example.myregistrar.repositories.CoursePreRequiteRepo;
 import com.example.myregistrar.repositories.CourseRepo;
+import com.example.myregistrar.repositories.StudentRepo;
 import com.example.myregistrar.services.CourseService;
-import com.example.myregistrar.util.entity_dto_mappers.CourseMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -29,6 +30,8 @@ import java.util.stream.IntStream;
 public class CourseServiceImpl implements CourseService {
     private final CourseRepo courseRepo;
     private final CoursePreRequiteRepo coursePreRequiteRepo;
+    private final StudentRepo studentRepo;
+    private final BookRepo bookRepo;
 
     @Transactional
     @Override
@@ -44,17 +47,11 @@ public class CourseServiceImpl implements CourseService {
     }
 
     @Override
-    public void createCourse(CourseDto courseDto) {
-        Course course = CourseMapper.INSTANCE.courseDtoToCourse(courseDto);
-        createCourse(course);
-    }
-
-    @Override
     public void createRandomCourses(int n) {
         IntStream.range(0, n)
                 .filter(i -> {
                     try {
-                        createCourse(Course.createRandomCourse());
+                        createCourse(CourseDto.createRandomCourseDto().toCourse());
                         return true;
                     } catch (Exception ignored) {
                         return false;
@@ -117,7 +114,11 @@ public class CourseServiceImpl implements CourseService {
             log.error("The course is null or book list is null");
             return;
         }
-        course.getBooks().addAll(books);
+
+        List<Book> bookListByCourseId = bookRepo.findBooksByCourseId(course.getId());
+        bookListByCourseId.addAll(books);
+        course.setBooks(bookListByCourseId);
+
         books.forEach(book -> book.setCourse(course));
         courseRepo.save(course);
     }
@@ -129,8 +130,18 @@ public class CourseServiceImpl implements CourseService {
             log.error("The course is null or student list is null");
             return;
         }
-        course.setStudents(students);
-        students.forEach(student -> student.getCourses().add(course));
+
+        List<Student> studentListByCourse = studentRepo.findStudentsByCourseId(course.getId());
+        studentListByCourse.addAll(students);
+
+        course.setStudents(studentListByCourse);
+
+        students.forEach(student -> {
+            List<Course> courseListByStudent = courseRepo.findCoursesByStudentId(student.getId());
+            courseListByStudent.add(course);
+
+            student.setCourses(courseListByStudent);
+        });
         courseRepo.save(course);
     }
 
@@ -142,15 +153,7 @@ public class CourseServiceImpl implements CourseService {
             return;
         }
 
-        CoursePreRequisiteId coursePreRequisiteId = new CoursePreRequisiteId(course.getId(), coursePreReq.getId());
-        CoursePreRequisite coursePreRequisite = coursePreRequiteRepo.findById(coursePreRequisiteId)
-                .orElseThrow(() -> {
-                    String message = "The course does not have such prerequisite course";
-                    log.error(message);
-                    return new CourseNotFoundException(message);
-                });
-
-        coursePreRequiteRepo.delete(coursePreRequisite);
+        coursePreRequiteRepo.deleteByCourseIdAndCoursePreReqId(course.getId(), coursePreReq.getId());
     }
 
     @Transactional
@@ -171,6 +174,6 @@ public class CourseServiceImpl implements CourseService {
     @Override
     public List<Course> getCoursePreRequisitesFromCourse(Course course) {
         if (course == null) throw new CourseNotFoundException("The course is null");
-        return coursePreRequiteRepo.findPrerequisiteCoursesByCourse(course);
+        return coursePreRequiteRepo.findPrerequisiteCoursesByCourseId(course.getId());
     }
 }

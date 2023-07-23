@@ -1,5 +1,8 @@
 package com.example.myregistrar.util;
 
+import com.example.myregistrar.dtos.BookDto;
+import com.example.myregistrar.dtos.CourseDto;
+import com.example.myregistrar.dtos.StudentDto;
 import com.example.myregistrar.models.Book;
 import com.example.myregistrar.models.Course;
 import com.example.myregistrar.models.Student;
@@ -93,11 +96,11 @@ public class CLI {
         switch (ConsoleInput.readInt()) {
             case 1 -> {
                 if (Student.class.isAssignableFrom(entityClass)) {
-                    studentService.createStudent(Student.getInstance());
+                    studentService.createStudent(StudentDto.getInstanceDto().toStudent());
                 } else if (Course.class.isAssignableFrom(entityClass)) {
-                    courseService.createCourse(Course.getInstance());
+                    courseService.createCourse(CourseDto.getInstanceDto().toCourse());
                 } else if (Book.class.isAssignableFrom(entityClass)) {
-                    bookService.createBook(Book.getInstance());
+                    bookService.createBook(BookDto.getInstanceDto().toBook());
                 }
             }
             case 2 -> {

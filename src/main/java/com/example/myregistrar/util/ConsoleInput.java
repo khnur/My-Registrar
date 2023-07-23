@@ -16,20 +16,14 @@ public class ConsoleInput {
     }
 
     public static int readInt() throws NumberFormatException, IOException {
-        while (true) {
-            try {
-                return Integer.parseInt(readLine());
-            } catch (NumberFormatException e) {
-                throw new NumberFormatException(e.getMessage());
-            } catch (IOException e) {
-                throw new IOException(e.getMessage());
-            }
-        }
+        return Integer.parseInt(readLine());
     }
 
     public static void close() throws IOException {
         reader.close();
     }
 
-    private ConsoleInput() {}
+    private ConsoleInput() {
+        throw new IllegalStateException("ConsoleInput class created");
+    }
 }

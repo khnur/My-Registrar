@@ -3,14 +3,11 @@ package com.example.myregistrar;
 import com.example.myregistrar.dtos.BookDto;
 import com.example.myregistrar.dtos.CourseDto;
 import com.example.myregistrar.dtos.StudentDto;
-import com.example.myregistrar.models.Course;
 import com.example.myregistrar.services.BookService;
 import com.example.myregistrar.services.CourseService;
 import com.example.myregistrar.services.StudentService;
 import com.example.myregistrar.util.CLI;
 import com.example.myregistrar.util.DateMapper;
-import com.example.myregistrar.util.JsonMapper;
-import com.example.myregistrar.util.entity_dto_mappers.CourseMapper;
 import org.springframework.boot.ApplicationRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -49,7 +46,7 @@ public class Application {
                             DateMapper.DATE_FORMAT.parse("1234-14-74"),
                             "M"
                     )
-            ).forEach(studentService::createStudent);
+            ).forEach(studentDto -> studentService.createStudent(studentDto.toStudent()));
 
             List.of(
                     new CourseDto(
@@ -80,7 +77,7 @@ public class Application {
                             "wdefsvfd",
                             7
                     )
-            ).forEach(courseService::createCourse);
+            ).forEach(courseDto -> courseService.createCourse(courseDto.toCourse()));
 
             List.of(
                     new BookDto(
@@ -97,7 +94,7 @@ public class Application {
                             DateMapper.DATE_FORMAT.parse("1234-14-74"),
                             "qwfewrf"
                     )
-            ).forEach(bookService::createBook);
+            ).forEach(bookDto -> bookService.createBook(bookDto.toBook()));
 
             courseService.assignBooksToCourse(
                     courseService.getCourseByNameAndUniversity("aaa", "ppp"),
