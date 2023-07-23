@@ -1,4 +1,4 @@
-package com.example.myregistrar.configs;
+package com.example.myregistrar.kafka.kafka_configs;
 
 import org.apache.kafka.clients.admin.NewTopic;
 import org.springframework.context.annotation.Bean;

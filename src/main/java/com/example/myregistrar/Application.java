@@ -3,6 +3,8 @@ package com.example.myregistrar;
 import com.example.myregistrar.dtos.BookDto;
 import com.example.myregistrar.dtos.CourseDto;
 import com.example.myregistrar.dtos.StudentDto;
+import com.example.myregistrar.kafka.KafkaConsumer;
+import com.example.myregistrar.kafka.KafkaProducer;
 import com.example.myregistrar.services.BookService;
 import com.example.myregistrar.services.CourseService;
 import com.example.myregistrar.services.StudentService;
@@ -16,6 +18,9 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.kafka.core.KafkaTemplate;
 
 import java.util.List;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
 @SpringBootApplication
 public class Application {
@@ -24,9 +29,15 @@ public class Application {
     }
 
     @Bean
-    CommandLineRunner commandLineRunner(KafkaTemplate<String, String> kafkaTemplate) {
+    CommandLineRunner commandLineRunner(
+            KafkaProducer kafkaProducer,
+            KafkaConsumer kafkaConsumer
+    ) {
         return args -> {
-            kafkaTemplate.send("registrar", "Hello Me");
+            ScheduledExecutorService scheduler = Executors.newSingleThreadScheduledExecutor();
+            scheduler.scheduleAtFixedRate(
+                    () -> kafkaProducer.sendMessage("registrar", "Hello Me"),
+                    0, 3, TimeUnit.SECONDS);
         };
     }
 
