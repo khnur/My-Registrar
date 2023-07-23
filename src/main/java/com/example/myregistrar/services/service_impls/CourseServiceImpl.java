@@ -100,7 +100,7 @@ public class CourseServiceImpl implements CourseService {
             log.error("The student is null");
             throw new StudentNotFoundException("The student is null");
         }
-        List<Course> courses = student.getCourses();
+        List<Course> courses = courseRepo.findCoursesByStudentId(student.getId());
         if (courses.isEmpty()) {
             throw new CourseNotFoundException("The student does not have any course");
         }
