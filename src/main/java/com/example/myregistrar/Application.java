@@ -8,7 +8,6 @@ import com.example.myregistrar.models.Course;
 import com.example.myregistrar.services.BookService;
 import com.example.myregistrar.services.CourseService;
 import com.example.myregistrar.services.StudentService;
-import com.example.myregistrar.util.CLI;
 import com.example.myregistrar.util.DateMapper;
 import org.springframework.boot.ApplicationRunner;
 import org.springframework.boot.CommandLineRunner;
@@ -55,7 +54,6 @@ public class Application {
 
     @Bean
     ApplicationRunner applicationRunner(
-            CLI cli,
             StudentService studentService,
             CourseService courseService,
             BookService bookService
@@ -162,8 +160,6 @@ public class Application {
                     courseService.getCourseByNameAndUniversity("aaa", "ppp"),
                     courseService.getCourseByNameAndUniversity("bbb", "ppp")
             );
-
-//            cli.init();
         };
     }
 
