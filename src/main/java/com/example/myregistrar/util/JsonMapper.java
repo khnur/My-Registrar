@@ -23,20 +23,24 @@ public class JsonMapper {
             return "null";
         }
 
-        Object object = entity;
-        if (entity instanceof Student) {
-            object = ((Student) entity).toStudentDto();
-        } else if (entity instanceof Course) {
-            object = ((Course) entity).toCourseDto();
-        } else if (entity instanceof Book) {
-            object = ((Book) entity).toBookDto();
-        }
-
         try {
-            return "\n" + entity.getClass().getSimpleName() + " " + mapper.writeValueAsString(object);
+            return "\n" + entity.getClass().getSimpleName() + " " + mapper.writeValueAsString(entity);
         } catch (JsonProcessingException e) {
             log.error(e.getMessage(), e);
-            return object.toString();
+            return entity.toString();
+        }
+    }
+
+    public static <T> T toObject(String json, Class<T> clazz) {
+        try {
+            int classNameEndIndex = json.indexOf(' ');
+            if (classNameEndIndex != -1 && classNameEndIndex + 1 < json.length()) {
+                json = json.substring(classNameEndIndex + 1);
+            }
+            return mapper.readValue(json, clazz);
+        } catch (JsonProcessingException e) {
+            log.error("Error during JSON deserialization: " + e.getMessage());
+            return null;
         }
     }
 

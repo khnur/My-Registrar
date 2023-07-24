@@ -3,6 +3,7 @@ package com.example.myregistrar.dtos;
 import com.example.myregistrar.models.Student;
 import com.example.myregistrar.util.ConsoleInput;
 import com.example.myregistrar.util.DateMapper;
+import com.example.myregistrar.util.JsonMapper;
 import com.example.myregistrar.util.entity_dto_mappers.StudentMapper;
 import com.github.javafaker.Faker;
 import lombok.Data;
@@ -35,6 +36,10 @@ public class StudentDto {
 
     public Student toStudent() {
         return StudentMapper.INSTANCE.studentDtoToStudent(this);
+    }
+
+    public String toJson() {
+        return JsonMapper.toJsonString(this);
     }
 
     public static StudentDto getInstanceDto() throws IOException {

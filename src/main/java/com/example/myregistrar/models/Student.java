@@ -6,17 +6,17 @@ import com.example.myregistrar.util.entity_dto_mappers.StudentMapper;
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.elasticsearch.annotations.Document;
 
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+@Document(indexName = "student_index")
 @Entity
 @Table
 @Data
 @NoArgsConstructor
-@Slf4j
 public class Student {
     private static final String DOMAIN = "@onelab.kz";
 

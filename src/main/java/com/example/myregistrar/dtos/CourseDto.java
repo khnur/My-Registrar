@@ -2,6 +2,7 @@ package com.example.myregistrar.dtos;
 
 import com.example.myregistrar.models.Course;
 import com.example.myregistrar.util.ConsoleInput;
+import com.example.myregistrar.util.JsonMapper;
 import com.example.myregistrar.util.entity_dto_mappers.CourseMapper;
 import com.github.javafaker.Faker;
 import lombok.Data;
@@ -36,6 +37,10 @@ public class CourseDto {
 
     public Course toCourse() {
         return CourseMapper.INSTANCE.courseDtoToCourse(this);
+    }
+
+    public String toJson() {
+        return JsonMapper.toJsonString(this);
     }
 
     public static CourseDto getInstanceDto() throws IOException {

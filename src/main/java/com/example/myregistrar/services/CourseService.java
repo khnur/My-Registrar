@@ -11,6 +11,8 @@ public interface CourseService {
 
     void generateRandomCourses(int n);
 
+    Course getCourseById(Long id);
+
     List<Course> getAllCourses();
 
     List<Course> getCoursesByName(String name);

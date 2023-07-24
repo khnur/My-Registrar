@@ -162,20 +162,20 @@ public class CLI {
                 }
 
                 case 1 -> studentService.getAllStudents().forEach(
-                        student -> log.info(JsonMapper.toJsonString(student))
+                        student -> log.info(JsonMapper.toJsonString(student.toStudentDto()))
                 );
 
                 case 2 -> {
                     String firstName = getUserInput("First name: ");
                     studentService.getStudentsByFirstName(firstName)
                             .forEach(
-                                    student -> log.info(JsonMapper.toJsonString(student))
+                                    student -> log.info(JsonMapper.toJsonString(student.toStudentDto()))
                             );
                 }
                 case 3 -> {
                     String lastName = getUserInput("Last name: ");
                     studentService.getStudentsByLastName(lastName).forEach(
-                            student -> log.info(JsonMapper.toJsonString(student))
+                            student -> log.info(JsonMapper.toJsonString(student.toStudentDto()))
                     );
                 }
 
@@ -185,7 +185,7 @@ public class CLI {
                     String lastName = getUserInput("Last name: ");
 
                     Student student = studentService.getStudentByFirstNameAndLastName(firstName, lastName);
-                    log.info(JsonMapper.toJsonString(student));
+                    log.info(JsonMapper.toJsonString(student.toStudentDto()));
 
                     getStudentsBooksAndCourses(student);
                 }
@@ -207,11 +207,11 @@ public class CLI {
             switch (ConsoleInput.readInt()) {
                 case 0 -> getEntityStudent();
                 case 1 -> courseService.getCoursesByStudent(student).forEach(
-                        course -> log.info(JsonMapper.toJsonString(course))
+                        course -> log.info(JsonMapper.toJsonString(course.toCourseDto()))
                 );
 
                 case 2 -> bookService.getBooksByStudent(student).forEach(
-                        book -> log.info(JsonMapper.toJsonString(book))
+                        book -> log.info(JsonMapper.toJsonString(book.toBookDto()))
                 );
 
                 default -> {
@@ -238,20 +238,20 @@ public class CLI {
                     return;
                 }
                 case 1 -> courseService.getAllCourses().forEach(
-                        course -> log.info(JsonMapper.toJsonString(course))
+                        course -> log.info(JsonMapper.toJsonString(course.toCourseDto()))
                 );
 
                 case 2 -> {
                     String name = getUserInput("Name: ");
                     courseService.getCoursesByName(name).forEach(
-                            course -> log.info(JsonMapper.toJsonString(course))
+                            course -> log.info(JsonMapper.toJsonString(course.toCourseDto()))
                     );
 
                 }
                 case 3 -> {
                     String university = getUserInput("University: ");
                     courseService.getCoursesByUniversity(university).forEach(
-                            course -> log.info(JsonMapper.toJsonString(course))
+                            course -> log.info(JsonMapper.toJsonString(course.toCourseDto()))
                     );
                 }
                 case 4 -> {
@@ -259,7 +259,7 @@ public class CLI {
                     String university = getUserInput("University: ");
 
                     Course course = courseService.getCourseByNameAndUniversity(name, university);
-                    log.info(JsonMapper.toJsonString(course));
+                    log.info(JsonMapper.toJsonString(course.toCourseDto()));
 
                     getCoursesStudentsAndBooks(course);
                 }
@@ -274,6 +274,7 @@ public class CLI {
     private void getCoursesStudentsAndBooks(Course course) throws RuntimeException {
         displayMenu(
                 "Get all books",
+                "Get all enrolled students",
                 "Get All Pre-Requisite courses",
                 "Add a Pre-Requisite course",
                 "Delete a Pre-Requisite course"
@@ -283,26 +284,29 @@ public class CLI {
             switch (ConsoleInput.readInt()) {
                 case 0 -> getEntityCourse();
                 case 1 -> bookService.getBooksByCourse(course).forEach(
-                        book -> log.info(JsonMapper.toJsonString(book))
+                        book -> log.info(JsonMapper.toJsonString(book.toBookDto()))
                 );
-                case 2 -> courseService.getCoursePreRequisitesFromCourse(course).forEach(
-                        coursePreReq -> log.info(JsonMapper.toJsonString(coursePreReq))
+                case 2 -> studentService.getStudentsByCourse(course).forEach(
+                        student -> log.info(JsonMapper.toJsonString(student.toStudentDto()))
                 );
-                case 3 -> {
-                    String name = getUserInput("Course name: ");
-                    String university = getUserInput("University name: ");
-
-                    Course coursePreReq = courseService.getCourseByNameAndUniversity(name, university);
-                    log.info(JsonMapper.toJsonString(coursePreReq));
-
-                    courseService.assignCoursePreRequisiteCourse(course, coursePreReq);
-                }
+                case 3 -> courseService.getCoursePreRequisitesFromCourse(course.toCourseDto().toCourse()).forEach(
+                        coursePreReq -> log.info(JsonMapper.toJsonString(coursePreReq.toCourseDto()))
+                );
                 case 4 -> {
                     String name = getUserInput("Course name: ");
                     String university = getUserInput("University name: ");
 
                     Course coursePreReq = courseService.getCourseByNameAndUniversity(name, university);
-                    log.info(JsonMapper.toJsonString(coursePreReq));
+                    log.info(JsonMapper.toJsonString(coursePreReq.toCourseDto()));
+
+                    courseService.assignCoursePreRequisiteCourse(course, coursePreReq);
+                }
+                case 5 -> {
+                    String name = getUserInput("Course name: ");
+                    String university = getUserInput("University name: ");
+
+                    Course coursePreReq = courseService.getCourseByNameAndUniversity(name, university);
+                    log.info(JsonMapper.toJsonString(coursePreReq.toCourseDto()));
 
                     courseService.removeCoursePreRequisiteFromCourse(course, coursePreReq);
                 }
@@ -331,26 +335,27 @@ public class CLI {
                     return;
                 }
                 case 1 -> bookService.getAllBooks().forEach(
-                        book -> log.info(JsonMapper.toJsonString(book))
+                        book -> log.info(JsonMapper.toJsonString(book.toBookDto()))
                 );
 
                 case 2 -> {
                     String name = getUserInput("Name: ");
                     bookService.getBooksByName(name).forEach(
-                            book -> log.info(JsonMapper.toJsonString(book))
+                            book -> log.info(JsonMapper.toJsonString(book.toBookDto()))
                     );
                 }
                 case 3 -> {
                     String author = getUserInput("Author: ");
                     bookService.getBooksByAuthor(author).forEach(
-                            book -> log.info(JsonMapper.toJsonString(book))
+                            book -> log.info(JsonMapper.toJsonString(book.toBookDto()))
                     );
                 }
                 case 4 -> {
                     String name = getUserInput("Name: ");
                     String author = getUserInput("Author: ");
 
-                    log.info(JsonMapper.toJsonString(bookService.getBookByNameAndAuthor(name, author)));
+                    Book book = bookService.getBookByNameAndAuthor(name, author);
+                    log.info(JsonMapper.toJsonString(book.toBookDto()));
                 }
                 default -> displayErrorMessage();
             }
@@ -364,6 +369,8 @@ public class CLI {
         displayMenu(
                 "Assign students to course by first name",
                 "Assign students to course by last name",
+                "Assign courses to student by name",
+                "Assign courses to student by university",
                 "Assign books to course"
         );
 
@@ -400,6 +407,32 @@ public class CLI {
                     courseService.assignStudentsToCourse(course, students);
                 }
                 case 3 -> {
+                    String firstName = getUserInput("First name: ");
+
+                    String lastName = getUserInput("Last name: ");
+
+                    Student student = studentService.getStudentByFirstNameAndLastName(firstName, lastName);
+
+                    String courseName = getUserInput("Course name: ");
+
+                    List<Course> courses = courseService.getCoursesByName(courseName);
+
+                    studentService.assignCoursesToStudent(student, courses);
+                }
+                case 4 -> {
+                    String firstName = getUserInput("First name: ");
+
+                    String lastName = getUserInput("Last name: ");
+
+                    Student student = studentService.getStudentByFirstNameAndLastName(firstName, lastName);
+
+                    String courseUniversity = getUserInput("University name: ");
+
+                    List<Course> courses = courseService.getCoursesByUniversity(courseUniversity);
+
+                    studentService.assignCoursesToStudent(student, courses);
+                }
+                case 5 -> {
                     String courseName = getUserInput("Course name: ");
 
                     String university = getUserInput("University: ");

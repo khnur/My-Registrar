@@ -11,6 +11,8 @@ public interface BookService {
 
     void generateRandomBooks(int n);
 
+    Book getBookById(Long id);
+
     List<Book> getAllBooks();
 
     List<Book> getBooksByName(String name);

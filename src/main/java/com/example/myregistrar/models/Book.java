@@ -5,15 +5,15 @@ import com.example.myregistrar.util.entity_dto_mappers.BookMapper;
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.elasticsearch.annotations.Document;
 
 import java.util.Date;
 
+@Document(indexName = "book_index")
 @Entity
 @Table
 @Data
 @NoArgsConstructor
-@Slf4j
 public class Book {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

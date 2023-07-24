@@ -9,10 +9,8 @@ import com.example.myregistrar.models.Book;
 import com.example.myregistrar.models.Course;
 import com.example.myregistrar.models.Student;
 import com.example.myregistrar.repositories.BookRepo;
-import com.example.myregistrar.repositories.CourseRepo;
 import com.example.myregistrar.services.BookService;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -22,18 +20,12 @@ import java.util.stream.IntStream;
 @Service
 @Transactional(readOnly = true)
 @RequiredArgsConstructor
-@Slf4j
 public class BookServiceImpl implements BookService {
     private final BookRepo bookRepo;
-    private final CourseRepo courseRepo;
 
     @Transactional
     @Override
     public void createBook(Book book) {
-        if (book == null) {
-            log.error("The book is null");
-            return;
-        }
         if (bookRepo.existsByNameAndAuthor(book.getName(), book.getAuthor())) {
             throw new BookAlreadyExistsException("Book with such name and author already exists");
         }
@@ -65,6 +57,12 @@ public class BookServiceImpl implements BookService {
     }
 
     @Override
+    public Book getBookById(Long id) {
+        return bookRepo.findById(id)
+                .orElseThrow(() -> new BookNotFoundException("Book with id=" + id + " does not exists"));
+    }
+
+    @Override
     public List<Book> getBooksByName(String name) {
         List<Book> bookList = bookRepo.findBooksByName(name);
         if (bookList.isEmpty()) {
@@ -91,7 +89,6 @@ public class BookServiceImpl implements BookService {
     @Override
     public List<Book> getBooksByStudent(Student student) {
         if (student == null) {
-            log.error("The student is null");
             throw new StudentNotFoundException("The student is null");
         }
 
@@ -101,7 +98,6 @@ public class BookServiceImpl implements BookService {
     @Override
     public List<Book> getBooksByCourse(Course course) {
         if (course == null) {
-            log.error("The course is null");
             throw new CourseNotFoundException("The course is null");
         }
 

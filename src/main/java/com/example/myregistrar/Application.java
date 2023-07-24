@@ -3,8 +3,8 @@ package com.example.myregistrar;
 import com.example.myregistrar.dtos.BookDto;
 import com.example.myregistrar.dtos.CourseDto;
 import com.example.myregistrar.dtos.StudentDto;
-import com.example.myregistrar.kafka.KafkaConsumer;
-import com.example.myregistrar.kafka.KafkaProducer;
+import com.example.myregistrar.jms.KafkaService;
+import com.example.myregistrar.models.Course;
 import com.example.myregistrar.services.BookService;
 import com.example.myregistrar.services.CourseService;
 import com.example.myregistrar.services.StudentService;
@@ -15,7 +15,6 @@ import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
-import org.springframework.kafka.core.KafkaTemplate;
 
 import java.util.List;
 import java.util.concurrent.Executors;
@@ -28,16 +27,29 @@ public class Application {
         SpringApplication.run(Application.class, args);
     }
 
+    /*
+   - Whenever a new course is created, the course notification system automatically sends notifications to all students who have subscribed for course updates.
+   - The course acceptance system considers the age of students before enrolling them in a course. Students whose age falls within the accepted range will be enrolled in the course automatically.
+   - The system plans to introduce the `University` model in future updates to represent different universities.
+   - Each student will be associated with a specific university, allowing for personalized notifications and handling.
+   - As part of future enhancements, the system will provide each student in the university with a unique consumer.
+   - This will enable targeted notifications and allow students to receive course updates tailored to their preferences.
+     */
+
     @Bean
     CommandLineRunner commandLineRunner(
-            KafkaProducer kafkaProducer,
-            KafkaConsumer kafkaConsumer
+            KafkaService kafkaService,
+            CourseService courseService
     ) {
         return args -> {
             ScheduledExecutorService scheduler = Executors.newSingleThreadScheduledExecutor();
             scheduler.scheduleAtFixedRate(
-                    () -> kafkaProducer.sendMessage("registrar", "Hello Me"),
-                    0, 3, TimeUnit.SECONDS);
+                    () -> {
+                        Course course = CourseDto.createRandomCourseDto().toCourse();
+                        courseService.createCourse(course);
+                        kafkaService.sendToCourseTopic(course.toCourseDto().toJson());
+                    },
+                    0, 5, TimeUnit.SECONDS);
         };
     }
 
@@ -49,21 +61,19 @@ public class Application {
             BookService bookService
     ) {
         return args -> {
-            studentService.generateRandomStudents(8);
-            courseService.generateRandomCourses(7);
-            bookService.generateRandomBooks(10);
+            studentService.generateRandomStudents(5);
 
             List.of(
                     new StudentDto(
                             "aaa",
                             "bbb",
-                            DateMapper.DATE_FORMAT.parse("1234-14-74"),
+                            DateMapper.DATE_FORMAT.parse("2020-14-74"),
                             "M"
                     ),
                     new StudentDto(
                             "aaa",
                             "ppp",
-                            DateMapper.DATE_FORMAT.parse("1234-14-74"),
+                            DateMapper.DATE_FORMAT.parse("2020-14-74"),
                             "M"
                     )
             ).forEach(studentDto -> studentService.createStudent(studentDto.toStudent()));

@@ -59,12 +59,9 @@ public class StudentRepo {
                 .getResultList();
     }
 
-    public Student findStudentById(Long id) {
+    public Optional<Student> findStudentById(Long id) {
         Student student = entityManager.find(Student.class, id);
-        if (student == null) {
-            throw new StudentNotFoundException("There is no student with such id");
-        }
-        return student;
+        return Optional.of(student);
     }
 
     @Modifying
