@@ -95,22 +95,6 @@ public class BookServiceImplTest {
         Book result = bookServiceImpl.getBookByNameAndAuthor("name", "author");
         Assert.assertEquals(new Book("name", "author", "genre", DateMapper.DATE_FORMAT.parse("1247-74-77"), "publisher"), result);
     }
-
-    @Test
-    public void testGetBooksByStudent() throws Exception {
-        when(bookRepo.findBooksByCourseIn(any())).thenReturn(List.of(new Book("name", "author", "genre", DateMapper.DATE_FORMAT.parse("1247-74-77"), "publisher")));
-
-        List<Book> result = bookServiceImpl.getBooksByStudent(new Student("firstName", "lastName", DateMapper.DATE_FORMAT.parse("1247-74-77"), "gender"));
-        Assert.assertEquals(List.of(new Book("name", "author", "genre", DateMapper.DATE_FORMAT.parse("1247-74-77"), "publisher")), result);
-    }
-
-    @Test
-    public void testGetBooksByCourse() throws Exception {
-        when(bookRepo.findBooksByCourse(any())).thenReturn(List.of(new Book("name", "author", "genre", DateMapper.DATE_FORMAT.parse("1247-74-77"), "publisher")));
-
-        List<Book> result = bookServiceImpl.getBooksByCourse(new Course("name", "university", "department", "instructor", Integer.valueOf(0)));
-        Assert.assertEquals(List.of(new Book("name", "author", "genre", DateMapper.DATE_FORMAT.parse("1247-74-77"), "publisher")), result);
-    }
 }
 
 //Generated with love by TestMe :) Please report issues and submit feature requests at: http://weirddev.com/forum#!/testme

@@ -33,23 +33,23 @@ public class Application {
    - The system plans to introduce the `University` model in future updates to represent different universities.
    - Each student will be associated with a specific university, allowing for personalized notifications and handling.
    - As part of future enhancements, the system will provide each student in the university with a unique consumer.
-   - This will enable targeted notifications and allow students to receive course updates tailored to their preferences.
+   - This will hopefully enable targeted notifications and allow students to receive course updates tailored to their preferences.
      */
 
     @Bean
     CommandLineRunner commandLineRunner(
             KafkaService kafkaService,
-            CourseService courseService
+            StudentService studentService,
+            CourseService courseService,
+            BookService bookService
     ) {
         return args -> {
-            ScheduledExecutorService scheduler = Executors.newSingleThreadScheduledExecutor();
-            scheduler.scheduleAtFixedRate(
-                    () -> {
-                        Course course = CourseDto.createRandomCourseDto().toCourse();
-                        courseService.createCourse(course);
-                        kafkaService.sendToCourseTopic(course.toCourseDto().toJson());
-                    },
-                    0, 5, TimeUnit.SECONDS);
+            enableJmsFlow(kafkaService, courseService); // comment it if you want to disable
+
+            /*
+                The custom code goes here
+             */
+
         };
     }
 
@@ -62,6 +62,7 @@ public class Application {
     ) {
         return args -> {
             studentService.generateRandomStudents(5);
+            bookService.generateRandomBooks(10);
 
             List.of(
                     new StudentDto(
@@ -164,5 +165,16 @@ public class Application {
 
 //            cli.init();
         };
+    }
+
+    private static void enableJmsFlow(KafkaService kafkaService, CourseService courseService) {
+        ScheduledExecutorService scheduler = Executors.newSingleThreadScheduledExecutor();
+        scheduler.scheduleAtFixedRate(
+                () -> {
+                    Course course = CourseDto.createRandomCourseDto().toCourse();
+                    courseService.createCourse(course);
+                    kafkaService.sendToCourseTopic(course.toCourseDto().toJson());
+                },
+                0, 5, TimeUnit.SECONDS);
     }
 }

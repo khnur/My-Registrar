@@ -1,8 +1,6 @@
 package com.example.myregistrar.jms;
 
 import com.example.myregistrar.dtos.CourseDto;
-import com.example.myregistrar.models.Course;
-import com.example.myregistrar.services.CourseService;
 import com.example.myregistrar.services.StudentService;
 import com.example.myregistrar.util.JsonMapper;
 import lombok.AllArgsConstructor;
@@ -11,9 +9,7 @@ import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
-
-import static com.example.myregistrar.jms.KafkaConfig.*;
+import static com.example.myregistrar.jms.KafkaConfig.COURSE_CREATION_TOPIC;
 
 @Service
 @Slf4j

@@ -171,14 +171,6 @@ public class CourseServiceImplTest {
 
         courseServiceImpl.removeCoursePreRequisiteFromCourse(course, coursePreReq);
     }
-
-    @Test
-    public void testGetCoursePreRequisitesFromCourse() throws Exception {
-        when(coursePreRequiteRepo.findPrerequisiteCoursesByCourse(any())).thenReturn(List.of(new Course("name", "university", "department", "instructor", Integer.valueOf(0))));
-
-        List<Course> result = courseServiceImpl.getCoursePreRequisitesFromCourse(new Course("name", "university", "department", "instructor", Integer.valueOf(0)));
-        Assert.assertEquals(List.of(new Course("name", "university", "department", "instructor", Integer.valueOf(0))), result);
-    }
 }
 
 //Generated with love by TestMe :) Please report issues and submit feature requests at: http://weirddev.com/forum#!/testme

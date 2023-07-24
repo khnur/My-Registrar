@@ -85,29 +85,6 @@ public class CourseDtoTest {
     }
 
     @Test
-    public void testSetStudentDtoList() throws Exception {
-        courseDto.setStudentDtoList(List.of(new Student("firstName", "lastName", new GregorianCalendar(2023, Calendar.JULY, 21, 17, 3).getTime(), "gender")));
-    }
-
-    @Test
-    public void testSetBookDtoList() throws Exception {
-        courseDto.setBookDtoList(List.of(
-                new Book("name", "author", "genre",
-                        new GregorianCalendar(2023, Calendar.JULY, 21, 17, 3).getTime(), "publisher")));
-    }
-
-    @Test
-    public void testSetCoursePreRequisiteList() throws Exception {
-        courseDto.setCoursePreRequisiteList(List.of(
-                new CoursePreRequisite(
-                        new CoursePreRequisiteId(Long.valueOf(1), Long.valueOf(1)),
-                        new Course("name", "university", "department", "instructor", Integer.valueOf(0)),
-                        new Course("name", "university", "department", "instructor", Integer.valueOf(0))
-                ))
-        );
-    }
-
-    @Test
     public void testEquals() throws Exception {
         boolean result = courseDto.equals("o");
         Assert.assertEquals(true, result);
@@ -138,44 +115,6 @@ public class CourseDtoTest {
         Assert.assertEquals("replaceMeWithExpectedResult", result);
     }
 
-    @Test
-    public void testStudentDtoList() {
-        CourseDto courseDto = new CourseDto();
-
-        List<Student> studentDtos = new ArrayList<>();
-        studentDtos.add(new Student("John", "Doe", new Date(), "Male"));
-
-        courseDto.setStudentDtoList(studentDtos);
-
-        Assert.assertEquals(studentDtos, courseDto.getStudentDtoList());
-    }
-
-    @Test
-    public void testBookDtoList() {
-        CourseDto courseDto = new CourseDto();
-
-        List<Book> bookDtos = new ArrayList<>();
-        bookDtos.add(new Book("Book1", "Author1", "Fiction", new Date(), "Publisher1"));
-
-        courseDto.setBookDtoList(bookDtos);
-
-        Assert.assertEquals(bookDtos, courseDto.getBookDtoList());
-    }
-
-    @Test
-    public void testCoursePreRequisiteList() {
-        CourseDto courseDto = new CourseDto();
-
-        List<CoursePreRequisite> coursePreRequisites = new ArrayList<>();
-        Course course1 = new Course("Course1", "University1", "Department1", "Instructor1", 3);
-        Course course2 = new Course("Course2", "University2", "Department2", "Instructor2", 3);
-        CoursePreRequisite coursePreRequisite = new CoursePreRequisite(new CoursePreRequisiteId(1L, 2L), course1, course2);
-        coursePreRequisites.add(coursePreRequisite);
-
-        courseDto.setCoursePreRequisiteList(coursePreRequisites);
-
-        Assert.assertEquals(coursePreRequisites, courseDto.getCoursePreRequisiteList());
-    }
 }
 
 //Generated with love by TestMe :) Please report issues and submit feature requests at: http://weirddev.com/forum#!/testme

@@ -12,18 +12,9 @@ import org.springframework.kafka.core.ConsumerFactory;
 @EnableKafka
 public class KafkaConfig {
     public static final String COURSE_CREATION_TOPIC = "CourseCreationTopic";
-    public static final String STUDENT_SUBSCRIPTION_TOPIC = "StudentSubscriptionTopic";
     @Bean
     public NewTopic courseCreationTopic() {
         return TopicBuilder.name(COURSE_CREATION_TOPIC)
-                .partitions(1)
-                .replicas(1)
-                .build();
-    }
-
-    @Bean
-    public NewTopic studentSubscriptionTopic() {
-        return TopicBuilder.name(STUDENT_SUBSCRIPTION_TOPIC)
                 .partitions(1)
                 .replicas(1)
                 .build();

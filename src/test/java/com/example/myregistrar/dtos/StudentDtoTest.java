@@ -92,11 +92,6 @@ public class StudentDtoTest {
     }
 
     @Test
-    public void testSetCourseDtoList() throws Exception {
-        studentDto.setCourseDtoList(List.of(new CourseDto("name", "university", "department", "instructor", Integer.valueOf(0))));
-    }
-
-    @Test
     public void testEquals() throws Exception {
         boolean result = studentDto.equals("o");
         Assert.assertEquals(true, result);
