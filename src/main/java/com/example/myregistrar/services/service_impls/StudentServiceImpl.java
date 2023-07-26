@@ -1,15 +1,13 @@
 package com.example.myregistrar.services.service_impls;
 
-import com.example.myregistrar.dtos.StudentDto;
-import com.example.myregistrar.exceptions.CourseAlreadyExistsException;
-import com.example.myregistrar.exceptions.CourseNotFoundException;
-import com.example.myregistrar.exceptions.StudentAlreadyExistsException;
-import com.example.myregistrar.exceptions.StudentNotFoundException;
+import com.example.myregistrar.exceptions.*;
 import com.example.myregistrar.models.Course;
 import com.example.myregistrar.models.Student;
+import com.example.myregistrar.models.University;
 import com.example.myregistrar.repositories.CourseRepo;
 import com.example.myregistrar.repositories.StudentRepo;
 import com.example.myregistrar.services.StudentService;
+import com.example.myregistrar.util.NewModel;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -39,7 +37,7 @@ public class StudentServiceImpl implements StudentService {
         IntStream.range(0, n)
                 .filter(i -> {
                     try {
-                        createStudent(StudentDto.createRandomStudentDto().toStudent());
+                        createStudent(NewModel.createRandomStudent());
                         return true;
                     } catch (Exception ignored) {
                         return false;
@@ -51,8 +49,8 @@ public class StudentServiceImpl implements StudentService {
 
     @Override
     public Student getStudentById(Long id) {
-        return studentRepo.findStudentById(id)
-                .orElseThrow(() -> new StudentNotFoundException("Student with id=\" + id + \" does not exists"));
+        return studentRepo.findById(id)
+                .orElseThrow(() -> new StudentNotFoundException("Student with id=" + id + " does not exists"));
     }
 
     @Override
@@ -135,6 +133,23 @@ public class StudentServiceImpl implements StudentService {
         studentListByStudent.add(student);
 
         courseRepo.save(course);
+        studentRepo.save(student);
+    }
+
+    @Transactional
+    @Override
+    public void assignUniversityToStudent(Student student, University university) {
+        if (student == null || university == null) {
+            throw new NoSuchElementException("provided student or university is null");
+        }
+        if (student.getUniversity() != null && student.getUniversity().getId() != null) {
+            throw new UniversityAlreadyExists("student with id=" + student.getId() + " has already been assigned to university");
+        }
+        if (university.getId() == null) {
+            throw new UniversityNotFound("university is not registered");
+        }
+
+        student.setUniversity(university);
         studentRepo.save(student);
     }
 }

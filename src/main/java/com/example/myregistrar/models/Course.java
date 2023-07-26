@@ -24,10 +24,7 @@ public class Course {
     @Column(nullable = false)
     private String name;
 
-    @Column(nullable = false)
-    private String university;
-
-    @Column(nullable = false)
+    @Column
     private String department;
 
     @Column
@@ -38,6 +35,14 @@ public class Course {
             nullable = false
     )
     private Integer creditHours;
+
+    @ManyToOne
+    @JoinColumn(
+            name = "university_id",
+            referencedColumnName = "id",
+            foreignKey = @ForeignKey(name = "university_course_fk")
+    )
+    private University university;
 
     @ManyToMany(
             mappedBy = "courses",
@@ -61,15 +66,14 @@ public class Course {
     )
     private List<CoursePreRequisite> coursePreRequisiteList = new ArrayList<>();
 
-    public Course(String name, String university, String department, String instructor, Integer creditHours) {
+    public CourseDto toCourseDto() {
+        return CourseMapper.INSTANCE.courseToCourseDto(this);
+    }
+
+    public Course(String name, String department, String instructor, Integer creditHours) {
         this.name = name;
-        this.university = university;
         this.department = department;
         this.instructor = instructor;
         this.creditHours = creditHours;
-    }
-
-    public CourseDto toCourseDto() {
-        return CourseMapper.INSTANCE.courseToCourseDto(this);
     }
 }

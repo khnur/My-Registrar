@@ -1,6 +1,5 @@
 package com.example.myregistrar.services.service_impls;
 
-import com.example.myregistrar.dtos.BookDto;
 import com.example.myregistrar.exceptions.BookAlreadyExistsException;
 import com.example.myregistrar.exceptions.BookNotFoundException;
 import com.example.myregistrar.exceptions.CourseNotFoundException;
@@ -10,6 +9,7 @@ import com.example.myregistrar.models.Course;
 import com.example.myregistrar.models.Student;
 import com.example.myregistrar.repositories.BookRepo;
 import com.example.myregistrar.services.BookService;
+import com.example.myregistrar.util.NewModel;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -37,7 +37,7 @@ public class BookServiceImpl implements BookService {
         IntStream.range(0, n)
                 .filter(i -> {
                     try {
-                        createBook(BookDto.createRandomBookDto().toBook());
+                        createBook(NewModel.createRandomBook());
                         return true;
                     } catch (Exception ignored) {
                         return false;

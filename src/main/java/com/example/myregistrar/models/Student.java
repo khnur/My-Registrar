@@ -18,8 +18,6 @@ import java.util.List;
 @Data
 @NoArgsConstructor
 public class Student {
-    private static final String DOMAIN = "@onelab.kz";
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column
@@ -52,6 +50,14 @@ public class Student {
     @Column(nullable = false)
     private String email;
 
+    @ManyToOne
+    @JoinColumn(
+            name = "university_id",
+            referencedColumnName = "id",
+            foreignKey = @ForeignKey(name = "university_student_fk")
+    )
+    private University university;
+
     @ManyToMany(
             cascade = {
                     CascadeType.PERSIST,
@@ -71,7 +77,7 @@ public class Student {
         this.birthDate = birthDate;
         this.age = DateMapper.GET_AGE(birthDate);
         this.gender = gender;
-        this.email = firstName.toLowerCase() + '.' + lastName.toLowerCase() + DOMAIN;
+        this.email = firstName.toLowerCase() + '.' + lastName.toLowerCase() + "@onelab.kz";
     }
 
     public StudentDto toStudentDto() {

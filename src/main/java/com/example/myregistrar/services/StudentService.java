@@ -2,6 +2,7 @@ package com.example.myregistrar.services;
 
 import com.example.myregistrar.models.Course;
 import com.example.myregistrar.models.Student;
+import com.example.myregistrar.models.University;
 
 import java.util.List;
 
@@ -25,4 +26,6 @@ public interface StudentService {
     void assignCoursesToStudent(Student student, List<Course> courses);
 
     void assignCourseToStudent(Student student, Long courseId);
+
+    void assignUniversityToStudent(Student student, University university);
 }

@@ -34,9 +34,10 @@ public class BookServiceImplTest {
 
     @Test
     public void testCreateBook() throws Exception {
+        Book book = new Book("name", "author", "genre", DateMapper.DATE_FORMAT.parse("1247-74-77"), "publisher");
+
         when(bookRepo.existsByNameAndAuthor(anyString(), anyString())).thenReturn(true);
 
-        Book book = new Book("name", "author", "genre", DateMapper.DATE_FORMAT.parse("1247-74-77"), "publisher");
         try {
             bookServiceImpl.createBook(book);
         } catch (BookAlreadyExistsException e) {

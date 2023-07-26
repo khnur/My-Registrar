@@ -3,6 +3,7 @@ package com.example.myregistrar.aop;
 import com.example.myregistrar.models.Book;
 import com.example.myregistrar.models.Course;
 import com.example.myregistrar.models.Student;
+import com.example.myregistrar.models.University;
 import lombok.extern.slf4j.Slf4j;
 import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.ProceedingJoinPoint;
@@ -48,7 +49,8 @@ public class ServiceAdvice {
         boolean[] methodNameChecks = new boolean[] {
                 methodSignature.getName().equals("createStudent"),
                 methodSignature.getName().equals("createCourse"),
-                methodSignature.getName().equals("createBook")
+                methodSignature.getName().equals("createBook"),
+                methodSignature.getName().equals("createUniversity")
         };
 
         if (methodNameChecks[0]) {
@@ -57,6 +59,8 @@ public class ServiceAdvice {
             log.info(message + "a course");
         } else if (methodNameChecks[2]) {
             log.info(message + "a book");
+        } else if (methodNameChecks[3]) {
+            log.info(message + " an university");
         } else {
             log.error(message + "an entity. Method Not Allowed");
             return null;
@@ -77,6 +81,8 @@ public class ServiceAdvice {
             log.info("Course" + message, ((Course) arguments[0]).getName());
         } else if (methodNameChecks[2]) {
             log.info("Book" + message, ((Book) arguments[0]).getName());
+        } else if (methodNameChecks[3]) {
+            log.info("University" + message, ((University) arguments[0]).getName());
         } else {
             log.error("Method Not Allowed");
             return null;
@@ -108,7 +114,8 @@ public class ServiceAdvice {
         boolean[] methodNameChecks = new boolean[] {
                 methodSignature.getName().equals("generateRandomStudents"),
                 methodSignature.getName().equals("generateRandomCourses"),
-                methodSignature.getName().equals("generateRandomBooks")
+                methodSignature.getName().equals("generateRandomBooks"),
+                methodSignature.getName().equals("createUniversity")
         };
 
         if (methodNameChecks[0]) {
@@ -117,6 +124,8 @@ public class ServiceAdvice {
             log.info(message + " of Course");
         } else if (methodNameChecks[2]) {
             log.info(message + " of Book");
+        } else if (methodNameChecks[3]) {
+            log.info(message + " of University");
         } else {
             log.error(message + " an entity. Method Not Allowed");
             return null;
@@ -139,6 +148,8 @@ public class ServiceAdvice {
             log.info("{} courses" + message, amount);
         } else if (methodNameChecks[2]) {
             log.info("{} books" + message, amount);
+        } else if (methodNameChecks[3]) {
+            log.info("{} universities " + message, amount);
         } else {
             log.error("Method Not Allowed");
             return null;

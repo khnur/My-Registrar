@@ -1,21 +1,15 @@
 package com.example.myregistrar.services.service_impls;
 
-import com.example.myregistrar.dtos.CourseDto;
 import com.example.myregistrar.embeddables.CoursePreRequisiteId;
-import com.example.myregistrar.exceptions.BookNotFoundException;
-import com.example.myregistrar.exceptions.CourseAlreadyExistsException;
-import com.example.myregistrar.exceptions.CourseNotFoundException;
-import com.example.myregistrar.exceptions.StudentNotFoundException;
+import com.example.myregistrar.exceptions.*;
 import com.example.myregistrar.jms.KafkaService;
-import com.example.myregistrar.models.Book;
-import com.example.myregistrar.models.Course;
-import com.example.myregistrar.models.CoursePreRequisite;
-import com.example.myregistrar.models.Student;
+import com.example.myregistrar.models.*;
 import com.example.myregistrar.repositories.BookRepo;
 import com.example.myregistrar.repositories.CoursePreRequiteRepo;
 import com.example.myregistrar.repositories.CourseRepo;
 import com.example.myregistrar.repositories.StudentRepo;
 import com.example.myregistrar.services.CourseService;
+import com.example.myregistrar.util.NewModel;
 import jakarta.el.MethodNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -34,13 +28,14 @@ public class CourseServiceImpl implements CourseService {
     private final CoursePreRequiteRepo coursePreRequiteRepo;
     private final StudentRepo studentRepo;
     private final BookRepo bookRepo;
+
     private final KafkaService kafkaService;
 
     @Transactional
     @Override
     public void createCourse(Course course) {
-        if (courseRepo.existsByNameAndUniversity(course.getName(), course.getUniversity())) {
-            throw new CourseAlreadyExistsException("Course with such name and university already exists");
+        if (course == null || course.getId() != null) {
+            throw new CourseAlreadyExistsException("Course with such id already exists");
         }
         Course newCourse = courseRepo.save(course);
         kafkaService.sendToCourseTopic(newCourse.toCourseDto().toJson());
@@ -51,7 +46,7 @@ public class CourseServiceImpl implements CourseService {
         IntStream.range(0, n)
                 .filter(i -> {
                     try {
-                        createCourse(CourseDto.createRandomCourseDto().toCourse());
+                        createCourse(NewModel.createRandomCourse());
                         return true;
                     } catch (Exception ignored) {
                         return false;
@@ -87,18 +82,25 @@ public class CourseServiceImpl implements CourseService {
     }
 
     @Override
-    public List<Course> getCoursesByUniversity(String university) {
-        List<Course> courseList = courseRepo.findCoursesByUniversity(university);
+    public Course getCoursesByNameAndDepartment(String name, String department) {
+        return courseRepo.findCourseByNameAndDepartment(name, department)
+                .orElseThrow(() -> new CourseNotFoundException("There is no course with name=" + name +
+                        " and deparment=" + department));
+    }
+
+    @Override
+    public List<Course> getCoursesByUniversityId(Long universityId) {
+        List<Course> courseList = courseRepo.findCoursesByUniversityId(universityId);
         if (courseList.isEmpty()) {
-            throw new CourseNotFoundException("There is no course with such university");
+            throw new CourseNotFoundException("There is no course with such university id");
         }
         return courseList;
     }
 
     @Override
-    public Course getCourseByNameAndUniversity(String name, String university) {
-        return courseRepo.findCourseByNameAndUniversity(name, university)
-                .orElseThrow(() -> new RuntimeException("There is no course with such name and university"));
+    public Course getCourseByNameAndUniversityId(String name, Long universityId) {
+        return courseRepo.findCourseByNameAndUniversityId(name, universityId)
+                .orElseThrow(() -> new CourseNotFoundException("There is no course with such name and university"));
     }
 
     @Override
@@ -183,5 +185,22 @@ public class CourseServiceImpl implements CourseService {
     public List<Course> getCoursePreRequisitesFromCourse(Course course) {
         if (course == null) throw new CourseNotFoundException("The course is null");
         return coursePreRequiteRepo.findPrerequisiteCoursesByCourseId(course.getId());
+    }
+
+    @Transactional
+    @Override
+    public void assignUniversityToCourse(Course course, University university) {
+        if (course == null || university == null) {
+            throw new NoSuchElementException("provided course or university is null");
+        }
+        if (course.getUniversity() != null && course.getUniversity().getId() != null) {
+            throw new UniversityAlreadyExists("course with id=" + course.getId() + " has already been assigned to university");
+        }
+        if (university.getId() == null) {
+            throw new UniversityNotFound("university is not registered");
+        }
+
+        course.setUniversity(university);
+        courseRepo.save(course);
     }
 }

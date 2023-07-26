@@ -3,6 +3,7 @@ package com.example.myregistrar.services;
 import com.example.myregistrar.models.Book;
 import com.example.myregistrar.models.Course;
 import com.example.myregistrar.models.Student;
+import com.example.myregistrar.models.University;
 
 import java.util.List;
 
@@ -17,9 +18,11 @@ public interface CourseService {
 
     List<Course> getCoursesByName(String name);
 
-    List<Course> getCoursesByUniversity(String university);
+    Course getCoursesByNameAndDepartment(String name, String department);
 
-    Course getCourseByNameAndUniversity(String name, String university);
+    List<Course> getCoursesByUniversityId(Long universityId);
+
+    Course getCourseByNameAndUniversityId(String name, Long universityId);
 
     List<Course> getCoursesByStudent(Student student);
 
@@ -32,4 +35,5 @@ public interface CourseService {
     void assignCoursePreRequisiteCourse(Course course, Course coursePreReq);
 
     List<Course> getCoursePreRequisitesFromCourse(Course course);
+    void assignUniversityToCourse(Course course, University university);
 }

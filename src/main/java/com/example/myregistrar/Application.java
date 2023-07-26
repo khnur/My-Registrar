@@ -1,14 +1,16 @@
 package com.example.myregistrar;
 
-import com.example.myregistrar.dtos.BookDto;
-import com.example.myregistrar.dtos.CourseDto;
-import com.example.myregistrar.dtos.StudentDto;
 import com.example.myregistrar.jms.KafkaService;
+import com.example.myregistrar.models.Book;
 import com.example.myregistrar.models.Course;
+import com.example.myregistrar.models.Student;
+import com.example.myregistrar.models.University;
 import com.example.myregistrar.services.BookService;
 import com.example.myregistrar.services.CourseService;
 import com.example.myregistrar.services.StudentService;
+import com.example.myregistrar.services.UniversityService;
 import com.example.myregistrar.util.DateMapper;
+import com.example.myregistrar.util.NewModel;
 import org.springframework.boot.ApplicationRunner;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
@@ -43,8 +45,10 @@ public class Application {
             BookService bookService
     ) {
         return args -> {
-            enableJmsFlow(kafkaService, courseService); // comment it if you want to disable
-
+//            enableJmsFlow(kafkaService, courseService); // comment it if you want to disable
+            bookService.getAllBooks().forEach(
+                    book -> System.out.println(book.toBookDto().toJson())
+            );
             /*
                 The custom code goes here
              */
@@ -56,109 +60,122 @@ public class Application {
     ApplicationRunner applicationRunner(
             StudentService studentService,
             CourseService courseService,
-            BookService bookService
+            BookService bookService,
+            UniversityService universityService
     ) {
         return args -> {
             studentService.generateRandomStudents(5);
             bookService.generateRandomBooks(10);
 
             List.of(
-                    new StudentDto(
+                    new Student(
                             "aaa",
                             "bbb",
                             DateMapper.DATE_FORMAT.parse("2020-14-74"),
                             "M"
                     ),
-                    new StudentDto(
+                    new Student(
                             "aaa",
                             "ppp",
                             DateMapper.DATE_FORMAT.parse("2020-14-74"),
                             "M"
                     )
-            ).forEach(studentDto -> studentService.createStudent(studentDto.toStudent()));
+            ).forEach(studentService::createStudent);
 
             List.of(
-                    new CourseDto(
+                    new Course(
                             "aaa",
                             "ppp",
-                            "wdafdsfd",
                             "wdefsvfd",
                             7
                     ),
-                    new CourseDto(
+                    new Course(
                             "bbb",
                             "ppp",
-                            "wdafdsfd",
                             "wdefsvfd",
                             7
                     ),
-                    new CourseDto(
+                    new Course(
                             "qqq",
                             "ppp",
-                            "wdafdsfd",
                             "wdefsvfd",
                             7
                     ),
-                    new CourseDto(
+                    new Course(
                             "www",
                             "ppp",
-                            "wdafdsfd",
                             "wdefsvfd",
                             7
                     )
-            ).forEach(courseDto -> courseService.createCourse(courseDto.toCourse()));
+            ).forEach(courseService::createCourse);
 
             List.of(
-                    new BookDto(
+                    new Book(
                             "nnn",
                             "mmm",
                             "mmm",
                             DateMapper.DATE_FORMAT.parse("1234-14-74"),
                             "qwfewrf"
                     ),
-                    new BookDto(
+                    new Book(
                             "nnn",
                             "qqq",
                             "mmm",
                             DateMapper.DATE_FORMAT.parse("1234-14-74"),
                             "qwfewrf"
                     )
-            ).forEach(bookDto -> bookService.createBook(bookDto.toBook()));
+            ).forEach(bookService::createBook);
+
+            universityService.createUniversity(new University(
+                    "uuu",
+                    "uuu",
+                    "uuu"
+            ));
 
             courseService.assignBooksToCourse(
-                    courseService.getCourseByNameAndUniversity("aaa", "ppp"),
+                    courseService.getCoursesByNameAndDepartment("aaa", "ppp"),
                     bookService.getBooksByName("nnn")
             );
 
             courseService.assignStudentsToCourse(
-                    courseService.getCourseByNameAndUniversity("aaa", "ppp"),
+                    courseService.getCoursesByNameAndDepartment("aaa", "ppp"),
                     studentService.getAllStudents()
             );
 
 
             courseService.assignCoursePreRequisiteCourse(
-                    courseService.getCourseByNameAndUniversity("aaa", "ppp"),
-                    courseService.getCourseByNameAndUniversity("bbb", "ppp")
+                    courseService.getCoursesByNameAndDepartment("aaa", "ppp"),
+                    courseService.getCoursesByNameAndDepartment("bbb", "ppp")
             );
 
             courseService.assignCoursePreRequisiteCourse(
-                    courseService.getCourseByNameAndUniversity("aaa", "ppp"),
-                    courseService.getCourseByNameAndUniversity("qqq", "ppp")
+                    courseService.getCoursesByNameAndDepartment("aaa", "ppp"),
+                    courseService.getCoursesByNameAndDepartment("qqq", "ppp")
             );
 
             courseService.assignCoursePreRequisiteCourse(
-                    courseService.getCourseByNameAndUniversity("qqq", "ppp"),
-                    courseService.getCourseByNameAndUniversity("www", "ppp")
+                    courseService.getCoursesByNameAndDepartment("qqq", "ppp"),
+                    courseService.getCoursesByNameAndDepartment("www", "ppp")
             );
 
             courseService.assignCoursePreRequisiteCourse(
-                    courseService.getCourseByNameAndUniversity("www", "ppp"),
-                    courseService.getCourseByNameAndUniversity("bbb", "ppp")
+                    courseService.getCoursesByNameAndDepartment("www", "ppp"),
+                    courseService.getCoursesByNameAndDepartment("bbb", "ppp")
             );
 
             courseService.removeCoursePreRequisiteFromCourse(
-                    courseService.getCourseByNameAndUniversity("aaa", "ppp"),
-                    courseService.getCourseByNameAndUniversity("bbb", "ppp")
+                    courseService.getCoursesByNameAndDepartment("aaa", "ppp"),
+                    courseService.getCoursesByNameAndDepartment("bbb", "ppp")
+            );
+
+
+            courseService.assignUniversityToCourse(
+                    courseService.getCoursesByNameAndDepartment("aaa", "ppp"),
+                    universityService.getUniversityById(1L)
+            );
+            studentService.assignUniversityToStudent(
+                    studentService.getStudentById(1L),
+                    universityService.getUniversityById(1L)
             );
         };
     }
@@ -167,9 +184,7 @@ public class Application {
         ScheduledExecutorService scheduler = Executors.newSingleThreadScheduledExecutor();
         scheduler.scheduleAtFixedRate(
                 () -> {
-                    Course course = CourseDto.createRandomCourseDto().toCourse();
-                    courseService.createCourse(course);
-                    kafkaService.sendToCourseTopic(course.toCourseDto().toJson());
+                    courseService.createCourse(NewModel.createRandomCourse());
                 },
                 0, 5, TimeUnit.SECONDS);
     }
