@@ -8,7 +8,7 @@ import com.example.myregistrar.models.University;
 import java.util.List;
 
 public interface CourseService {
-    void createCourse(Course course);
+    Course createCourse(Course course);
 
     void generateRandomCourses(int n);
 

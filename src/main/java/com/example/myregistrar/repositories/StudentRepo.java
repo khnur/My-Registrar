@@ -17,4 +17,6 @@ public interface StudentRepo extends JpaRepository<Student, Long> {
     Optional<Student> findStudentByFirstNameAndLastName(String firstName, String lastName);
     @Query("SELECT s FROM Student s JOIN s.courses c WHERE c.id = :courseId")
     List<Student> findStudentsByCourseId(@Param("courseId") Long courseId);
+
+    List<Student> findStudentsByUniversityId(Long universityId);
 }

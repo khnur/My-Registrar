@@ -5,7 +5,7 @@ import com.example.myregistrar.models.University;
 import java.util.List;
 
 public interface UniversityService {
-    void createUniversity(University university);
+    University createUniversity(University university);
 
     University getUniversityById(Long id);
 

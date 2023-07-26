@@ -25,11 +25,11 @@ public class BookServiceImpl implements BookService {
 
     @Transactional
     @Override
-    public void createBook(Book book) {
+    public Book createBook(Book book) {
         if (bookRepo.existsByNameAndAuthor(book.getName(), book.getAuthor())) {
             throw new BookAlreadyExistsException("Book with such name and author already exists");
         }
-        bookRepo.save(book);
+        return bookRepo.save(book);
     }
 
     @Override

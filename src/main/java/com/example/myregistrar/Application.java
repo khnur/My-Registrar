@@ -16,6 +16,7 @@ import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.EnableAspectJAutoProxy;
 
 import java.util.List;
 import java.util.concurrent.Executors;
@@ -42,13 +43,13 @@ public class Application {
             KafkaService kafkaService,
             StudentService studentService,
             CourseService courseService,
-            BookService bookService
+            BookService bookService,
+            UniversityService universityService
     ) {
         return args -> {
 //            enableJmsFlow(kafkaService, courseService); // comment it if you want to disable
-            bookService.getAllBooks().forEach(
-                    book -> System.out.println(book.toBookDto().toJson())
-            );
+            studentService.createStudent(NewModel.createRandomStudent());
+            universityService.createUniversity(NewModel.createRandomUniversity());
             /*
                 The custom code goes here
              */
@@ -56,129 +57,129 @@ public class Application {
         };
     }
 
-    @Bean
-    ApplicationRunner applicationRunner(
-            StudentService studentService,
-            CourseService courseService,
-            BookService bookService,
-            UniversityService universityService
-    ) {
-        return args -> {
-            studentService.generateRandomStudents(5);
-            bookService.generateRandomBooks(10);
-
-            List.of(
-                    new Student(
-                            "aaa",
-                            "bbb",
-                            DateMapper.DATE_FORMAT.parse("2020-14-74"),
-                            "M"
-                    ),
-                    new Student(
-                            "aaa",
-                            "ppp",
-                            DateMapper.DATE_FORMAT.parse("2020-14-74"),
-                            "M"
-                    )
-            ).forEach(studentService::createStudent);
-
-            List.of(
-                    new Course(
-                            "aaa",
-                            "ppp",
-                            "wdefsvfd",
-                            7
-                    ),
-                    new Course(
-                            "bbb",
-                            "ppp",
-                            "wdefsvfd",
-                            7
-                    ),
-                    new Course(
-                            "qqq",
-                            "ppp",
-                            "wdefsvfd",
-                            7
-                    ),
-                    new Course(
-                            "www",
-                            "ppp",
-                            "wdefsvfd",
-                            7
-                    )
-            ).forEach(courseService::createCourse);
-
-            List.of(
-                    new Book(
-                            "nnn",
-                            "mmm",
-                            "mmm",
-                            DateMapper.DATE_FORMAT.parse("1234-14-74"),
-                            "qwfewrf"
-                    ),
-                    new Book(
-                            "nnn",
-                            "qqq",
-                            "mmm",
-                            DateMapper.DATE_FORMAT.parse("1234-14-74"),
-                            "qwfewrf"
-                    )
-            ).forEach(bookService::createBook);
-
-            universityService.createUniversity(new University(
-                    "uuu",
-                    "uuu",
-                    "uuu"
-            ));
-
-            courseService.assignBooksToCourse(
-                    courseService.getCoursesByNameAndDepartment("aaa", "ppp"),
-                    bookService.getBooksByName("nnn")
-            );
-
-            courseService.assignStudentsToCourse(
-                    courseService.getCoursesByNameAndDepartment("aaa", "ppp"),
-                    studentService.getAllStudents()
-            );
-
-
-            courseService.assignCoursePreRequisiteCourse(
-                    courseService.getCoursesByNameAndDepartment("aaa", "ppp"),
-                    courseService.getCoursesByNameAndDepartment("bbb", "ppp")
-            );
-
-            courseService.assignCoursePreRequisiteCourse(
-                    courseService.getCoursesByNameAndDepartment("aaa", "ppp"),
-                    courseService.getCoursesByNameAndDepartment("qqq", "ppp")
-            );
-
-            courseService.assignCoursePreRequisiteCourse(
-                    courseService.getCoursesByNameAndDepartment("qqq", "ppp"),
-                    courseService.getCoursesByNameAndDepartment("www", "ppp")
-            );
-
-            courseService.assignCoursePreRequisiteCourse(
-                    courseService.getCoursesByNameAndDepartment("www", "ppp"),
-                    courseService.getCoursesByNameAndDepartment("bbb", "ppp")
-            );
-
-            courseService.removeCoursePreRequisiteFromCourse(
-                    courseService.getCoursesByNameAndDepartment("aaa", "ppp"),
-                    courseService.getCoursesByNameAndDepartment("bbb", "ppp")
-            );
-
-
-            courseService.assignUniversityToCourse(
-                    courseService.getCoursesByNameAndDepartment("aaa", "ppp"),
-                    universityService.getUniversityById(1L)
-            );
-            studentService.assignUniversityToStudent(
-                    studentService.getStudentById(1L),
-                    universityService.getUniversityById(1L)
-            );
-        };
-    }
+//    @Bean
+//    ApplicationRunner applicationRunner(
+//            StudentService studentService,
+//            CourseService courseService,
+//            BookService bookService,
+//            UniversityService universityService
+//    ) {
+//        return args -> {
+//            studentService.generateRandomStudents(5);
+//            bookService.generateRandomBooks(10);
+//
+//            List.of(
+//                    new Student(
+//                            "aaa",
+//                            "bbb",
+//                            DateMapper.DATE_FORMAT.parse("2020-14-74"),
+//                            "M"
+//                    ),
+//                    new Student(
+//                            "aaa",
+//                            "ppp",
+//                            DateMapper.DATE_FORMAT.parse("2020-14-74"),
+//                            "M"
+//                    )
+//            ).forEach(studentService::createStudent);
+//
+//            List.of(
+//                    new Course(
+//                            "aaa",
+//                            "ppp",
+//                            "wdefsvfd",
+//                            7
+//                    ),
+//                    new Course(
+//                            "bbb",
+//                            "ppp",
+//                            "wdefsvfd",
+//                            7
+//                    ),
+//                    new Course(
+//                            "qqq",
+//                            "ppp",
+//                            "wdefsvfd",
+//                            7
+//                    ),
+//                    new Course(
+//                            "www",
+//                            "ppp",
+//                            "wdefsvfd",
+//                            7
+//                    )
+//            ).forEach(courseService::createCourse);
+//
+//            List.of(
+//                    new Book(
+//                            "nnn",
+//                            "mmm",
+//                            "mmm",
+//                            DateMapper.DATE_FORMAT.parse("1234-14-74"),
+//                            "qwfewrf"
+//                    ),
+//                    new Book(
+//                            "nnn",
+//                            "qqq",
+//                            "mmm",
+//                            DateMapper.DATE_FORMAT.parse("1234-14-74"),
+//                            "qwfewrf"
+//                    )
+//            ).forEach(bookService::createBook);
+//
+//            universityService.createUniversity(new University(
+//                    "uuu",
+//                    "uuu",
+//                    "uuu"
+//            ));
+//
+//            courseService.assignBooksToCourse(
+//                    courseService.getCoursesByNameAndDepartment("aaa", "ppp"),
+//                    bookService.getBooksByName("nnn")
+//            );
+//
+//            courseService.assignStudentsToCourse(
+//                    courseService.getCoursesByNameAndDepartment("aaa", "ppp"),
+//                    studentService.getAllStudents()
+//            );
+//
+//
+//            courseService.assignCoursePreRequisiteCourse(
+//                    courseService.getCoursesByNameAndDepartment("aaa", "ppp"),
+//                    courseService.getCoursesByNameAndDepartment("bbb", "ppp")
+//            );
+//
+//            courseService.assignCoursePreRequisiteCourse(
+//                    courseService.getCoursesByNameAndDepartment("aaa", "ppp"),
+//                    courseService.getCoursesByNameAndDepartment("qqq", "ppp")
+//            );
+//
+//            courseService.assignCoursePreRequisiteCourse(
+//                    courseService.getCoursesByNameAndDepartment("qqq", "ppp"),
+//                    courseService.getCoursesByNameAndDepartment("www", "ppp")
+//            );
+//
+//            courseService.assignCoursePreRequisiteCourse(
+//                    courseService.getCoursesByNameAndDepartment("www", "ppp"),
+//                    courseService.getCoursesByNameAndDepartment("bbb", "ppp")
+//            );
+//
+//            courseService.removeCoursePreRequisiteFromCourse(
+//                    courseService.getCoursesByNameAndDepartment("aaa", "ppp"),
+//                    courseService.getCoursesByNameAndDepartment("bbb", "ppp")
+//            );
+//
+//
+//            courseService.assignUniversityToCourse(
+//                    courseService.getCoursesByNameAndDepartment("aaa", "ppp"),
+//                    universityService.getUniversityById(1L)
+//            );
+//            studentService.assignUniversityToStudent(
+//                    studentService.getStudentById(1L),
+//                    universityService.getUniversityById(1L)
+//            );
+//        };
+//    }
 
     private static void enableJmsFlow(KafkaService kafkaService, CourseService courseService) {
         ScheduledExecutorService scheduler = Executors.newSingleThreadScheduledExecutor();

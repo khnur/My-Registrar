@@ -1,5 +1,6 @@
 package com.example.myregistrar.aop;
 
+import com.example.myregistrar.exceptions.BookNotFoundException;
 import com.example.myregistrar.models.Book;
 import com.example.myregistrar.models.Course;
 import com.example.myregistrar.models.Student;
@@ -10,6 +11,8 @@ import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.*;
 import org.aspectj.lang.reflect.MethodSignature;
 import org.springframework.stereotype.Component;
+
+import java.util.Collections;
 
 @Aspect
 @Component
@@ -29,7 +32,7 @@ public class ServiceAdvice {
         log.info("Executing get method matching pointcut within services package");
     }
 
-    @Around("execution(public void com.example.myregistrar.services.*.create*(..))")
+    @Around("execution(public * com.example.myregistrar.services.*.create*(..))")
     public Object logCreateEntity(ProceedingJoinPoint pjp) {
         String message = "Attempt to create ";
         MethodSignature methodSignature = (MethodSignature) pjp.getSignature();
@@ -163,7 +166,6 @@ public class ServiceAdvice {
         String declaringMethodType = joinPoint.getSignature().getDeclaringType().getSimpleName();
         String methodName = joinPoint.getSignature().getName();
         log.error("After Throwing Exception in [{}] {} method within the service layer", declaringMethodType, methodName);
-        log.error("Exception: {}", ex.getMessage());
     }
 
     @AfterReturning(pointcut = "getPointCut()", returning = "result")
@@ -180,5 +182,15 @@ public class ServiceAdvice {
         String methodName = joinPoint.getSignature().getName();
         log.info("Date dependency changed in database. Method [{}] {} completed.",
                 declaringMethodType, methodName);
+    }
+
+    @Around("getAndAssignMethod()")
+    public Object handleBookNotFoundException(ProceedingJoinPoint joinPoint) throws Throwable {
+        try {
+            return joinPoint.proceed();
+        } catch (RuntimeException ex) {
+            log.error("An exception occurred: {}", ex.getMessage());
+            return Collections.emptyList();
+        }
     }
 }

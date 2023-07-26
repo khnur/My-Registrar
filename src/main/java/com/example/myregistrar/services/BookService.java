@@ -7,7 +7,7 @@ import com.example.myregistrar.models.Student;
 import java.util.List;
 
 public interface BookService {
-    void createBook(Book book);
+    Book createBook(Book book);
 
     void generateRandomBooks(int n);
 

@@ -7,7 +7,7 @@ import com.example.myregistrar.models.University;
 import java.util.List;
 
 public interface StudentService {
-    void createStudent(Student student);
+    Student createStudent(Student student);
 
     void generateRandomStudents(int n);
 
@@ -22,6 +22,8 @@ public interface StudentService {
     Student getStudentByFirstNameAndLastName(String firstName, String lastName);
 
     List<Student> getStudentsByCourse(Course course);
+
+    List<Student> getStudentsByUniversity(University university);
 
     void assignCoursesToStudent(Student student, List<Course> courses);
 

@@ -25,11 +25,11 @@ public class StudentServiceImpl implements StudentService {
 
     @Transactional
     @Override
-    public void createStudent(Student student) {
+    public Student createStudent(Student student) {
         if (studentRepo.existsStudentByFirstNameAndLastName(student.getFirstName(), student.getLastName())) {
             throw new StudentAlreadyExistsException("Student with such name and last name already exists");
         }
-        studentRepo.save(student);
+        return studentRepo.save(student);
     }
 
     @Override
@@ -94,6 +94,18 @@ public class StudentServiceImpl implements StudentService {
         List<Student> students = studentRepo.findStudentsByCourseId(course.getId());
         if (students.isEmpty()) {
             throw new StudentNotFoundException("The course does not have any student");
+        }
+        return students;
+    }
+
+    @Override
+    public List<Student> getStudentsByUniversity(University university) {
+        if (university == null || university.getId() == null) {
+            throw new UniversityNotFound("provided university is null or has not been registered");
+        }
+        List<Student> students = studentRepo.findStudentsByUniversityId(university.getId());
+        if (students.isEmpty()) {
+            throw new StudentNotFoundException("There is no student at the university with name=" + university.getName());
         }
         return students;
     }

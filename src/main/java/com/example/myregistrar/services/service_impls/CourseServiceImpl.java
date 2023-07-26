@@ -33,12 +33,13 @@ public class CourseServiceImpl implements CourseService {
 
     @Transactional
     @Override
-    public void createCourse(Course course) {
+    public Course createCourse(Course course) {
         if (course == null || course.getId() != null) {
             throw new CourseAlreadyExistsException("Course with such id already exists");
         }
         Course newCourse = courseRepo.save(course);
         kafkaService.sendToCourseTopic(newCourse.toCourseDto().toJson());
+        return newCourse;
     }
 
     @Override

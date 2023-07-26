@@ -17,13 +17,13 @@ import java.util.List;
 public class UniversityServiceImpl implements UniversityService {
     private final UniversityRepo universityRepo;
 
-    @Transactional()
+    @Transactional
     @Override
-    public void createUniversity(University university) {
+    public University createUniversity(University university) {
         if (university == null || university.getId() != null) {
             throw new UniversityAlreadyExists("University with id=" + university.getId() + " already exists");
         }
-        universityRepo.save(university);
+        return universityRepo.save(university);
     }
 
     @Override

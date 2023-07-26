@@ -1,8 +1,5 @@
 package com.example.myregistrar.util;
 
-import com.example.myregistrar.dtos.BookDto;
-import com.example.myregistrar.dtos.CourseDto;
-import com.example.myregistrar.dtos.StudentDto;
 import com.example.myregistrar.models.Book;
 import com.example.myregistrar.models.Course;
 import com.example.myregistrar.models.Student;
