@@ -26,7 +26,10 @@ public class StudentServiceImpl implements StudentService {
     @Transactional
     @Override
     public Student createStudent(Student student) {
-        if (studentRepo.existsStudentByFirstNameAndLastName(student.getFirstName(), student.getLastName())) {
+        if (student == null) {
+            throw new StudentNotFoundException("Provided student null");
+        } else if (student.getId() != null ||
+                studentRepo.existsStudentByFirstNameAndLastName(student.getFirstName(), student.getLastName())) {
             throw new StudentAlreadyExistsException("Student with such name and last name already exists");
         }
         return studentRepo.save(student);
@@ -88,8 +91,8 @@ public class StudentServiceImpl implements StudentService {
 
     @Override
     public List<Student> getStudentsByCourse(Course course) {
-        if (course == null) {
-            throw new StudentNotFoundException("The course is null");
+        if (course == null || course.getId() == null) {
+            throw new CourseNotFoundException("The course is null or has not been registered");
         }
         List<Student> students = studentRepo.findStudentsByCourseId(course.getId());
         if (students.isEmpty()) {
@@ -115,6 +118,10 @@ public class StudentServiceImpl implements StudentService {
     public void assignCourseToStudent(Student student, Course course) {
         if (student == null || course == null) {
             throw new NoSuchElementException("The course is null or student is null");
+        } else if (student.getId() == null) {
+            throw new StudentNotFoundException("Provided transient student, should be registered");
+        } else if (course.getId() == null) {
+            throw new CourseNotFoundException("Provided transient course, should be registered");
         }
 
         List<Course> courseListByStudent = courseRepo.findCoursesByStudentId(student.getId());
@@ -133,31 +140,12 @@ public class StudentServiceImpl implements StudentService {
 
     @Transactional
     @Override
-    public void assignCourseToStudent(Student student, Long courseId) {
-        Course course = courseRepo.findById(courseId)
-                .orElseThrow(() -> new CourseNotFoundException("There is not course with id=" + courseId));
-
-        List<Course> courseListByStudent = courseRepo.findCoursesByStudentId(student.getId());
-        courseListByStudent.add(course);
-
-        List<Student> studentListByStudent = studentRepo.findStudentsByCourseId(courseId);
-        studentListByStudent.add(student);
-
-        courseRepo.save(course);
-        studentRepo.save(student);
-    }
-
-    @Transactional
-    @Override
     public void assignUniversityToStudent(Student student, University university) {
-        if (student == null || university == null) {
-            throw new NoSuchElementException("provided student or university is null");
-        }
-        if (student.getUniversity() != null && student.getUniversity().getId() != null) {
-            throw new UniversityAlreadyExistsException("student with id=" + student.getId() + " has already been assigned to university");
-        }
-        if (university.getId() == null) {
-            throw new UniversityNotFoundException("university is not registered");
+        if (student == null || university == null || student.getId() == null || university.getId() == null) {
+            throw new NoSuchElementException("provided student or university is null or has not been registered");
+        } else if (student.getUniversity() != null && student.getUniversity().getId() != null) {
+            throw new UniversityAlreadyExistsException("student with id=" + student.getId() +
+                    " has already been assigned to university");
         }
 
         student.setUniversity(university);

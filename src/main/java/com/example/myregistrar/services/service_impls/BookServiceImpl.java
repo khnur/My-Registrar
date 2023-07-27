@@ -26,7 +26,9 @@ public class BookServiceImpl implements BookService {
     @Transactional
     @Override
     public Book createBook(Book book) {
-        if (bookRepo.existsByNameAndAuthor(book.getName(), book.getAuthor())) {
+        if (book == null) {
+            throw new BookNotFoundException("Provided book null");
+        } else if (book.getId() != null || bookRepo.existsByNameAndAuthor(book.getName(), book.getAuthor())) {
             throw new BookAlreadyExistsException("Book with such name and author already exists");
         }
         return bookRepo.save(book);
@@ -88,17 +90,16 @@ public class BookServiceImpl implements BookService {
 
     @Override
     public List<Book> getBooksByStudent(Student student) {
-        if (student == null) {
-            throw new StudentNotFoundException("The student is null");
+        if (student == null || student.getId() == null) {
+            throw new StudentNotFoundException("The student is null or has not been registered");
         }
-
         return bookRepo.findBooksByStudentId(student.getId());
     }
 
     @Override
     public List<Book> getBooksByCourse(Course course) {
-        if (course == null) {
-            throw new CourseNotFoundException("The course is null");
+        if (course == null || course.getId() == null) {
+            throw new CourseNotFoundException("The course is null or has not been registered");
         }
 
         List<Book> booksByCourse = bookRepo.findBooksByCourseId(course.getId());

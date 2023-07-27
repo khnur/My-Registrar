@@ -47,7 +47,7 @@ public class Application {
             UniversityService universityService
     ) {
         return args -> {
-//            enableJmsFlow(kafkaService, courseService); // comment it if you want to disable
+            enableJmsFlow(kafkaService, courseService); // comment it if you want to disable
             studentService.createStudent(new Student(
                     "aaa",
                     "aaa",

@@ -34,11 +34,14 @@ public class CourseServiceImpl implements CourseService {
     @Transactional
     @Override
     public Course createCourse(Course course) {
-        if (course == null || course.getId() != null) {
-            throw new CourseAlreadyExistsException("Course with such id already exists");
+        if (course == null)  {
+            throw new CourseNotFoundException("Provided course null");
+        } else if (course.getId() != null) {
+            throw new CourseAlreadyExistsException("Course with such id already exists with id=" + course.getId());
         }
+
         Course newCourse = courseRepo.save(course);
-        kafkaService.sendToCourseTopic(newCourse.toCourseDto().toJson());
+        kafkaService.sendToCourseTopic(newCourse.toCourseDto());
         return newCourse;
     }
 
@@ -109,8 +112,8 @@ public class CourseServiceImpl implements CourseService {
 
     @Override
     public List<Course> getCoursesByStudent(Student student) {
-        if (student == null) {
-            throw new StudentNotFoundException("The student is null");
+        if (student == null || student.getId() == null) {
+            throw new StudentNotFoundException("The student is null or has not been registered");
         }
         List<Course> courses = courseRepo.findCoursesByStudentId(student.getId());
         if (courses.isEmpty()) {
@@ -122,8 +125,8 @@ public class CourseServiceImpl implements CourseService {
     @Transactional
     @Override
     public void assignBookToCourse(Course course, Book book) {
-        if (course == null || book == null) {
-            throw new NoSuchElementException("The course is null or book is null");
+        if (course == null || book == null || course.getId() == null || book.getId() == null) {
+            throw new NoSuchElementException("The course or book is null or has not been registered");
         }
 
         List<Book> bookListByCourseId = bookRepo.findBooksByCourseId(course.getId());
@@ -138,7 +141,7 @@ public class CourseServiceImpl implements CourseService {
     @Transactional
     @Override
     public void assignStudentToCourse(Course course, Student student) {
-        if (course == null || student == null) {
+        if (course == null || student == null || course.getId() == null || student.getId() == null) {
             throw new NoSuchElementException("The course is null or student is null");
         }
 
@@ -159,7 +162,7 @@ public class CourseServiceImpl implements CourseService {
     @Transactional
     @Override
     public void removeCoursePreRequisiteFromCourse(Course course, Course coursePreReq) {
-        if (course == null || coursePreReq == null) {
+        if (course == null || coursePreReq == null || course.getId() == null || coursePreReq.getId() == null) {
             throw new NoSuchElementException("The course is null or course pre-requisite is null");
         } else if (Objects.equals(course.getId(), coursePreReq.getId())) {
             throw new MethodNotFoundException("Method Not Allowed");
@@ -171,7 +174,7 @@ public class CourseServiceImpl implements CourseService {
     @Transactional
     @Override
     public void assignCoursePreRequisiteCourse(Course course, Course coursePreReq) {
-        if (course == null || coursePreReq == null) {
+        if (course == null || coursePreReq == null || course.getId() == null || coursePreReq.getId() == null) {
             throw new NoSuchElementException("The course is null or course pre-requisite is null");
         } else if (Objects.equals(course.getId(), coursePreReq.getId())) {
             throw new MethodNotFoundException("Method Not Allowed");
@@ -186,21 +189,19 @@ public class CourseServiceImpl implements CourseService {
     @Transactional
     @Override
     public List<Course> getCoursePreRequisitesFromCourse(Course course) {
-        if (course == null) throw new CourseNotFoundException("The course is null");
+        if (course == null || course.getId() == null) {
+            throw new CourseNotFoundException("The course is null or has not been registered");
+        }
         return coursePreRequiteRepo.findPrerequisiteCoursesByCourseId(course.getId());
     }
 
     @Transactional
     @Override
     public void assignUniversityToCourse(Course course, University university) {
-        if (course == null || university == null) {
-            throw new NoSuchElementException("provided course or university is null");
-        }
-        if (course.getUniversity() != null && course.getUniversity().getId() != null) {
+        if (course == null || university == null || course.getId() == null || university.getId() == null) {
+            throw new NoSuchElementException("provided course or university is null or has not been registered");
+        } else if (course.getUniversity() != null && course.getUniversity().getId() != null) {
             throw new UniversityAlreadyExistsException("course with id=" + course.getId() + " has already been assigned to university");
-        }
-        if (university.getId() == null) {
-            throw new UniversityNotFoundException("university is not registered");
         }
 
         course.setUniversity(university);

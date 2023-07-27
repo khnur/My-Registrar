@@ -27,7 +27,5 @@ public interface StudentService {
 
     void assignCourseToStudent(Student student, Course course);
 
-    void assignCourseToStudent(Student student, Long courseId);
-
     void assignUniversityToStudent(Student student, University university);
 }

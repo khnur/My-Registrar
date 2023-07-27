@@ -20,7 +20,9 @@ public class UniversityServiceImpl implements UniversityService {
     @Transactional
     @Override
     public University createUniversity(University university) {
-        if (university == null || university.getId() != null) {
+        if (university == null) {
+            throw new UniversityNotFoundException("Provided university null");
+        } else if (university.getId() != null) {
             throw new UniversityAlreadyExistsException("University with id=" + university.getId() + " already exists");
         }
         return universityRepo.save(university);

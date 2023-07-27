@@ -2,43 +2,62 @@ package com.example.myregistrar.jms;
 
 import com.example.myregistrar.dtos.CourseDto;
 import com.example.myregistrar.services.StudentService;
-import com.example.myregistrar.util.JsonMapper;
 import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.kafka.clients.admin.NewTopic;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Bean;
 import org.springframework.kafka.annotation.KafkaListener;
+import org.springframework.kafka.config.TopicBuilder;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
 
-import static com.example.myregistrar.jms.KafkaConfig.COURSE_CREATION_TOPIC;
 
 @Service
 @Slf4j
-@AllArgsConstructor
+@RequiredArgsConstructor
 public class KafkaService {
-    private final KafkaTemplate<String, String> kafkaTemplate;
+    private static final String TOPIC = "my-topic";
+    private static final String GROUP_ID = "${spring.kafka.consumer.group-id}";
+
+    private final KafkaTemplate<Long, CourseDto> kafkaTemplate;
     private final StudentService studentService;
 
-    public void sendToCourseTopic(String object) {
-        kafkaTemplate.send(COURSE_CREATION_TOPIC, object);
+    public void sendToCourseTopic(CourseDto courseDto) {
+        if (courseDto == null) {
+            log.error("provided course is null");
+            return;
+        } else if (courseDto.getUniversity() == null) {
+            log.error("course with id={} is not registered by any university", courseDto.getId());
+            return;
+        }
+        kafkaTemplate.send(TOPIC, courseDto);
     }
 
-    @KafkaListener(topics = COURSE_CREATION_TOPIC, groupId = "groupId")
-    public void listenMessage(String courseDtoJson) {
-        log.info(">>> Received: created new course " + courseDtoJson);
+    @KafkaListener(topics = TOPIC, groupId = GROUP_ID)
+    public void listenMessage(CourseDto courseDto) {
+        log.info(">>> Received: created new course " + courseDto.toJson());
 
         final int[] studentIter = new int[]{1};
         studentService.getAllStudents().forEach(student -> {
             log.info("Student with the following credentials received course enrolment request: {} {}",
                     studentIter[0]++, student.toStudentDto().toJson());
             if (student.getAge() >= 25) {
-                CourseDto courseDto = JsonMapper.toObject(courseDtoJson, CourseDto.class);
-                log.info("Student accepted course enrolment request");
+                studentService.assignCourseToStudent(student, courseDto.toCourse());
 
-                studentService.assignCourseToStudent(student, courseDto.getId());
+                log.info("Student accepted course enrolment request");
             } else {
                 log.warn("Student is not eligible to enrol the course");
             }
         });
     }
 
+    @Bean
+    public NewTopic courseCreationTopic() {
+        return TopicBuilder.name(TOPIC)
+                .partitions(1)
+                .replicas(1)
+                .build();
+    }
 }
