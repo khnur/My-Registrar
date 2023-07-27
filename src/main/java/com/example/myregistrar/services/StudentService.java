@@ -25,7 +25,7 @@ public interface StudentService {
 
     List<Student> getStudentsByUniversity(University university);
 
-    void assignCoursesToStudent(Student student, List<Course> courses);
+    void assignCourseToStudent(Student student, Course course);
 
     void assignCourseToStudent(Student student, Long courseId);
 

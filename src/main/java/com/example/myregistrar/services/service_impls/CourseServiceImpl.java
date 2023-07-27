@@ -90,10 +90,13 @@ public class CourseServiceImpl implements CourseService {
     }
 
     @Override
-    public List<Course> getCoursesByUniversityId(Long universityId) {
-        List<Course> courseList = courseRepo.findCoursesByUniversityId(universityId);
+    public List<Course> getCoursesByUniversity(University university) {
+        if (university == null || university.getId() == null) {
+            throw new UniversityNotFoundException("provided university is null or has not been registered");
+        }
+        List<Course> courseList = courseRepo.findCoursesByUniversityId(university.getId());
         if (courseList.isEmpty()) {
-            throw new CourseNotFoundException("There is no course with such university id");
+            throw new CourseNotFoundException("There is no course with such university name=" + university.getName());
         }
         return courseList;
     }
@@ -118,39 +121,38 @@ public class CourseServiceImpl implements CourseService {
 
     @Transactional
     @Override
-    public void assignBooksToCourse(Course course, List<Book> books) {
-        if (course == null || books == null) {
-            throw new NoSuchElementException("The course is null or book list is null");
+    public void assignBookToCourse(Course course, Book book) {
+        if (course == null || book == null) {
+            throw new NoSuchElementException("The course is null or book is null");
         }
 
         List<Book> bookListByCourseId = bookRepo.findBooksByCourseId(course.getId());
-        bookListByCourseId.addAll(books);
+        bookListByCourseId.add(book);
 
         course.setBooks(bookListByCourseId);
+        book.setCourse(course);
 
-        books.forEach(book -> book.setCourse(course));
         courseRepo.save(course);
     }
 
     @Transactional
     @Override
-    public void assignStudentsToCourse(Course course, List<Student> students) {
-        if (course == null || students == null) {
-            throw new NoSuchElementException("The course is null or student list is null");
+    public void assignStudentToCourse(Course course, Student student) {
+        if (course == null || student == null) {
+            throw new NoSuchElementException("The course is null or student is null");
         }
 
         List<Student> studentListByCourse = studentRepo.findStudentsByCourseId(course.getId());
-        studentListByCourse.addAll(students);
+        studentListByCourse.add(student);
 
         course.setStudents(studentListByCourse);
 
-        students.forEach(student -> {
-            List<Course> courseListByStudent = courseRepo.findCoursesByStudentId(student.getId());
-            courseListByStudent.add(course);
+        List<Course> courseListByStudent = courseRepo.findCoursesByStudentId(student.getId());
+        courseListByStudent.add(course);
 
-            student.setCourses(courseListByStudent);
-            studentRepo.save(student);
-        });
+        student.setCourses(courseListByStudent);
+
+        studentRepo.save(student);
         courseRepo.save(course);
     }
 
@@ -195,10 +197,10 @@ public class CourseServiceImpl implements CourseService {
             throw new NoSuchElementException("provided course or university is null");
         }
         if (course.getUniversity() != null && course.getUniversity().getId() != null) {
-            throw new UniversityAlreadyExists("course with id=" + course.getId() + " has already been assigned to university");
+            throw new UniversityAlreadyExistsException("course with id=" + course.getId() + " has already been assigned to university");
         }
         if (university.getId() == null) {
-            throw new UniversityNotFound("university is not registered");
+            throw new UniversityNotFoundException("university is not registered");
         }
 
         course.setUniversity(university);

@@ -47,8 +47,20 @@ public class Student {
     @Column(nullable = false)
     private String gender;
 
-    @Column(nullable = false)
+    @Column(
+            nullable = false,
+            unique = true
+    )
     private String email;
+
+    @Column(nullable = false)
+    private String password;
+
+    @Column(nullable = false)
+    private String role;
+
+    @Column(nullable = false)
+    private boolean isActive;
 
     @ManyToOne
     @JoinColumn(
@@ -71,13 +83,16 @@ public class Student {
     )
     private List<Course> courses = new ArrayList<>();
 
-    public Student(String firstName, String lastName, Date birthDate, String gender) {
+    public Student(String firstName, String lastName, Date birthDate, String gender, String password, String role, boolean isActive) {
         this.firstName = firstName;
         this.lastName = lastName;
         this.birthDate = birthDate;
         this.age = DateMapper.GET_AGE(birthDate);
         this.gender = gender;
         this.email = firstName.toLowerCase() + '.' + lastName.toLowerCase() + "@onelab.kz";
+        this.password = password;
+        this.role = role;
+        this.isActive = isActive;
     }
 
     public StudentDto toStudentDto() {

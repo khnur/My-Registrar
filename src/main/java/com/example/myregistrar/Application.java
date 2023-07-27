@@ -48,11 +48,40 @@ public class Application {
     ) {
         return args -> {
 //            enableJmsFlow(kafkaService, courseService); // comment it if you want to disable
-            studentService.createStudent(NewModel.createRandomStudent());
-            universityService.createUniversity(NewModel.createRandomUniversity());
-            /*
-                The custom code goes here
-             */
+            studentService.createStudent(new Student(
+                    "aaa",
+                    "aaa",
+                    DateMapper.DATE_FORMAT.parse("1234-78-78"),
+                    "M",
+                    "aaa",
+                    "ROLE_USER",
+                    true
+            ));
+            universityService.createUniversity(new University(
+                    "uuu",
+                    "uuu",
+                    "uuu"
+            ));
+
+            courseService.createCourse(new Course(
+                    "aaa",
+                    "aaa",
+                    "aaa",
+                    6
+            ));
+
+            bookService.createBook(new Book(
+                    "aaa",
+                    "aaa",
+                    "aaa",
+                    DateMapper.DATE_FORMAT.parse("1234-78-78"),
+                    "aaa"
+            ));
+
+            studentService.assignUniversityToStudent(
+                    studentService.getStudentById(1L),
+                    universityService.getUniversityById(1L)
+            );
 
         };
     }

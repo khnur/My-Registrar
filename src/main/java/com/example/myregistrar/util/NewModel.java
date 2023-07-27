@@ -89,48 +89,51 @@ public class NewModel {
         return new Book(name, author, genre, publishedDate, publisher);
     }
 
-    public static Student getStudentInstance() throws IOException {
-        log.info("First Name: ");
-        String firstName = ConsoleInput.readLine();
-
-        log.info("Last Name: ");
-        String lastName = ConsoleInput.readLine();
-
-        Date birthDate = null;
-        while (birthDate == null) {
-            log.info("Birth Date (" + DateMapper.PATTERN + "): ");
-            try {
-                birthDate = DateMapper.DATE_FORMAT.parse(ConsoleInput.readLine());
-            } catch (Exception e) {
-                log.error("Entered incorrect for of date. Try again\n");
-            }
-        }
-
-        String gender = null;
-
-        while (gender == null) {
-            log.info("Gender: ");
-            gender = ConsoleInput.readLine();
-
-            if (gender.startsWith("M") || gender.startsWith("m")) {
-                gender = "Male";
-            } else if (gender.startsWith("F") || gender.startsWith("f")) {
-                gender = "Female";
-            } else {
-                gender = null;
-                log.error("Entered invalid format of gender. Try again\n");
-            }
-        }
-
-        return new Student(firstName, lastName, birthDate, gender);
-    }
+//    public static Student getStudentInstance() throws IOException {
+//        log.info("First Name: ");
+//        String firstName = ConsoleInput.readLine();
+//
+//        log.info("Last Name: ");
+//        String lastName = ConsoleInput.readLine();
+//
+//        Date birthDate = null;
+//        while (birthDate == null) {
+//            log.info("Birth Date (" + DateMapper.PATTERN + "): ");
+//            try {
+//                birthDate = DateMapper.DATE_FORMAT.parse(ConsoleInput.readLine());
+//            } catch (Exception e) {
+//                log.error("Entered incorrect for of date. Try again\n");
+//            }
+//        }
+//
+//        String gender = null;
+//
+//        while (gender == null) {
+//            log.info("Gender: ");
+//            gender = ConsoleInput.readLine();
+//
+//            if (gender.startsWith("M") || gender.startsWith("m")) {
+//                gender = "Male";
+//            } else if (gender.startsWith("F") || gender.startsWith("f")) {
+//                gender = "Female";
+//            } else {
+//                gender = null;
+//                log.error("Entered invalid format of gender. Try again\n");
+//            }
+//        }
+//
+//        return new Student(firstName, lastName, birthDate, gender);
+//    }
 
     public static Student createRandomStudent() {String firstName = faker.name().firstName();
         String lastName = faker.name().lastName();
         Date date = faker.date().birthday();
         String gender = faker.random().nextInt(5) % 2 == 0 ? "Male" : "Female";
+        String password = faker.name().username();
+        String role = "ROLE_USER";
+        boolean isActive = true;
 
-        return new Student(firstName, lastName, date, gender);
+        return new Student(firstName, lastName, date, gender, password, role, isActive);
     }
 
     public static University getUniversityInstance() throws IOException {

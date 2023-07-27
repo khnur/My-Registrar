@@ -1,27 +1,16 @@
-package com.example.myregistrar;
+package com.example.myregistrar.config;
 
 import org.elasticsearch.client.RestHighLevelClient;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.EnableAspectJAutoProxy;
 import org.springframework.data.elasticsearch.client.ClientConfiguration;
 import org.springframework.data.elasticsearch.client.RestClients;
 import org.springframework.data.elasticsearch.config.AbstractElasticsearchConfiguration;
 import org.springframework.data.elasticsearch.repository.config.EnableElasticsearchRepositories;
-import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
-import org.springframework.transaction.annotation.EnableTransactionManagement;
 
 @Configuration
-@EnableAspectJAutoProxy
-@EnableJpaRepositories(
-        basePackages = "com.example.myregistrar.repositories",
-        enableDefaultTransactions = false
-)
-@EnableTransactionManagement
 @EnableElasticsearchRepositories(basePackages = "com.example.myregistrar.es_repositories")
-@ComponentScan
-public class ApplicationConfig extends AbstractElasticsearchConfiguration {
+public class ElasticConfig extends AbstractElasticsearchConfiguration {
     @Bean
     @Override
     public RestHighLevelClient elasticsearchClient() {

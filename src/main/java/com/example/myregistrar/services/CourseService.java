@@ -20,15 +20,15 @@ public interface CourseService {
 
     Course getCoursesByNameAndDepartment(String name, String department);
 
-    List<Course> getCoursesByUniversityId(Long universityId);
+    List<Course> getCoursesByUniversity(University university);
 
     Course getCourseByNameAndUniversityId(String name, Long universityId);
 
     List<Course> getCoursesByStudent(Student student);
 
-    void assignBooksToCourse(Course course, List<Book> books);
+    void assignBookToCourse(Course course, Book book);
 
-    void assignStudentsToCourse(Course course, List<Student> students);
+    void assignStudentToCourse(Course course, Student student);
 
     void removeCoursePreRequisiteFromCourse(Course course, Course coursePreReq);
 

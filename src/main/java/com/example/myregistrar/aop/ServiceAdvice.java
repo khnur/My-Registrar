@@ -1,6 +1,5 @@
 package com.example.myregistrar.aop;
 
-import com.example.myregistrar.exceptions.BookNotFoundException;
 import com.example.myregistrar.models.Book;
 import com.example.myregistrar.models.Course;
 import com.example.myregistrar.models.Student;
@@ -12,86 +11,94 @@ import org.aspectj.lang.annotation.*;
 import org.aspectj.lang.reflect.MethodSignature;
 import org.springframework.stereotype.Component;
 
-import java.util.Collections;
-
 @Aspect
 @Component
 @Slf4j
 public class ServiceAdvice {
+    @Pointcut("execution(public com.example.myregistrar.models.* com.example.myregistrar.services.*.get*(..))")
+    public void getModelPointCut() {}
+
+    @Pointcut("execution(public java.util.List<com.example.myregistrar.models.*> com.example.myregistrar.services.*.get*(..))")
+    public void getListPointCut() {}
+
     @Pointcut("execution(* com.example.myregistrar.services.*.get*(..))")
     public void getPointCut() {}
 
     @Pointcut("execution(* com.example.myregistrar.services.*.assign*(..))")
     public void assignPointCut() {}
 
-    @Pointcut("execution(* com.example.myregistrar.services.*.get*(..)) || execution(* com.example.myregistrar.services.*.assign*(..))")
-    public void getAndAssignMethod() {}
+    @Pointcut("execution(* com.example.myregistrar.services.*.*(..))")
+    public void getAllServiceMethods() {}
+
+    @Pointcut("execution(public * com.example.myregistrar.services.*.create*(..))")
+    public void createMethodPointCut() {}
 
     @Before("getPointCut()")
     public void logGetMethodExecutionWithinServicesPackage() {
         log.info("Executing get method matching pointcut within services package");
     }
 
-    @Around("execution(public * com.example.myregistrar.services.*.create*(..))")
-    public Object logCreateEntity(ProceedingJoinPoint pjp) {
-        String message = "Attempt to create ";
-        MethodSignature methodSignature = (MethodSignature) pjp.getSignature();
+    @Before("assignPointCut()")
+    public void logAssignMethodExecutionWithinServicesPackage() {
+        log.info("Executing assign method matching pointcut within services package");
+    }
 
-        Object[] arguments = pjp.getArgs();
+    @Before("createMethodPointCut()")
+    public void logCreateMethodExecution(JoinPoint joinPoint) {
+        String message = "Attempt to create ";
+        MethodSignature methodSignature = (MethodSignature) joinPoint.getSignature();
+
+        Object[] arguments = joinPoint.getArgs();
         if (arguments == null || arguments.length == 0) {
             log.error(message + "an entity. No object provided");
-            return null;
+            return;
         } else if (arguments.length > 1) {
             log.error(message + "an entity. Too many arguments");
-            return null;
+            return;
         } else if (arguments[0] == null) {
             log.error(message + "an entity. The object is null");
-            return null;
+            return;
         }
 
-        boolean[] methodNameChecks = new boolean[] {
-                methodSignature.getName().equals("createStudent"),
-                methodSignature.getName().equals("createCourse"),
-                methodSignature.getName().equals("createBook"),
-                methodSignature.getName().equals("createUniversity")
-        };
+        if (methodSignature == null || methodSignature.getName() == null) {
+            log.error("Some shit went wrong");
+            return;
+        }
 
-        if (methodNameChecks[0]) {
+        if (methodSignature.getName().equals("createStudent")) {
             log.info(message + "a student");
-        } else if (methodNameChecks[1]) {
+        } else if (methodSignature.getName().equals("createCourse")) {
             log.info(message + "a course");
-        } else if (methodNameChecks[2]) {
+        } else if (methodSignature.getName().equals("createBook")) {
             log.info(message + "a book");
-        } else if (methodNameChecks[3]) {
+        } else if (methodSignature.getName().equals("createUniversity")) {
             log.info(message + " an university");
         } else {
             log.error(message + "an entity. Method Not Allowed");
-            return null;
+        }
+    }
+
+    @AfterReturning(pointcut = "createMethodPointCut()", returning = "result")
+    public void logCreateEntity(JoinPoint joinPoint, Object result) {
+        MethodSignature methodSignature = (MethodSignature) joinPoint.getSignature();
+
+        if (methodSignature == null || methodSignature.getName() == null) {
+            log.error("Some shit went wrong");
+            return;
         }
 
-        Object result;
-        try {
-            result = pjp.proceed();
-        } catch (Throwable e) {
-            log.error(e.getMessage());
-            return null;
-        }
-
-        message = " is added to database with name \"{}\"";
-        if (methodNameChecks[0]) {
-            log.info("Student" + message, ((Student) arguments[0]).getFirstName());
-        } else if (methodNameChecks[1]) {
-            log.info("Course" + message, ((Course) arguments[0]).getName());
-        } else if (methodNameChecks[2]) {
-            log.info("Book" + message, ((Book) arguments[0]).getName());
-        } else if (methodNameChecks[3]) {
-            log.info("University" + message, ((University) arguments[0]).getName());
+        String message = " is added to database with name \"{}\"";
+        if (methodSignature.getName().equals("createStudent")) {
+            log.info("Student" + message, ((Student) result).getFirstName());
+        } else if (methodSignature.getName().equals("createCourse")) {
+            log.info("Course" + message, ((Course) result).getName());
+        } else if (methodSignature.getName().equals("createBook")) {
+            log.info("Book" + message, ((Book) result).getName());
+        } else if (methodSignature.getName().equals("createUniversity")) {
+            log.info("University" + message, ((University) result).getName());
         } else {
             log.error("Method Not Allowed");
-            return null;
         }
-
-        return result;
     }
 
     @Around("execution(public void com.example.myregistrar.services.*.generate*(..))")
@@ -161,11 +168,13 @@ public class ServiceAdvice {
         return result;
     }
 
-    @AfterThrowing(pointcut = "getAndAssignMethod()", throwing = "ex")
+    @AfterThrowing(pointcut = "getAllServiceMethods()", throwing = "ex")
     public void afterThrowingServiceMethods(JoinPoint joinPoint, Exception ex) {
         String declaringMethodType = joinPoint.getSignature().getDeclaringType().getSimpleName();
         String methodName = joinPoint.getSignature().getName();
+
         log.error("After Throwing Exception in [{}] {} method within the service layer", declaringMethodType, methodName);
+        log.error("An exception occurred: {}", ex.getMessage());
     }
 
     @AfterReturning(pointcut = "getPointCut()", returning = "result")
@@ -184,13 +193,22 @@ public class ServiceAdvice {
                 declaringMethodType, methodName);
     }
 
-    @Around("getAndAssignMethod()")
-    public Object handleBookNotFoundException(ProceedingJoinPoint joinPoint) throws Throwable {
-        try {
-            return joinPoint.proceed();
-        } catch (RuntimeException ex) {
-            log.error("An exception occurred: {}", ex.getMessage());
-            return Collections.emptyList();
-        }
-    }
+//    @Around("getListPointCut()")
+//    public Object handleListNotFoundException(ProceedingJoinPoint joinPoint) throws Throwable {
+//        try {
+//            return joinPoint.proceed();
+//        } catch (RuntimeException ex) {
+//            return Collections.emptyList();
+//        }
+//    }
+
+//    @Around("getModelPointCut()")
+//    public Object handleGetMethods(ProceedingJoinPoint joinPoint) throws Throwable {
+//        Class<?> clazz = ((MethodSignature) joinPoint.getSignature()).getReturnType();
+//        try {
+//            return joinPoint.proceed();
+//        } catch (RuntimeException ex) {
+//            return clazz.getDeclaredConstructor().newInstance();
+//        }
+//    }
 }

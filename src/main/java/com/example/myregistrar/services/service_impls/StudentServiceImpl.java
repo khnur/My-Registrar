@@ -101,7 +101,7 @@ public class StudentServiceImpl implements StudentService {
     @Override
     public List<Student> getStudentsByUniversity(University university) {
         if (university == null || university.getId() == null) {
-            throw new UniversityNotFound("provided university is null or has not been registered");
+            throw new UniversityNotFoundException("provided university is null or has not been registered");
         }
         List<Student> students = studentRepo.findStudentsByUniversityId(university.getId());
         if (students.isEmpty()) {
@@ -112,23 +112,22 @@ public class StudentServiceImpl implements StudentService {
 
     @Transactional
     @Override
-    public void assignCoursesToStudent(Student student, List<Course> courses) {
-        if (student == null || courses == null) {
-            throw new NoSuchElementException("The course is null or student list is null");
+    public void assignCourseToStudent(Student student, Course course) {
+        if (student == null || course == null) {
+            throw new NoSuchElementException("The course is null or student is null");
         }
 
         List<Course> courseListByStudent = courseRepo.findCoursesByStudentId(student.getId());
-        courseListByStudent.addAll(courses);
+        courseListByStudent.add(course);
 
         student.setCourses(courseListByStudent);
 
-        courses.forEach(course -> {
-            List<Student> studentListByStudent = studentRepo.findStudentsByCourseId(course.getId());
-            studentListByStudent.add(student);
+        List<Student> studentListByStudent = studentRepo.findStudentsByCourseId(course.getId());
+        studentListByStudent.add(student);
 
-            course.setStudents(studentListByStudent);
-            courseRepo.save(course);
-        });
+        course.setStudents(studentListByStudent);
+
+        courseRepo.save(course);
         studentRepo.save(student);
     }
 
@@ -155,10 +154,10 @@ public class StudentServiceImpl implements StudentService {
             throw new NoSuchElementException("provided student or university is null");
         }
         if (student.getUniversity() != null && student.getUniversity().getId() != null) {
-            throw new UniversityAlreadyExists("student with id=" + student.getId() + " has already been assigned to university");
+            throw new UniversityAlreadyExistsException("student with id=" + student.getId() + " has already been assigned to university");
         }
         if (university.getId() == null) {
-            throw new UniversityNotFound("university is not registered");
+            throw new UniversityNotFoundException("university is not registered");
         }
 
         student.setUniversity(university);

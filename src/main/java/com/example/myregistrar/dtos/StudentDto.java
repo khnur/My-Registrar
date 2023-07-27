@@ -1,12 +1,9 @@
 package com.example.myregistrar.dtos;
 
 import com.example.myregistrar.models.Student;
-import com.example.myregistrar.models.University;
 import com.example.myregistrar.util.JsonMapper;
 import com.example.myregistrar.util.entity_dto_mappers.StudentMapper;
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Data;
-import lombok.ToString;
 
 import java.util.Date;
 
@@ -19,11 +16,11 @@ public class StudentDto {
     private Integer age;
     private String gender;
     private String email;
-    private String universityName;
+    private String password;
+    private String role;
+    private boolean isActive;
 
-    @ToString.Exclude
-    @JsonIgnore
-    private University university;
+    private UniversityDto university;
 
     public Student toStudent() {
         return StudentMapper.INSTANCE.studentDtoToStudent(this);
@@ -32,10 +29,4 @@ public class StudentDto {
     public String toJson() {
         return JsonMapper.toJsonString(this);
     }
-
-    public void setUniversity(University university) {
-        this.university = university;
-        this.universityName = university != null ? university.getName() : null;
-    }
-
 }

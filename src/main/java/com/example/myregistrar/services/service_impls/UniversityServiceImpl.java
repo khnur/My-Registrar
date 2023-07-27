@@ -1,7 +1,7 @@
 package com.example.myregistrar.services.service_impls;
 
-import com.example.myregistrar.exceptions.UniversityAlreadyExists;
-import com.example.myregistrar.exceptions.UniversityNotFound;
+import com.example.myregistrar.exceptions.UniversityAlreadyExistsException;
+import com.example.myregistrar.exceptions.UniversityNotFoundException;
 import com.example.myregistrar.models.University;
 import com.example.myregistrar.repositories.UniversityRepo;
 import com.example.myregistrar.services.UniversityService;
@@ -21,7 +21,7 @@ public class UniversityServiceImpl implements UniversityService {
     @Override
     public University createUniversity(University university) {
         if (university == null || university.getId() != null) {
-            throw new UniversityAlreadyExists("University with id=" + university.getId() + " already exists");
+            throw new UniversityAlreadyExistsException("University with id=" + university.getId() + " already exists");
         }
         return universityRepo.save(university);
     }
@@ -29,14 +29,14 @@ public class UniversityServiceImpl implements UniversityService {
     @Override
     public University getUniversityById(Long id) {
         return universityRepo.findById(id)
-                .orElseThrow(() -> new UniversityNotFound("University with id=" + id + " NOT FOUND"));
+                .orElseThrow(() -> new UniversityNotFoundException("University with id=" + id + " NOT FOUND"));
     }
 
     @Override
     public List<University> getAllUniversities() {
         List<University> universities = universityRepo.findAll();
         if (universities.isEmpty()) {
-            throw new UniversityNotFound("There is no university");
+            throw new UniversityNotFoundException("There is no university");
         }
         return universities;
     }
@@ -45,7 +45,7 @@ public class UniversityServiceImpl implements UniversityService {
     public List<University> getUniversitiesByName(String name) {
         List<University> universities = universityRepo.findUniversitiesByName(name);
         if (universities.isEmpty()) {
-            throw new UniversityNotFound("There is no university with name=" + name);
+            throw new UniversityNotFoundException("There is no university with name=" + name);
         }
         return universities;
     }
@@ -53,6 +53,6 @@ public class UniversityServiceImpl implements UniversityService {
     @Override
     public University getUniversityByNameAndCountry(String name, String country) {
         return universityRepo.findUniversityByNameAndCountry(name, country)
-                .orElseThrow(() -> new UniversityNotFound("There is no university with name=" + name + " and country=" + country));
+                .orElseThrow(() -> new UniversityNotFoundException("There is no university with name=" + name + " and country=" + country));
     }
 }
