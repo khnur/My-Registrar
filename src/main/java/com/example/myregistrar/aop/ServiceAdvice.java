@@ -195,7 +195,7 @@ public class ServiceAdvice {
 
     @Before("execution(public * com.example.myregistrar.services.*.notify*(..))")
     public void logNotifyStudents() {
-        log.error("Notifying students about new course with the university");
+        log.info("Notifying students about new course with the university");
     }
 
     @AfterReturning(pointcut = "execution(public * com.example.myregistrar.services.*.notify*(..))")

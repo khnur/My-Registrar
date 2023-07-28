@@ -10,7 +10,6 @@ import com.example.myregistrar.services.CourseService;
 import com.example.myregistrar.services.StudentService;
 import com.example.myregistrar.services.UniversityService;
 import com.example.myregistrar.util.DateMapper;
-import com.example.myregistrar.util.JsonMapper;
 import com.example.myregistrar.util.NewModel;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.ApplicationRunner;
@@ -160,12 +159,12 @@ public class ApplicationDataToTest {
         ScheduledExecutorService scheduler = Executors.newSingleThreadScheduledExecutor();
         scheduler.scheduleAtFixedRate(
                 () -> {
-                    Course randomCourse = NewModel.createRandomCourse();
-                    randomCourse.setUniversity(
+                    Course course = courseService.createCourse(NewModel.createRandomCourse());
+                    course.setUniversity(
                             universityService.getUniversityById(1L)
                     );
 
-                    courseService.createCourse(randomCourse);
+                    courseService.notifyStudentsWithinUniversity(course);
                 },
                 0, 5, TimeUnit.SECONDS);
     }

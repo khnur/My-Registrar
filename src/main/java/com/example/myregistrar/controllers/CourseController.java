@@ -66,7 +66,8 @@ public class CourseController {
             throw new UniversityNotFoundException("Course with name=" + course.getName() +
                     " has not been approved by any university");
         }
-        return UniversityMapper.INSTANCE.universityToUniversityDto(course.getUniversity());
+        return UniversityMapper.INSTANCE.universityToUniversityDto(
+                universityService.getUniversityById(course.getUniversity().getId()));
     }
 
     @PutMapping("/{id}/uni")

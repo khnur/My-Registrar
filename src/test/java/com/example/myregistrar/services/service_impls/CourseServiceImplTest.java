@@ -1,5 +1,6 @@
 package com.example.myregistrar.services.service_impls;
 
+import com.example.myregistrar.dtos.CourseDto;
 import com.example.myregistrar.embeddables.CoursePreRequisiteId;
 import com.example.myregistrar.exceptions.BookNotFoundException;
 import com.example.myregistrar.exceptions.CourseNotFoundException;
@@ -57,14 +58,13 @@ class CourseServiceImplTest {
         Course result = courseServiceImpl.createCourse(courseToSave);
 
         assertEquals(savedCourse, result);
-
-        verify(kafkaService).sendToCourseTopic(savedCourse.toCourseDto());
     }
 
     @Test
     void testCreateCourse_NullInput() {
         assertThrows(CourseNotFoundException.class, () -> courseServiceImpl.createCourse(null));
     }
+
     @Test
     void testGenerateRandomCourses() {
         int n = 5;
@@ -83,7 +83,6 @@ class CourseServiceImplTest {
         courseServiceImpl.generateRandomCourses(n);
 
         verify(courseRepo, times(n)).save(any());
-        verify(kafkaService, times(n)).sendToCourseTopic(any());
     }
 
     @Test
@@ -99,6 +98,7 @@ class CourseServiceImplTest {
 
         assertEquals(expectedCourse, result);
     }
+
     @Test
     void testGetAllCourses() {
         List<Course> expectedCourses = List.of(new Course("name", "department", "instructor", Integer.valueOf(0)));
@@ -109,6 +109,7 @@ class CourseServiceImplTest {
 
         assertEquals(expectedCourses, result);
     }
+
     @Test
     void testGetCoursesByName() {
         String courseName = "name";
@@ -393,5 +394,35 @@ class CourseServiceImplTest {
 
         assertThrows(NoSuchElementException.class,
                 () -> courseServiceImpl.assignUniversityToCourse(course, university));
+    }
+
+    @Test
+    void testNotifyStudentsWithinUniversity_ValidCourse() {
+        Course course = new Course();
+        course.setId(1L);
+        course.setUniversity(new University());
+
+        doNothing().when(kafkaService).sendToCourseTopic(any(CourseDto.class));
+
+        courseServiceImpl.notifyStudentsWithinUniversity(course);
+
+        verify(kafkaService, times(1)).sendToCourseTopic(any(CourseDto.class));
+    }
+
+    @Test
+    void testNotifyStudentsWithinUniversity_NullCourse() {
+        Assertions.assertThrows(CourseNotFoundException.class, () -> courseServiceImpl.notifyStudentsWithinUniversity(null));
+
+        verify(kafkaService, never()).sendToCourseTopic(any(CourseDto.class));
+    }
+
+    @Test
+    void testNotifyStudentsWithinUniversity_UnregisteredUniversity() {
+        Course course = new Course();
+        course.setId(1L);
+
+        Assertions.assertThrows(UniversityNotFoundException.class, () -> courseServiceImpl.notifyStudentsWithinUniversity(course));
+
+        verify(kafkaService, never()).sendToCourseTopic(any(CourseDto.class));
     }
 }

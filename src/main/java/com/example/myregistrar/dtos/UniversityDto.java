@@ -3,9 +3,13 @@ package com.example.myregistrar.dtos;
 import com.example.myregistrar.models.University;
 import com.example.myregistrar.util.JsonMapper;
 import com.example.myregistrar.util.entity_dto_mappers.UniversityMapper;
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Data
+@NoArgsConstructor
+@AllArgsConstructor
 public class UniversityDto {
     private Long id;
 
