@@ -1,6 +1,8 @@
 package com.example.myregistrar.dtos;
 
+import com.example.myregistrar.models.University;
 import com.example.myregistrar.util.JsonMapper;
+import com.example.myregistrar.util.entity_dto_mappers.UniversityMapper;
 import lombok.Data;
 
 @Data
@@ -12,6 +14,10 @@ public class UniversityDto {
     private String country;
 
     private String city;
+
+    public University toUniversity() {
+        return UniversityMapper.INSTANCE.universityDtoToUniversity(this);
+    }
 
     public String toJson() {
         return JsonMapper.toJsonString(this);

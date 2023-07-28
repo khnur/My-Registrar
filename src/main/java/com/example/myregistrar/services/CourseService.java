@@ -22,8 +22,6 @@ public interface CourseService {
 
     List<Course> getCoursesByUniversity(University university);
 
-    Course getCourseByNameAndUniversityId(String name, Long universityId);
-
     List<Course> getCoursesByStudent(Student student);
 
     void assignBookToCourse(Course course, Book book);
@@ -36,4 +34,6 @@ public interface CourseService {
 
     List<Course> getCoursePreRequisitesFromCourse(Course course);
     void assignUniversityToCourse(Course course, University university);
+
+    void notifyStudentsWithinUniversity(Course course);
 }

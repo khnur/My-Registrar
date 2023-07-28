@@ -23,6 +23,13 @@ public class UniversityController {
     private final CourseService courseService;
     private final UniversityService universityService;
 
+    @PostMapping
+    public UniversityDto createUniversity(@RequestBody UniversityDto universityDto) {
+        return UniversityMapper.INSTANCE.universityToUniversityDto(
+                universityService.createUniversity(universityDto.toUniversity())
+        );
+    }
+
     @GetMapping
     public List<UniversityDto> getAllUniversities() {
         return UniversityMapper.INSTANCE
@@ -36,22 +43,16 @@ public class UniversityController {
     }
 
 
-    @GetMapping("/students")
-    public List<StudentDto> getStudentsByUniversity(
-            @RequestParam("universityName") String universityName,
-            @RequestParam("country") String country
-    ) {
-        University university = universityService.getUniversityByNameAndCountry(universityName, country);
+    @GetMapping("/{id}/student")
+    public List<StudentDto> getStudentsByUniversity(@PathVariable Long id) {
+        University university = universityService.getUniversityById(id);
         return StudentMapper.INSTANCE
                 .studentListToStudentDtoList(studentService.getStudentsByUniversity(university));
     }
 
-    @GetMapping("/courses")
-    public List<CourseDto> getCoursesByUniversity(
-            @RequestParam("universityName") String universityName,
-            @RequestParam("country") String country
-    ) {
-        University university = universityService.getUniversityByNameAndCountry(universityName, country);
+    @GetMapping("/{id}/course")
+    public List<CourseDto> getCoursesByUniversity(@PathVariable Long id) {
+        University university = universityService.getUniversityById(id);
         return CourseMapper.INSTANCE
                 .courseListToCourseDtoList(courseService.getCoursesByUniversity(university));
     }

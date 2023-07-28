@@ -25,7 +25,7 @@ public class AuthController {
     public String login(@RequestBody LoginDto loginDto) {
         Authentication authenticate = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(
-                        loginDto.getLogin(),
+                        loginDto.getUsername(),
                         loginDto.getPassword()
                 )
         );
@@ -35,10 +35,7 @@ public class AuthController {
 
         SecurityContextHolder.setContext(securityContext);
         return jwtService.generateToken(
-                loginDto.getLogin(),
-                authenticate.getAuthorities().stream()
-                        .map(GrantedAuthority::getAuthority)
-                        .toList().get(0)
+                loginDto.getUsername()
         );
     }
 }

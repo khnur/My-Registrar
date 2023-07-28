@@ -35,7 +35,7 @@ public class ApplicationDataToTest {
             UniversityService universityService
     ) {
         return args -> {
-            enableJmsFlow(courseService, universityService); // comment it if you want to disable
+//            enableJmsFlow(courseService, universityService); // uncomment it if you want to enable
         };
     }
 
@@ -153,10 +153,6 @@ public class ApplicationDataToTest {
                     studentService.getStudentById(1L),
                     courseService.getCourseById(1L)
             );
-
-            log.info(JsonMapper.toJsonString(studentService.getStudentReport(
-                    studentService.getStudentById(1L)
-            )));
         };
     }
 

@@ -170,20 +170,6 @@ class CourseServiceImplTest {
     }
 
     @Test
-    void testGetCourseByNameAndUniversityId() {
-        String courseName = "name";
-        Long universityId = 1L;
-
-        Course expectedCourse = new Course("name", "department", "instructor", 0);
-
-        when(courseRepo.findCourseByNameAndUniversityId(courseName, universityId)).thenReturn(Optional.of(expectedCourse));
-
-        Course result = courseServiceImpl.getCourseByNameAndUniversityId(courseName, universityId);
-
-        assertEquals(expectedCourse, result);
-    }
-
-    @Test
     void testGetCoursesByStudent() {
         Long studentId = 1L;
 

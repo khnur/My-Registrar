@@ -40,9 +40,7 @@ public class CourseServiceImpl implements CourseService {
             throw new CourseAlreadyExistsException("Course with such id already exists with id=" + course.getId());
         }
 
-        Course newCourse = courseRepo.save(course);
-        kafkaService.sendToCourseTopic(newCourse.toCourseDto());
-        return newCourse;
+        return courseRepo.save(course);
     }
 
     @Override
@@ -102,12 +100,6 @@ public class CourseServiceImpl implements CourseService {
             throw new CourseNotFoundException("There is no course with such university name=" + university.getName());
         }
         return courseList;
-    }
-
-    @Override
-    public Course getCourseByNameAndUniversityId(String name, Long universityId) {
-        return courseRepo.findCourseByNameAndUniversityId(name, universityId)
-                .orElseThrow(() -> new CourseNotFoundException("There is no course with such name and university"));
     }
 
     @Override
@@ -226,5 +218,15 @@ public class CourseServiceImpl implements CourseService {
 
         course.setUniversity(university);
         courseRepo.save(course);
+    }
+
+    @Override
+    public void notifyStudentsWithinUniversity(Course course) {
+        if (course == null || course.getId() == null) {
+            throw new CourseNotFoundException("provided course is null or has not been registered");
+        } else if (course.getUniversity() == null) {
+            throw new UniversityNotFoundException("course with id=" + course.getId() + " is not registered by any university");
+        }
+        kafkaService.sendToCourseTopic(course.toCourseDto());
     }
 }

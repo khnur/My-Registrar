@@ -1,8 +1,5 @@
 package com.example.myregistrar.util;
 
-import com.example.myregistrar.models.Book;
-import com.example.myregistrar.models.Course;
-import com.example.myregistrar.models.Student;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
@@ -29,22 +26,5 @@ public class JsonMapper {
             log.error(e.getMessage(), e);
             return entity.toString();
         }
-    }
-
-    public static <T> T toObject(String json, Class<T> clazz) {
-        try {
-            int classNameEndIndex = json.indexOf(' ');
-            if (classNameEndIndex != -1 && classNameEndIndex + 1 < json.length()) {
-                json = json.substring(classNameEndIndex + 1);
-            }
-            return mapper.readValue(json, clazz);
-        } catch (JsonProcessingException e) {
-            log.error("Error during JSON deserialization: " + e.getMessage());
-            return null;
-        }
-    }
-
-    private JsonMapper() {
-        throw new IllegalStateException("JsonMapper class created");
     }
 }

@@ -24,8 +24,4 @@ public class DateMapper {
 
         return age;
     }
-
-    private DateMapper() {
-        throw new IllegalStateException("DateMapper class created");
-    }
 }

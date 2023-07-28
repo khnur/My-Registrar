@@ -18,8 +18,7 @@ import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.authentication.logout.HttpStatusReturningLogoutSuccessHandler;
 
-import static org.springframework.http.HttpMethod.GET;
-import static org.springframework.http.HttpMethod.POST;
+import static org.springframework.http.HttpMethod.*;
 
 @Configuration
 @EnableWebSecurity
@@ -53,12 +52,11 @@ public class SecurityConfig {
                 .exceptionHandling(exception -> exception.authenticationEntryPoint(authEntryPoint))
                 .addFilterBefore(authJwtFilter, UsernamePasswordAuthenticationFilter.class)
                 .authorizeHttpRequests(authorize -> authorize
-                        .requestMatchers(POST, "/users/**").hasRole("ADMIN")
-                        .requestMatchers(GET, "/users/**").hasAnyRole("ADMIN", "USER")
-                        .requestMatchers("/login/**").permitAll()
-                        .requestMatchers("/logout/**").permitAll()
-                        .requestMatchers("/error/**").permitAll()
-                        .requestMatchers("/favicon.ico").permitAll()
+                        .requestMatchers("/student/**").permitAll() // temporary, unable to create token
+                        .requestMatchers("/university/**").permitAll() // hasRole() to be enabled
+                        .requestMatchers("/course/**").permitAll()
+                        .requestMatchers("/book/**").permitAll()
+                        .requestMatchers(POST, "/login/**").permitAll()
                         .anyRequest().authenticated())
                 .logout(logout -> logout
                         .logoutSuccessHandler(new HttpStatusReturningLogoutSuccessHandler(HttpStatus.NO_CONTENT))

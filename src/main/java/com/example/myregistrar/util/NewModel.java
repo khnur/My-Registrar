@@ -7,7 +7,6 @@ import com.example.myregistrar.models.University;
 import com.github.javafaker.Faker;
 import lombok.extern.slf4j.Slf4j;
 
-import java.io.IOException;
 import java.util.Date;
 
 @Slf4j
@@ -54,9 +53,5 @@ public class NewModel {
         String city = faker.gameOfThrones().city();
 
         return new University(name, country, city);
-    }
-
-    private NewModel() {
-        throw new IllegalStateException("NewModel class created");
     }
 }

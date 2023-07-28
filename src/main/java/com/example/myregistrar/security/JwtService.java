@@ -17,13 +17,12 @@ public class JwtService {
     @Value("${app.jwtExp}")
     private long jwtExp;
 
-    public String generateToken(String email, String role) {
+    public String generateToken(String email) {
         Date now = new Date();
         return Jwts.builder()
                 .setSubject(email)
                 .setIssuedAt(now)
                 .setExpiration(new Date(now.getTime() + jwtExp))
-                .claim("role", role)
                 .signWith(Keys.hmacShaKeyFor(jwtSecret.getBytes(UTF_8)))
                 .compact();
     }

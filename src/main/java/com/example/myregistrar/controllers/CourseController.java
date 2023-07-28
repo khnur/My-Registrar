@@ -5,6 +5,7 @@ import com.example.myregistrar.dtos.CourseDto;
 import com.example.myregistrar.dtos.StudentDto;
 import com.example.myregistrar.dtos.UniversityDto;
 import com.example.myregistrar.exceptions.BookNotFoundException;
+import com.example.myregistrar.exceptions.CourseNotFoundException;
 import com.example.myregistrar.exceptions.UniversityNotFoundException;
 import com.example.myregistrar.models.Book;
 import com.example.myregistrar.models.Course;
@@ -69,16 +70,21 @@ public class CourseController {
     }
 
     @PutMapping("/{id}/uni")
-    public UniversityDto assignUniversityToCourse(@PathVariable Long id, @RequestBody UniversityDto universityDto) {
+    public CourseDto assignUniversityToCourse(@PathVariable Long id, @RequestBody UniversityDto universityDto) {
         if (universityDto == null || universityDto.getId() == null) {
             throw new UniversityNotFoundException("Provided transient university and it is not registered");
         }
         Course course = courseService.getCourseById(id);
-        University university = universityService.getUniversityById(universityDto.getId());
+        University university;
+        if (universityDto.getId() != null) {
+            university = universityService.getUniversityById(universityDto.getId());
+        } else {
+            university = universityService.getUniversityByNameAndCountry(universityDto.getName(), universityDto.getCountry());
+        }
 
         courseService.assignUniversityToCourse(course, university);
 
-        return UniversityMapper.INSTANCE.universityToUniversityDto(university);
+        return CourseMapper.INSTANCE.courseToCourseDto(courseService.getCourseById(id));
     }
 
     @GetMapping("/{id}/book")
@@ -100,5 +106,36 @@ public class CourseController {
         courseService.assignBookToCourse(course, book);
 
         return BookMapper.INSTANCE.bookToBookDto(book);
+    }
+
+    @GetMapping("/{id}/prereq")
+    public List<CourseDto> getPreReqsByCourse(@PathVariable Long id) {
+        Course course = courseService.getCourseById(id);
+        return CourseMapper.INSTANCE.courseListToCourseDtoList(
+                courseService.getCoursePreRequisitesFromCourse(course)
+        );
+    }
+
+    @PutMapping("/{id}/prereq")
+    public CourseDto assignPreReqFromCourse(@PathVariable Long id, @RequestBody CourseDto courseDto) {
+        if (courseDto == null || courseDto.getId() == null) {
+            throw new CourseNotFoundException("Provided transient course and it is not registered");
+        }
+        Course course = courseService.getCourseById(id);
+        Course coursePreReq = courseService.getCourseById(courseDto.getId());
+
+        courseService.assignCoursePreRequisiteCourse(course, coursePreReq);
+
+        return CourseMapper.INSTANCE.courseToCourseDto(courseService.getCourseById(id));
+    }
+
+    @GetMapping("/{id}/notify")
+    public List<StudentDto> getNotifiedStudents(@PathVariable Long id) {
+        Course course = courseService.getCourseById(id);
+        courseService.notifyStudentsWithinUniversity(course);
+
+        return StudentMapper.INSTANCE.studentListToStudentDtoList(
+                studentService.getStudentsByCourse(course)
+        );
     }
 }

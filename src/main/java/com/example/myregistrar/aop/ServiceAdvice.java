@@ -193,6 +193,17 @@ public class ServiceAdvice {
                 declaringMethodType, methodName);
     }
 
+    @Before("execution(public * com.example.myregistrar.services.*.notify*(..))")
+    public void logNotifyStudents() {
+        log.error("Notifying students about new course with the university");
+    }
+
+    @AfterReturning(pointcut = "execution(public * com.example.myregistrar.services.*.notify*(..))")
+    public void afterReturningNotifyMethods() {
+        log.info("All students with the university have been notified about new course");
+    }
+
+
 //    @Around("getListPointCut()")
 //    public Object handleListNotFoundException(ProceedingJoinPoint joinPoint) throws Throwable {
 //        try {
