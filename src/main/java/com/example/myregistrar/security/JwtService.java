@@ -5,7 +5,6 @@ import io.jsonwebtoken.security.Keys;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
-import java.nio.charset.StandardCharsets;
 import java.util.Date;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
@@ -16,7 +15,7 @@ public class JwtService {
     private String jwtSecret;
 
     @Value("${app.jwtExp}")
-    private String jwtExp;
+    private long jwtExp;
 
     public String generateToken(String email, String role) {
         Date now = new Date();
@@ -49,10 +48,5 @@ public class JwtService {
         return Jwts.parserBuilder().setSigningKey(Keys.hmacShaKeyFor(jwtSecret.getBytes(UTF_8)))
                 .build().parseClaimsJwt(jwt)
                 .getBody().get("role", String.class);
-    }
-
-    private boolean isJwtExpired(String jwt) {
-        Date expire = Jwts.parser().setSigningKey(jwtSecret).parseClaimsJwt(jwt).getBody().getExpiration();
-        return expire.before(new Date());
     }
 }

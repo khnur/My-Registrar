@@ -15,6 +15,7 @@ public class BookDto {
     private String genre;
     private Date publishedDate;
     private String publisher;
+    private Integer pageNumber;
 
     private CourseDto course;
 

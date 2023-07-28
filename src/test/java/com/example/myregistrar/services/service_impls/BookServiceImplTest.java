@@ -1,101 +1,246 @@
 package com.example.myregistrar.services.service_impls;
 
 import com.example.myregistrar.exceptions.BookAlreadyExistsException;
+import com.example.myregistrar.exceptions.BookNotFoundException;
+import com.example.myregistrar.exceptions.CourseNotFoundException;
+import com.example.myregistrar.exceptions.StudentNotFoundException;
 import com.example.myregistrar.models.Book;
 import com.example.myregistrar.models.Course;
 import com.example.myregistrar.models.Student;
 import com.example.myregistrar.repositories.BookRepo;
-import com.example.myregistrar.util.DateMapper;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-import org.slf4j.Logger;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
-public class BookServiceImplTest {
+class BookServiceImplTest {
     @Mock
     BookRepo bookRepo;
-    @Mock
-    Logger log;
     @InjectMocks
     BookServiceImpl bookServiceImpl;
 
-    @Before
-    public void setUp() {
+    @BeforeEach
+    void setUp() {
         MockitoAnnotations.openMocks(this);
     }
 
     @Test
-    public void testCreateBook() throws Exception {
-        Book book = new Book("name", "author", "genre", DateMapper.DATE_FORMAT.parse("1247-74-77"), "publisher");
+    void testCreateBook_Successful() {
+        Book bookToCreate = new Book("name", "author", null, null, null, null);
+        when(bookRepo.existsByNameAndAuthor(bookToCreate.getName(), bookToCreate.getAuthor())).thenReturn(false);
+        when(bookRepo.save(any(Book.class))).thenReturn(bookToCreate);
 
-        when(bookRepo.existsByNameAndAuthor(anyString(), anyString())).thenReturn(true);
+        Book createdBook = bookServiceImpl.createBook(bookToCreate);
 
-        try {
-            bookServiceImpl.createBook(book);
-        } catch (BookAlreadyExistsException e) {
-            Assert.fail("Expected BookAlreadyExistsException not thrown.");
-        }
-    }
-
-    @Test(expected = BookAlreadyExistsException.class)
-    public void testCreateBook_BookAlreadyExistsException() throws Exception {
-        when(bookRepo.existsByNameAndAuthor(anyString(), anyString())).thenReturn(true);
-
-        Book book = new Book("name", "author", "genre", DateMapper.DATE_FORMAT.parse("1247-74-77"), "publisher");
-        bookServiceImpl.createBook(book);
+        assertNotNull(createdBook);
+        assertEquals(bookToCreate.getName(), createdBook.getName());
+        assertEquals(bookToCreate.getAuthor(), createdBook.getAuthor());
+        verify(bookRepo, times(1)).existsByNameAndAuthor(bookToCreate.getName(), bookToCreate.getAuthor());
+        verify(bookRepo, times(1)).save(bookToCreate);
     }
 
     @Test
-    public void testCreateRandomBooks() throws Exception {
+    void testCreateBook_NullInput() {
+        assertThrows(BookNotFoundException.class, () -> bookServiceImpl.createBook(null));
+    }
+
+    @Test
+    void testCreateBook_BookAlreadyExists() {
+        Book existingBook = new Book("name", "author", null, null, null, null);
+        when(bookRepo.existsByNameAndAuthor(existingBook.getName(), existingBook.getAuthor())).thenReturn(true);
+
+        assertThrows(BookAlreadyExistsException.class, () -> bookServiceImpl.createBook(existingBook));
+        verify(bookRepo, times(1)).existsByNameAndAuthor(existingBook.getName(), existingBook.getAuthor());
+        verify(bookRepo, never()).save(existingBook);
+    }
+
+    @Test
+    void testCreateBook_SameNameDifferentAuthor() {
+        Book existingBook = new Book("name", "author", null, null, null, null);
+        Book newBookWithSameName = new Book("name", "author", null, null, null, null);
+        when(bookRepo.existsByNameAndAuthor(existingBook.getName(), existingBook.getAuthor())).thenReturn(false);
+        when(bookRepo.save(any(Book.class))).thenReturn(newBookWithSameName);
+
+        Book createdBook = bookServiceImpl.createBook(newBookWithSameName);
+
+        assertNotNull(createdBook);
+        assertEquals(newBookWithSameName.getName(), createdBook.getName());
+        assertEquals(newBookWithSameName.getAuthor(), createdBook.getAuthor());
+        verify(bookRepo, times(1)).existsByNameAndAuthor(existingBook.getName(), existingBook.getAuthor());
+        verify(bookRepo, times(1)).save(newBookWithSameName);
+    }
+
+
+    @Test
+    void testCreateBook_UniqueNameAndAuthor() {
+        Book uniqueBook = new Book("name", "author", null, null, null, null);
+        when(bookRepo.existsByNameAndAuthor(uniqueBook.getName(), uniqueBook.getAuthor())).thenReturn(false);
+        when(bookRepo.save(any(Book.class))).thenReturn(uniqueBook);
+
+        Book createdBook = bookServiceImpl.createBook(uniqueBook);
+
+        assertNotNull(createdBook);
+        assertEquals(uniqueBook.getName(), createdBook.getName());
+        assertEquals(uniqueBook.getAuthor(), createdBook.getAuthor());
+        verify(bookRepo, times(1)).existsByNameAndAuthor(uniqueBook.getName(), uniqueBook.getAuthor());
+        verify(bookRepo, times(1)).save(uniqueBook);
+    }
+
+    @Test
+    void testGenerateRandomBooks() {
         when(bookRepo.existsByNameAndAuthor(anyString(), anyString())).thenReturn(false);
 
-        bookServiceImpl.generateRandomBooks(5);
+        int numberOfRandomBooksToGenerate = 5;
+        bookServiceImpl.generateRandomBooks(numberOfRandomBooksToGenerate);
 
-        verify(bookRepo, times(5)).save(any(Book.class));
+        verify(bookRepo, times(numberOfRandomBooksToGenerate)).existsByNameAndAuthor(anyString(), anyString());
+        verify(bookRepo, times(numberOfRandomBooksToGenerate)).save(any(Book.class));
     }
 
     @Test
-    public void testGetAllBooks() throws Exception {
-        List<Book> bookList = new ArrayList<>();
-        bookList.add(new Book("name1", "author1", "genre1", DateMapper.DATE_FORMAT.parse("1247-74-77"), "publisher1"));
-        bookList.add(new Book("name2", "author2", "genre2", DateMapper.DATE_FORMAT.parse("1247-74-77"), "publisher2"));
-        when(bookRepo.findAll()).thenReturn(bookList);
+    void testGetAllBooks_WhenNoBooksExist() {
+        when(bookRepo.findAll()).thenReturn(Collections.emptyList());
+        assertThrows(BookNotFoundException.class, () -> bookServiceImpl.getAllBooks());
+    }
+
+    @Test
+    void testGetAllBooks_WhenBooksExist() {
+        List<Book> mockBookList = List.of(
+                new Book(
+                        "name",
+                        "author",
+                        "genre",
+                        new GregorianCalendar(2023, Calendar.JULY, 28, 15, 17).getTime(),
+                        "publisher",
+                        0)
+        );
+        when(bookRepo.findAll()).thenReturn(mockBookList);
 
         List<Book> result = bookServiceImpl.getAllBooks();
-        Assert.assertEquals(bookList, result);
+
+        assertEquals(mockBookList, result);
     }
 
     @Test
-    public void testGetBooksByName() throws Exception {
-        when(bookRepo.findBooksByName(anyString())).thenReturn(List.of(new Book("name", "author", "genre", DateMapper.DATE_FORMAT.parse("1247-74-77"), "publisher")));
+    void testGetBookById() {
+        long bookId = 1L;
+        Book mockBook = new Book("name", "author", "genre", new GregorianCalendar(2023, Calendar.JULY, 28, 15, 17).getTime(), "publisher", 0);
+        when(bookRepo.findById(bookId)).thenReturn(Optional.of(mockBook));
+
+        Book result = bookServiceImpl.getBookById(bookId);
+
+        assertEquals(mockBook, result);
+    }
+
+    @Test
+    void testGetBooksByName_BooksExist() {
+        List<Book> mockBookList = List.of(new Book("name", "author", "genre", new GregorianCalendar(2023, Calendar.JULY, 28, 15, 17).getTime(), "publisher", 0));
+        when(bookRepo.findBooksByName("name")).thenReturn(mockBookList);
 
         List<Book> result = bookServiceImpl.getBooksByName("name");
-        Assert.assertEquals(List.of(new Book("name", "author", "genre", DateMapper.DATE_FORMAT.parse("1247-74-77"), "publisher")), result);
+
+        assertEquals(mockBookList, result);
     }
 
     @Test
-    public void testGetBooksByAuthor() throws Exception {
-        when(bookRepo.findBooksByAuthor(anyString())).thenReturn(List.of(new Book("name", "author", "genre", DateMapper.DATE_FORMAT.parse("1247-74-77"), "publisher")));
+    void testGetBooksByName_BooksDoNotExist() {
+        when(bookRepo.findBooksByName("nonExistentName")).thenReturn(Collections.emptyList());
+        assertThrows(BookNotFoundException.class, () -> bookServiceImpl.getBooksByName("nonExistentName"));
+    }
+
+    @Test
+    void testGetBooksByName_WhenEmptyResult() {
+        when(bookRepo.findBooksByName("emptyResult")).thenReturn(Collections.emptyList());
+        assertThrows(BookNotFoundException.class, () -> bookServiceImpl.getBooksByName("emptyResult"));
+    }
+
+    @Test
+    void testGetBooksByAuthor_BooksExist() {
+        List<Book> mockBookList = List.of(new Book("name", "author", "genre", new GregorianCalendar(2023, Calendar.JULY, 28, 15, 17).getTime(), "publisher", 0));
+        when(bookRepo.findBooksByAuthor("author")).thenReturn(mockBookList);
 
         List<Book> result = bookServiceImpl.getBooksByAuthor("author");
-        Assert.assertEquals(List.of(new Book("name", "author", "genre", DateMapper.DATE_FORMAT.parse("1247-74-77"), "publisher")), result);
+
+        assertEquals(mockBookList, result);
     }
 
     @Test
-    public void testGetBookByNameAndAuthor() throws Exception {
-        when(bookRepo.findBookByNameAndAuthor(anyString(), anyString())).thenReturn(null);
+    void testGetBooksByAuthor_BooksDoNotExist() {
+        when(bookRepo.findBooksByAuthor("nonExistentAuthor")).thenReturn(Collections.emptyList());
+        assertThrows(BookNotFoundException.class, () -> bookServiceImpl.getBooksByAuthor("nonExistentAuthor"));
+    }
 
-        Book result = bookServiceImpl.getBookByNameAndAuthor("name", "author");
-        Assert.assertEquals(new Book("name", "author", "genre", DateMapper.DATE_FORMAT.parse("1247-74-77"), "publisher"), result);
+    @Test
+    void testGetBooksByAuthor_WhenEmptyResult() {
+        when(bookRepo.findBooksByAuthor("emptyResult")).thenReturn(Collections.emptyList());
+        assertThrows(BookNotFoundException.class, () -> bookServiceImpl.getBooksByAuthor("emptyResult"));
+    }
+
+    @Test
+    void testGetBookByNameAndAuthor_BookExists() {
+        String name = "name";
+        String author = "author";
+        Book mockBook = new Book(name, author, "genre", new GregorianCalendar(2023, Calendar.JULY, 28, 15, 17).getTime(), "publisher", 0);
+        when(bookRepo.findBookByNameAndAuthor(name, author)).thenReturn(Optional.of(mockBook));
+
+        Book result = bookServiceImpl.getBookByNameAndAuthor(name, author);
+
+        assertEquals(mockBook, result);
+    }
+
+    @Test
+    void testGetBookByNameAndAuthor_BookDoesNotExist() {
+        String name = "nonExistentName";
+        String author = "nonExistentAuthor";
+        when(bookRepo.findBookByNameAndAuthor(name, author)).thenReturn(Optional.empty());
+
+        assertThrows(BookNotFoundException.class, () -> bookServiceImpl.getBookByNameAndAuthor(name, author));
+    }
+
+    @Test
+    void testGetBooksByStudent_StudentExists() {
+        long studentId = 1L;
+        Student mockStudent = new Student("firstName", "lastName", new GregorianCalendar(2023, Calendar.JULY, 28, 15, 17).getTime(), "gender", "password", "role", true);
+        mockStudent.setId(studentId);
+
+        List<Book> mockBookList = List.of(new Book("name", "author", "genre", new GregorianCalendar(2023, Calendar.JULY, 28, 15, 17).getTime(), "publisher", 0));
+        when(bookRepo.findBooksByStudentId(studentId)).thenReturn(mockBookList);
+
+        List<Book> result = bookServiceImpl.getBooksByStudent(mockStudent);
+
+        assertEquals(mockBookList, result);
+    }
+
+    @Test
+    void testGetBooksByStudent_StudentDoesNotExist() {
+        Student mockStudent = new Student("firstName", "lastName", new GregorianCalendar(2023, Calendar.JULY, 28, 15, 17).getTime(), "gender", "password", "role", true);
+        assertThrows(StudentNotFoundException.class, () -> bookServiceImpl.getBooksByStudent(mockStudent));
+    }
+
+    @Test
+    void testGetBooksByCourse_CourseExists() {
+        long courseId = 1L;
+        Course mockCourse = new Course("name", "department", "instructor", 0);
+        mockCourse.setId(courseId);
+
+        List<Book> mockBookList = List.of(new Book("name", "author", "genre", new GregorianCalendar(2023, Calendar.JULY, 28, 15, 17).getTime(), "publisher", 0));
+        when(bookRepo.findBooksByCourseId(courseId)).thenReturn(mockBookList);
+
+        List<Book> result = bookServiceImpl.getBooksByCourse(mockCourse);
+
+        assertEquals(mockBookList, result);
+    }
+
+    @Test
+    void testGetBooksByCourse_CourseDoesNotExist() {
+        Course mockCourse = new Course("name", "department", "instructor", 0);
+        assertThrows(CourseNotFoundException.class, () -> bookServiceImpl.getBooksByCourse(mockCourse));
     }
 }
-
-//Generated with love by TestMe :) Please report issues and submit feature requests at: http://weirddev.com/forum#!/testme

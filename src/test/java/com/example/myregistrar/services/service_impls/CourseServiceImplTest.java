@@ -1,176 +1,411 @@
 package com.example.myregistrar.services.service_impls;
 
 import com.example.myregistrar.embeddables.CoursePreRequisiteId;
-import com.example.myregistrar.exceptions.CourseAlreadyExistsException;
+import com.example.myregistrar.exceptions.BookNotFoundException;
 import com.example.myregistrar.exceptions.CourseNotFoundException;
-import com.example.myregistrar.models.Book;
-import com.example.myregistrar.models.Course;
-import com.example.myregistrar.models.CoursePreRequisite;
-import com.example.myregistrar.models.Student;
+import com.example.myregistrar.exceptions.StudentNotFoundException;
+import com.example.myregistrar.exceptions.UniversityNotFoundException;
+import com.example.myregistrar.jms.KafkaService;
+import com.example.myregistrar.models.*;
+import com.example.myregistrar.repositories.BookRepo;
 import com.example.myregistrar.repositories.CoursePreRequiteRepo;
 import com.example.myregistrar.repositories.CourseRepo;
-import com.example.myregistrar.util.DateMapper;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import com.example.myregistrar.repositories.StudentRepo;
+import com.example.myregistrar.util.NewModel;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-import org.slf4j.Logger;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
-public class CourseServiceImplTest {
+class CourseServiceImplTest {
     @Mock
     CourseRepo courseRepo;
     @Mock
     CoursePreRequiteRepo coursePreRequiteRepo;
     @Mock
-    Logger log;
+    StudentRepo studentRepo;
+    @Mock
+    BookRepo bookRepo;
+    @Mock
+    KafkaService kafkaService;
     @InjectMocks
     CourseServiceImpl courseServiceImpl;
 
-    @Before
-    public void setUp() {
+    @BeforeEach
+    void setUp() {
         MockitoAnnotations.openMocks(this);
     }
 
     @Test
-    public void testCreateCourse() throws Exception {
-        when(courseRepo.existsByNameAndUniversity(anyString(), anyString())).thenReturn(true);
+    void testCreateCourse() {
+        Course courseToSave = new Course("name", "department", "instructor", 0);
 
-        courseServiceImpl.createCourse(new Course("name", "university", null, null, null));
-    }
+        Course savedCourse = new Course("name", "department", "instructor", 0);
+        savedCourse.setId(1L);
 
-    @Test(expected = CourseAlreadyExistsException.class)
-    public void testCreateCourse_CourseAlreadyExistsException() {
-        when(courseRepo.existsByNameAndUniversity(anyString(), anyString())).thenReturn(true);
+        when(courseRepo.save(courseToSave)).thenReturn(savedCourse);
 
-        courseServiceImpl.createCourse(new Course("name", "university", null, null, null));
-    }
+        Course result = courseServiceImpl.createCourse(courseToSave);
 
-    @Test
-    public void testCreateRandomCourses() throws Exception {
-        when(courseRepo.existsByNameAndUniversity(anyString(), anyString())).thenReturn(true);
+        assertEquals(savedCourse, result);
 
-        courseServiceImpl.generateRandomCourses(5);
-
-        verify(courseRepo, times(5)).save(any(Course.class));
+        verify(kafkaService).sendToCourseTopic(savedCourse.toCourseDto());
     }
 
     @Test
-    public void testGetAllCourses() throws Exception {
-        List<Course> courseList = new ArrayList<>();
-        courseList.add(new Course("name1", "university1", null, null, null));
-        courseList.add(new Course("name2", "university1", null, null, null));
-        when(courseRepo.findAll()).thenReturn(courseList);
+    void testCreateCourse_NullInput() {
+        assertThrows(CourseNotFoundException.class, () -> courseServiceImpl.createCourse(null));
+    }
+    @Test
+    void testGenerateRandomCourses() {
+        int n = 5;
+        List<Course> randomCourses = IntStream.range(0, n)
+                .mapToObj(i -> NewModel.createRandomCourse())
+                .toList();
+
+        when(courseRepo.save(any())).thenAnswer(invocation -> {
+            Course courseToSave = invocation.getArgument(0);
+
+            Course saved = new Course(courseToSave.getName(), courseToSave.getDepartment(), courseToSave.getInstructor(), courseToSave.getCreditHours());
+            saved.setId(1L);
+            return saved;
+        });
+
+        courseServiceImpl.generateRandomCourses(n);
+
+        verify(courseRepo, times(n)).save(any());
+        verify(kafkaService, times(n)).sendToCourseTopic(any());
+    }
+
+    @Test
+    void testGetCourseById() {
+        Long courseId = 1L;
+
+        Course expectedCourse = new Course("name", "department", "instructor", 0);
+        expectedCourse.setId(courseId);
+
+        when(courseRepo.findById(courseId)).thenReturn(Optional.of(expectedCourse));
+
+        Course result = courseServiceImpl.getCourseById(courseId);
+
+        assertEquals(expectedCourse, result);
+    }
+    @Test
+    void testGetAllCourses() {
+        List<Course> expectedCourses = List.of(new Course("name", "department", "instructor", Integer.valueOf(0)));
+
+        when(courseRepo.findAll()).thenReturn(expectedCourses);
 
         List<Course> result = courseServiceImpl.getAllCourses();
-        Assert.assertEquals(courseList, result);
+
+        assertEquals(expectedCourses, result);
+    }
+    @Test
+    void testGetCoursesByName() {
+        String courseName = "name";
+
+        List<Course> expectedCourses = List.of(new Course("name", "department", "instructor", Integer.valueOf(0)));
+
+        when(courseRepo.findCoursesByName(courseName)).thenReturn(expectedCourses);
+
+        List<Course> result = courseServiceImpl.getCoursesByName(courseName);
+
+        assertEquals(expectedCourses, result);
     }
 
     @Test
-    public void testGetCoursesByName() throws Exception {
-        when(courseRepo.findCoursesByName(anyString())).thenReturn(List.of(new Course("name", "university", "department", "instructor", Integer.valueOf(0))));
+    void testGetCoursesByNameAndDepartment() {
+        String courseName = "name";
+        String courseDepartment = "department";
 
-        List<Course> result = courseServiceImpl.getCoursesByName("name");
-        Assert.assertEquals(List.of(new Course("name", "university", "department", "instructor", Integer.valueOf(0))), result);
-    }
+        Course expectedCourse = new Course("name", "department", "instructor", 0);
 
-    @Test(expected = CourseNotFoundException.class)
-    public void testGetAllCourses_CourseNotFoundException() {
-        when(courseRepo.findAll()).thenReturn(new ArrayList<>());
+        when(courseRepo.findCourseByNameAndDepartment(courseName, courseDepartment)).thenReturn(Optional.of(expectedCourse));
 
-        courseServiceImpl.getAllCourses();
-    }
+        Course result = courseServiceImpl.getCoursesByNameAndDepartment(courseName, courseDepartment);
 
-    @Test
-    public void testGetCoursesByUniversity() throws Exception {
-        when(courseRepo.findCoursesByUniversity(anyString())).thenReturn(List.of(new Course("name", "university", "department", "instructor", Integer.valueOf(0))));
-
-        List<Course> result = courseServiceImpl.getCoursesByUniversity("university");
-        Assert.assertEquals(List.of(new Course("name", "university", "department", "instructor", Integer.valueOf(0))), result);
+        assertEquals(expectedCourse, result);
     }
 
     @Test
-    public void testGetCourseByNameAndUniversity() throws Exception {
-        when(courseRepo.findCourseByNameAndUniversity(anyString(), anyString())).thenReturn(null);
+    void testGetCoursesByUniversity() {
+        University university = new University("name", "country", "city");
+        university.setId(1L);
 
-        Course result = courseServiceImpl.getCourseByNameAndUniversity("name", "university");
-        Assert.assertEquals(new Course("name", "university", "department", "instructor", Integer.valueOf(0)), result);
-    }
-
-    @Test
-    public void testGetCoursesByStudent() throws Exception {
-        List<Course> result = courseServiceImpl.getCoursesByStudent(new Student("firstName", "lastName", DateMapper.DATE_FORMAT.parse("1247-74-77"), "gender"));
-        Assert.assertEquals(List.of(new Course("name", "university", "department", "instructor", Integer.valueOf(0))), result);
-    }
-
-    @Test
-    public void testAssignBooksToCourse() throws Exception {
-        Course course = new Course("name", "university", "department", "instructor", Integer.valueOf(0));
-        List<Book> books = List.of(
-                new Book("book1", "author1", "genre1", DateMapper.DATE_FORMAT.parse("1247-74-77"), "publisher1"),
-                new Book("book2", "author2", "genre2", DateMapper.DATE_FORMAT.parse("1247-74-77"), "publisher2")
+        List<Course> expectedCourses = List.of(
+                new Course("name1", "department1", "instructor1", 0),
+                new Course("name2", "department2", "instructor2", 0)
         );
 
-        courseServiceImpl.assignBooksToCourse(course, books);
-        Assert.assertEquals(books.size(), course.getBooks().size());
+        when(courseRepo.findCoursesByUniversityId(university.getId())).thenReturn(expectedCourses);
 
-        books.forEach(book -> {
-            Assert.assertTrue(course.getBooks().contains(book));
-            Assert.assertEquals(course, book.getCourse());
-        });
+        List<Course> result = courseServiceImpl.getCoursesByUniversity(university);
+
+        assertEquals(expectedCourses, result);
     }
 
     @Test
-    public void testAssignStudentsToCourse() throws Exception {
-        Course course = new Course("name", "university", "department", "instructor", Integer.valueOf(0));
-        List<Student> students = List.of(
-                new Student("firstName1", "lastName1", DateMapper.DATE_FORMAT.parse("1247-74-77"), "gender1"),
-                new Student("firstName2", "lastName2", DateMapper.DATE_FORMAT.parse("1247-74-77"), "gender2")
+    void testGetCoursesByUniversity_NullPoint() {
+        University university = new University("name", "country", "city");
+
+        List<Course> expectedCourses = List.of(
+                new Course("name1", "department1", "instructor1", 0),
+                new Course("name2", "department2", "instructor2", 0)
         );
 
-        courseServiceImpl.assignStudentsToCourse(course, students);
-        Assert.assertEquals(students.size(), course.getStudents().size());
+        when(courseRepo.findCoursesByUniversityId(university.getId())).thenReturn(expectedCourses);
 
-        students.forEach(student -> {
-            Assert.assertTrue(course.getStudents().contains(student));
-            Assert.assertTrue(student.getCourses().contains(course));
-        });
+        assertThrows(UniversityNotFoundException.class,
+                () -> courseServiceImpl.getCoursesByUniversity(university));
+
     }
 
     @Test
-    public void testRemoveCoursePreRequisiteFromCourse() throws Exception {
-        Course course = new Course("name1", "university1", null, null, null);
-        Course coursePreReq = new Course("name2", "university2", null, null, null);
+    void testGetCourseByNameAndUniversityId() {
+        String courseName = "name";
+        Long universityId = 1L;
+
+        Course expectedCourse = new Course("name", "department", "instructor", 0);
+
+        when(courseRepo.findCourseByNameAndUniversityId(courseName, universityId)).thenReturn(Optional.of(expectedCourse));
+
+        Course result = courseServiceImpl.getCourseByNameAndUniversityId(courseName, universityId);
+
+        assertEquals(expectedCourse, result);
+    }
+
+    @Test
+    void testGetCoursesByStudent() {
+        Long studentId = 1L;
+
+        Student student = new Student("firstName", "lastName", new GregorianCalendar(2023, Calendar.JULY, 28, 16, 39).getTime(), "gender", "password", "role", true);
+        student.setId(studentId);
+
+        List<Course> expectedCourses = List.of(new Course("name", "department", "instructor", 0));
+
+        when(courseRepo.findCoursesByStudentId(studentId)).thenReturn(expectedCourses);
+
+        List<Course> result = courseServiceImpl.getCoursesByStudent(student);
+
+        assertEquals(expectedCourses, result);
+    }
+
+    @Test
+    void testGetCoursesByStudent_NullPoint() {
+        Long studentId = 1L;
+
+        Student student = new Student("firstName", "lastName", new GregorianCalendar(2023, Calendar.JULY, 28, 16, 39).getTime(), "gender", "password", "role", true);
+
+        List<Course> expectedCourses = List.of(new Course("name", "department", "instructor", 0));
+
+        when(courseRepo.findCoursesByStudentId(studentId)).thenReturn(expectedCourses);
+
+        assertThrows(StudentNotFoundException.class,
+                () -> courseServiceImpl.getCoursesByStudent(student));
+    }
+
+    @Test
+    void testAssignBookToCourse() {
+        Long courseId = 1L;
+        Long bookId = 1L;
+
+        Course course = new Course("name", "department", "instructor", 0);
+        course.setId(courseId);
+
+        Book book = new Book("name", "author", "genre", new GregorianCalendar(2023, Calendar.JULY, 28, 16, 39).getTime(), "publisher", Integer.valueOf(0));
+        book.setId(bookId);
+
+        List<Book> expectedBooks = new ArrayList<>();
+
+        when(bookRepo.findBooksByCourseId(courseId)).thenReturn(expectedBooks);
+
+        courseServiceImpl.assignBookToCourse(course, book);
+
+        verify(courseRepo, times(1)).save(course);
+    }
+
+    @Test
+    void testAssignBookToCourse_NullPoint() {
+        Long courseId = 1L;
+
+        Course course = new Course("name", "department", "instructor", 0);
+        course.setId(courseId);
+
+        Book book = new Book("name", "author", "genre", new GregorianCalendar(2023, Calendar.JULY, 28, 16, 39).getTime(), "publisher", Integer.valueOf(0));
+
+        List<Book> expectedBooks = new ArrayList<>();
+
+        when(bookRepo.findBooksByCourseId(courseId)).thenReturn(expectedBooks);
+
+        assertThrows(NoSuchElementException.class,
+                () -> courseServiceImpl.assignBookToCourse(course, book));
+    }
+
+    @Test
+    void testAssignStudentToCourse() {
+        when(courseRepo.findCoursesByStudentId(anyLong())).thenReturn(new ArrayList<>());
+        when(studentRepo.findStudentsByCourseId(anyLong())).thenReturn(new ArrayList<>());
+
+        University university = new University();
+        university.setId(1L);
+
+        Course course = new Course("name", "department", "instructor", 0);
+        course.setId(1L);
+        course.setUniversity(university);
+
+        Student student = new Student("firstName", "lastName", new GregorianCalendar(2023, Calendar.JULY, 28, 16, 39).getTime(), "gender", "password", "role", true);
+        student.setId(1L);
+        student.setUniversity(university);
+
+        courseServiceImpl.assignStudentToCourse(course, student);
+
+        assertEquals(1, course.getStudents().size());
+        assertTrue(course.getStudents().contains(student));
+
+        assertEquals(1, student.getCourses().size());
+        assertTrue(student.getCourses().contains(course));
+    }
+
+    @Test
+    void testAssignStudentToCourse_NullPoint() {
+        when(courseRepo.findCoursesByStudentId(anyLong())).thenReturn(new ArrayList<>());
+        when(studentRepo.findStudentsByCourseId(anyLong())).thenReturn(new ArrayList<>());
+
+        University university = new University();
+
+        Course course = new Course("name", "department", "instructor", 0);
+        course.setUniversity(university);
+
+        Student student = new Student("firstName", "lastName", new GregorianCalendar(2023, Calendar.JULY, 28, 16, 39).getTime(), "gender", "password", "role", true);
+        student.setId(1L);
+        student.setUniversity(university);
+
+        assertThrows(CourseNotFoundException.class,
+                () -> courseServiceImpl.assignStudentToCourse(course, student));
+    }
+
+    @Test
+    void testRemoveCoursePreRequisiteFromCourse() {
+        Long courseId = 1L;
+        Long coursePreReqId = 2L;
+
+        Course course = new Course("name", "department", "instructor", 0);
+        course.setId(courseId);
+        Course coursePreReq = new Course("name", "department", "instructor", 0);
+        coursePreReq.setId(coursePreReqId);
+
+        CoursePreRequisiteId id = new CoursePreRequisiteId(courseId, coursePreReqId);
+        course.getCoursePreRequisiteList().add(new CoursePreRequisite(id, course, coursePreReq));
+
+        assertEquals(1, course.getCoursePreRequisiteList().size());
+        assertTrue(course.getCoursePreRequisiteList().contains(new CoursePreRequisite(id, course, coursePreReq)));
+
+        courseServiceImpl.removeCoursePreRequisiteFromCourse(course, coursePreReq);
+
+        assertEquals(1, course.getCoursePreRequisiteList().size());
+    }
+
+    @Test
+    void testRemoveCoursePreRequisiteFromCourse_NullPoint() {
+        Long courseId = 1L;
+        Long coursePreReqId = 2L;
+
+        Course course = new Course("name", "department", "instructor", 0);
+        Course coursePreReq = new Course("name", "department", "instructor", 0);
+
+        CoursePreRequisiteId id = new CoursePreRequisiteId(courseId, coursePreReqId);
+        course.getCoursePreRequisiteList().add(new CoursePreRequisite(id, course, coursePreReq));
+
+        assertThrows(NoSuchElementException.class,
+                () -> courseServiceImpl.removeCoursePreRequisiteFromCourse(course, coursePreReq));
+    }
+
+    @Test
+    void testAssignCoursePreRequisiteCourse() {
+        Long courseId = 1L;
+        Long coursePreReqId = 2L;
+        CoursePreRequisiteId id = new CoursePreRequisiteId(courseId, coursePreReqId);
+
+        Course course = new Course("name", "department", "instructor", 0);
+        course.setId(courseId);
+        Course coursePreReq = new Course("name", "department", "instructor", 0);
+        coursePreReq.setId(coursePreReqId);
+
+        University university = new University("universityName", "country", "city");
+        university.setId(1L);
+
+        CoursePreRequisite coursePreRequite = new CoursePreRequisite(id, course, coursePreReq);
+
+        course.setUniversity(university);
+        coursePreReq.setUniversity(university);
+
+        assertEquals(0, course.getCoursePreRequisiteList().size());
+
+        courseServiceImpl.assignCoursePreRequisiteCourse(course, coursePreReq);
+
+        course.getCoursePreRequisiteList().add(coursePreRequite);
+
+        assertEquals(1, course.getCoursePreRequisiteList().size());
+        assertTrue(course.getCoursePreRequisiteList().contains(coursePreRequite));
+    }
+
+    @Test
+    void testGetCoursePreRequisitesFromCourse() {
+        Long courseId = 1L;
+        Long coursePreReqId = 2L;
+
+        Course course = new Course("name", "department", "instructor", 0);
+        course.setId(courseId);
+        Course coursePreReq = new Course("name", "department", "instructor", 0);
+        coursePreReq.setId(coursePreReqId);
+
+        University university = new University("universityName", "country", "city");
+        university.setId(1L);
+
+        course.setUniversity(university);
+        coursePreReq.setUniversity(university);
+
         CoursePreRequisiteId coursePreRequisiteId = new CoursePreRequisiteId(course.getId(), coursePreReq.getId());
         CoursePreRequisite coursePreRequisite = new CoursePreRequisite(coursePreRequisiteId, course, coursePreReq);
 
-        when(coursePreRequiteRepo.findById(coursePreRequisiteId)).thenReturn(java.util.Optional.of(coursePreRequisite));
+        course.getCoursePreRequisiteList().add(coursePreRequisite);
 
-        courseServiceImpl.removeCoursePreRequisiteFromCourse(course, coursePreReq);
+        when(coursePreRequiteRepo.findPrerequisiteCoursesByCourseId(course.getId())).thenReturn(List.of(coursePreReq));
 
-        verify(coursePreRequiteRepo, times(1)).delete(coursePreRequisite);}
+        List<Course> result = courseServiceImpl.getCoursePreRequisitesFromCourse(course);
+
+        assertEquals(1, result.size());
+        assertTrue(result.contains(coursePreReq));
+    }
 
     @Test
-    public void testAssignCoursePreRequisiteCourse() throws Exception {
-        courseServiceImpl.assignCoursePreRequisiteCourse(new Course("name", "university", "department", "instructor", Integer.valueOf(0)), new Course("name", "university", "department", "instructor", Integer.valueOf(0)));
+    void testAssignUniversityToCourse() {
+        Course course = new Course("name", "department", "instructor", 0);
+        course.setId(1L);
+        University university = new University("name", "country", "city");
+        university.setId(1L);
+
+        courseServiceImpl.assignUniversityToCourse(course, university);
+
+        assertEquals(university, course.getUniversity());
     }
 
-    @Test(expected = CourseNotFoundException.class)
-    public void testRemoveCoursePreRequisiteFromCourse_CourseNotFoundException() {
-        Course course = new Course("name1", "university1", null, null, null);
-        Course coursePreReq = new Course("name2", "university2", null, null, null);
-        CoursePreRequisiteId coursePreRequisiteId = new CoursePreRequisiteId(course.getId(), coursePreReq.getId());
+    @Test
+    void testAssignUniversityToCourse_NullPoint() {
+        Course course = new Course("name", "department", "instructor", 0);
 
-        when(coursePreRequiteRepo.findById(coursePreRequisiteId)).thenReturn(java.util.Optional.empty());
+        University university = new University("name", "country", "city");
 
-        courseServiceImpl.removeCoursePreRequisiteFromCourse(course, coursePreReq);
+        assertThrows(NoSuchElementException.class,
+                () -> courseServiceImpl.assignUniversityToCourse(course, university));
     }
 }
-
-//Generated with love by TestMe :) Please report issues and submit feature requests at: http://weirddev.com/forum#!/testme

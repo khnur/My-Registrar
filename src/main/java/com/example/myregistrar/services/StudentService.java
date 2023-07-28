@@ -1,5 +1,6 @@
 package com.example.myregistrar.services;
 
+import com.example.myregistrar.dtos.StudentReportDto;
 import com.example.myregistrar.models.Course;
 import com.example.myregistrar.models.Student;
 import com.example.myregistrar.models.University;
@@ -28,4 +29,6 @@ public interface StudentService {
     void assignCourseToStudent(Student student, Course course);
 
     void assignUniversityToStudent(Student student, University university);
+
+    StudentReportDto getStudentReport(Student student);
 }

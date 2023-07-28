@@ -1,19 +1,25 @@
 package com.example.myregistrar.services.service_impls;
 
+import com.example.myregistrar.dtos.StudentReportDto;
 import com.example.myregistrar.exceptions.*;
 import com.example.myregistrar.models.Course;
 import com.example.myregistrar.models.Student;
 import com.example.myregistrar.models.University;
+import com.example.myregistrar.repositories.BookRepo;
+import com.example.myregistrar.repositories.CoursePreRequiteRepo;
 import com.example.myregistrar.repositories.CourseRepo;
 import com.example.myregistrar.repositories.StudentRepo;
 import com.example.myregistrar.services.StudentService;
 import com.example.myregistrar.util.NewModel;
+import com.example.myregistrar.util.entity_dto_mappers.CourseMapper;
+import com.example.myregistrar.util.entity_dto_mappers.UniversityMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.NoSuchElementException;
+import java.util.Objects;
 import java.util.stream.IntStream;
 
 @Service
@@ -22,6 +28,8 @@ import java.util.stream.IntStream;
 public class StudentServiceImpl implements StudentService {
     private final StudentRepo studentRepo;
     private final CourseRepo courseRepo;
+    private final CoursePreRequiteRepo coursePreRequiteRepo;
+    private final BookRepo bookRepo;
 
     @Transactional
     @Override
@@ -124,6 +132,16 @@ public class StudentServiceImpl implements StudentService {
             throw new CourseNotFoundException("Provided transient course, should be registered");
         }
 
+        if (student.getUniversity() == null) {
+            throw new UniversityNotFoundException("Student with id=" + student.getId() +
+                    " can not enrol any course. Student has not applied to any university");
+        } else if (course.getUniversity() == null) {
+            throw new UniversityNotFoundException("Course with id=" + course.getId() +
+                    " is not registered by any university");
+        } else if (!Objects.equals(student.getUniversity().getId(), course.getUniversity().getId())) {
+            throw new RuntimeException("Student with id=" + student.getId() + " can not take course with id=" + course.getId());
+        }
+
         List<Course> courseListByStudent = courseRepo.findCoursesByStudentId(student.getId());
         courseListByStudent.add(course);
 
@@ -150,5 +168,63 @@ public class StudentServiceImpl implements StudentService {
 
         student.setUniversity(university);
         studentRepo.save(student);
+    }
+
+    @Override
+    public StudentReportDto getStudentReport(Student student) {
+        if (student == null || student.getId() == null) {
+            throw new StudentNotFoundException("provided student is null or has not been registered");
+        }
+        StudentReportDto studentReport = new StudentReportDto();
+
+        studentReport.setName(student.getFirstName() + " " + student.getLastName());
+        studentReport.setEmail(student.getEmail());
+
+        if (student.getUniversity() == null) {
+            return studentReport;
+        }
+
+        studentReport.setUniversity(
+                UniversityMapper.INSTANCE.universityToUniversityDto(student.getUniversity())
+        );
+
+        List<Course> courses = courseRepo.findCoursesByStudentId(student.getId());
+
+        studentReport.setCourses(
+                CourseMapper.INSTANCE.courseListToCourseDtoList(courses)
+        );
+
+        final int[] properties = new int[5];
+        courses.stream()
+                .flatMap(course -> {
+                    if (course == null || course.getId() == null) {
+                        throw new CourseNotFoundException("course is null or has not been registered");
+                    }
+                    properties[1]++;
+                    properties[2] += course.getCreditHours();
+
+                    bookRepo.findBooksByCourseId(course.getId())
+                            .forEach(book -> properties[4] += book.getPageNumber());
+
+                    return coursePreRequiteRepo.findPrerequisiteCoursesByCourseId(course.getId()).stream();
+                })
+                .forEach(coursePreRequite -> {
+                    if (coursePreRequite == null || coursePreRequite.getId() == null) {
+                        throw new CourseNotFoundException("coursePreReq is null or has not been registered");
+                    }
+                    properties[0]++;
+                    properties[2] += coursePreRequite.getCreditHours();
+
+                    bookRepo.findBooksByCourseId(coursePreRequite.getId())
+                            .forEach(book -> properties[3] += book.getPageNumber());
+                });
+
+        studentReport.setNumberOfCoursesCompleted(properties[0]);
+        studentReport.setNumberOfCoursesTaking(properties[1]);
+        studentReport.setTotalCreditHours(properties[2]);
+        studentReport.setPageNumberRead(properties[3]);
+        studentReport.setPageNumberUpToRead(properties[4]);
+
+        return studentReport;
     }
 }

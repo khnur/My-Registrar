@@ -3,12 +3,10 @@ package com.example.myregistrar.models;
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.springframework.data.elasticsearch.annotations.Document;
 
 import java.util.ArrayList;
 import java.util.List;
 
-@Document(indexName = "university_index")
 @Entity
 @Table
 @Data

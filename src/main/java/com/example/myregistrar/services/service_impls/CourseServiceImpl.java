@@ -141,8 +141,22 @@ public class CourseServiceImpl implements CourseService {
     @Transactional
     @Override
     public void assignStudentToCourse(Course course, Student student) {
-        if (course == null || student == null || course.getId() == null || student.getId() == null) {
+        if (course == null || student == null) {
             throw new NoSuchElementException("The course is null or student is null");
+        } else if (course.getId() == null) {
+            throw new CourseNotFoundException("Provided transient course, should be registered");
+        } else if (student.getId() == null) {
+            throw new StudentNotFoundException("Provided transient student, should be registered");
+        }
+
+        if (course.getUniversity() == null) {
+            throw new UniversityNotFoundException("Course with id=" + course.getId() +
+                    " is not registered by any university");
+        } else if (student.getUniversity() == null) {
+            throw new UniversityNotFoundException("Student with id=" + student.getId() +
+                    " can not enrol any course. Student has not applied to any university");
+        } else if (!Objects.equals(course.getUniversity().getId(), student.getUniversity().getId())) {
+            throw new RuntimeException("Student with id=" + student.getId() + " can not take course with id=" + course.getId());
         }
 
         List<Student> studentListByCourse = studentRepo.findStudentsByCourseId(course.getId());
@@ -178,6 +192,12 @@ public class CourseServiceImpl implements CourseService {
             throw new NoSuchElementException("The course is null or course pre-requisite is null");
         } else if (Objects.equals(course.getId(), coursePreReq.getId())) {
             throw new MethodNotFoundException("Method Not Allowed");
+        } else if (course.getUniversity() == null || coursePreReq.getUniversity() == null) {
+            throw new UniversityNotFoundException("courses with id=" + course.getId() + " and id=" + coursePreReq.getId() +
+                    " have not been approved by any university");
+        } else if (!Objects.equals(course.getUniversity().getId(), coursePreReq.getUniversity().getId())) {
+            throw new RuntimeException("courses with id=" + course.getId() + " and id=" + coursePreReq.getId() +
+                    " have different universities");
         }
 
         CoursePreRequisiteId coursePreRequisiteId = new CoursePreRequisiteId(course.getId(), coursePreReq.getId());

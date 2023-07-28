@@ -5,11 +5,9 @@ import com.example.myregistrar.util.entity_dto_mappers.BookMapper;
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.springframework.data.elasticsearch.annotations.Document;
 
 import java.util.Date;
 
-@Document(indexName = "book_index")
 @Entity
 @Table
 @Data
@@ -36,6 +34,9 @@ public class Book {
     @Column
     private String publisher;
 
+    @Column(name = "page_number")
+    private Integer pageNumber;
+
     @ManyToOne
     @JoinColumn(
             name = "course_id",
@@ -44,12 +45,13 @@ public class Book {
     )
     private Course course;
 
-    public Book(String name, String author, String genre, Date publishedDate, String publisher) {
+    public Book(String name, String author, String genre, Date publishedDate, String publisher, Integer pageNUmber) {
         this.name = name;
         this.author = author;
         this.genre = genre;
         this.publishedDate = publishedDate;
         this.publisher = publisher;
+        this.pageNumber = pageNUmber;
     }
 
     public BookDto toBookDto() {

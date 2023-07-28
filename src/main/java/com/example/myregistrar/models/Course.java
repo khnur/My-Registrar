@@ -5,12 +5,10 @@ import com.example.myregistrar.util.entity_dto_mappers.CourseMapper;
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.springframework.data.elasticsearch.annotations.Document;
 
 import java.util.ArrayList;
 import java.util.List;
 
-@Document(indexName = "course_index")
 @Entity
 @Table
 @Data
