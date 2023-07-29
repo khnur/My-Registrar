@@ -19,17 +19,13 @@ public class UserDetailsServiceImpl implements UserDetailsService {
     private final StudentRepo studentRepo;
 
     @Override
-    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        Student student = studentRepo.findStudentByEmail(username)
-                .orElseThrow(() -> new StudentNotFoundException("There is no student with such username=" + username));
+    public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
+        Student student = studentRepo.findStudentByEmail(email)
+                .orElseThrow(() -> new StudentNotFoundException("There is no student with such email=" + email));
 
         return new User(
                 student.getEmail(),
                 student.getPassword(),
-                student.isActive(),
-                student.isActive(),
-                student.isActive(),
-                student.isActive(),
                 List.of(new SimpleGrantedAuthority(student.getRole()))
         );
     }

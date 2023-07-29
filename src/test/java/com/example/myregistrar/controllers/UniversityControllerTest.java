@@ -85,7 +85,7 @@ class UniversityControllerTest {
     void testGetStudentsByUniversity() {
         List<Student> students = List.of(new Student("firstName", "lastName",
                 new GregorianCalendar(2023, Calendar.JULY, 28, 22, 47).getTime(),
-                "gender", "password", "role", true));
+                "gender", "password", "role"));
         when(studentService.getStudentsByUniversity(any())).thenReturn(
                 students);
         when(universityService.getUniversityById(anyLong())).thenReturn(new University("name", "country", "city"));

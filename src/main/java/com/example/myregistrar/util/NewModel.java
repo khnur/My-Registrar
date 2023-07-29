@@ -42,9 +42,8 @@ public class NewModel {
         String gender = faker.random().nextInt(5) % 2 == 0 ? "Male" : "Female";
         String password = faker.name().username();
         String role = "ROLE_USER";
-        boolean isActive = true;
 
-        return new Student(firstName, lastName, date, gender, password, role, isActive);
+        return new Student(firstName, lastName, date, gender, password, role);
     }
 
     public static University createRandomUniversity() {

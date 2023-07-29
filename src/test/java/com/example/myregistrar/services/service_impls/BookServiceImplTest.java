@@ -207,7 +207,7 @@ class BookServiceImplTest {
     @Test
     void testGetBooksByStudent_StudentExists() {
         long studentId = 1L;
-        Student mockStudent = new Student("firstName", "lastName", new GregorianCalendar(2023, Calendar.JULY, 28, 15, 17).getTime(), "gender", "password", "role", true);
+        Student mockStudent = new Student("firstName", "lastName", new GregorianCalendar(2023, Calendar.JULY, 28, 15, 17).getTime(), "gender", "password", "role");
         mockStudent.setId(studentId);
 
         List<Book> mockBookList = List.of(new Book("name", "author", "genre", new GregorianCalendar(2023, Calendar.JULY, 28, 15, 17).getTime(), "publisher", 0));
@@ -220,7 +220,7 @@ class BookServiceImplTest {
 
     @Test
     void testGetBooksByStudent_StudentDoesNotExist() {
-        Student mockStudent = new Student("firstName", "lastName", new GregorianCalendar(2023, Calendar.JULY, 28, 15, 17).getTime(), "gender", "password", "role", true);
+        Student mockStudent = new Student("firstName", "lastName", new GregorianCalendar(2023, Calendar.JULY, 28, 15, 17).getTime(), "gender", "password", "role");
         assertThrows(StudentNotFoundException.class, () -> bookServiceImpl.getBooksByStudent(mockStudent));
     }
 

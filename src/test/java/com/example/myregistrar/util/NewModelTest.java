@@ -67,7 +67,6 @@ class NewModelTest {
         Assertions.assertNotNull(result.getGender());
         Assertions.assertNotNull(result.getPassword());
         Assertions.assertNotNull(result.getRole());
-        Assertions.assertNotNull(result.isActive());
     }
 
     @Test

@@ -25,7 +25,7 @@ class StudentControllerIntegrationTest {
 
     @Test
     void testCreateStudent_Success() {
-        Student student= new Student("Nurzhan", "kkk", new Date(), "password", "aaa", "USER", true);
+        Student student= new Student("Nurzhan", "kkk", new Date(), "password", "aaa", "USER");
 
         ResponseEntity<StudentDto> response = restTemplate.postForEntity(
                 "http://localhost:" + port + "/student", student.toStudentDto(), StudentDto.class);

@@ -96,7 +96,7 @@ class CourseControllerTest {
     void testGetStudentsByCourse() {
         List<Student> students = List.of(new Student("firstName", "lastName", new
                 GregorianCalendar(2023, Calendar.JULY, 28, 22, 3).getTime(),
-                "gender", "password", "role", true));
+                "gender", "password", "role"));
         when(studentService.getStudentsByCourse(any())).thenReturn(students);
         when(courseService.getCourseById(anyLong())).thenReturn(new Course("name", "department", "instructor", Integer.valueOf(0)));
 
@@ -177,7 +177,7 @@ class CourseControllerTest {
 
     @Test
     void testGetNotifiedStudents() {
-        List<Student> students = List.of(new Student("firstName", "lastName", new GregorianCalendar(2023, Calendar.JULY, 28, 22, 3).getTime(), "gender", "password", "role", true));
+        List<Student> students = List.of(new Student("firstName", "lastName", new GregorianCalendar(2023, Calendar.JULY, 28, 22, 3).getTime(), "gender", "password", "role"));
         when(studentService.getStudentsByCourse(any())).thenReturn(students);
         when(courseService.getCourseById(anyLong())).thenReturn(new Course("name", "department", "instructor", Integer.valueOf(0)));
 

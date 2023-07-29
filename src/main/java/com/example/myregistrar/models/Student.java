@@ -57,8 +57,6 @@ public class Student {
     @Column(nullable = false)
     private String role;
 
-    @Column(nullable = false)
-    private boolean isActive;
 
     @ManyToOne
     @JoinColumn(
@@ -81,7 +79,7 @@ public class Student {
     )
     private List<Course> courses = new ArrayList<>();
 
-    public Student(String firstName, String lastName, Date birthDate, String gender, String password, String role, boolean isActive) {
+    public Student(String firstName, String lastName, Date birthDate, String gender, String password, String role) {
         this.firstName = firstName;
         this.lastName = lastName;
         this.birthDate = birthDate;
@@ -90,7 +88,6 @@ public class Student {
         this.email = firstName.toLowerCase() + '.' + lastName.toLowerCase() + "@onelab.kz";
         this.password = password;
         this.role = role;
-        this.isActive = isActive;
     }
 
     public StudentDto toStudentDto() {

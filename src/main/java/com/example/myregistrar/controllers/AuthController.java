@@ -3,39 +3,38 @@ package com.example.myregistrar.controllers;
 import com.example.myregistrar.dtos.LoginDto;
 import com.example.myregistrar.security.JwtService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.context.SecurityContext;
-import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("/login")
+@RequestMapping("/auth")
 @RequiredArgsConstructor
 public class AuthController {
     private final AuthenticationManager authenticationManager;
     private final JwtService jwtService;
+    private final UserDetailsService userDetailsService;
 
     @PostMapping
-    public String login(@RequestBody LoginDto loginDto) {
-        Authentication authenticate = authenticationManager.authenticate(
+    public ResponseEntity<String> auth(@RequestBody LoginDto loginDto) {
+        authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(
-                        loginDto.getUsername(),
+                        loginDto.getEmail(),
                         loginDto.getPassword()
                 )
         );
 
-        SecurityContext securityContext = SecurityContextHolder.createEmptyContext();
-        securityContext.setAuthentication(authenticate);
+        final UserDetails userDetails = userDetailsService.loadUserByUsername(loginDto.getEmail());
 
-        SecurityContextHolder.setContext(securityContext);
-        return jwtService.generateToken(
-                loginDto.getUsername()
-        );
+        if (userDetails == null) {
+            return ResponseEntity.ofNullable("Something went wrong");
+        }
+        return ResponseEntity.ok(jwtService.generateToken(userDetails));
     }
 }

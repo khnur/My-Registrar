@@ -56,8 +56,7 @@ class StudentServiceImplTest {
                 DateMapper.DATE_FORMAT.parse("1234-78-78"),
                 "M",
                 "aaa",
-                "ROLE_USER",
-                true
+                "ROLE_USER"
         );
 
         when(studentRepo.save(any(Student.class))).thenReturn(mockStudent);
@@ -77,8 +76,7 @@ class StudentServiceImplTest {
                     DateMapper.DATE_FORMAT.parse("1234-78-78"),
                     "M",
                     "aaa",
-                    "ROLE_USER",
-                    true
+                    "ROLE_USER"
             );
             studentServiceImpl.createStudent(student);
         });
@@ -103,7 +101,7 @@ class StudentServiceImplTest {
     @Test
     void testGetStudentById_StudentExists() {
         long studentId = 1L;
-        Student mockStudent = new Student("firstName", "lastName", new GregorianCalendar(2023, Calendar.JULY, 28, 15, 43).getTime(), "gender", "password", "role", true);
+        Student mockStudent = new Student("firstName", "lastName", new GregorianCalendar(2023, Calendar.JULY, 28, 15, 43).getTime(), "gender", "password", "role");
         when(studentRepo.findById(studentId)).thenReturn(Optional.of(mockStudent));
 
         Student result = studentServiceImpl.getStudentById(studentId);
@@ -120,9 +118,9 @@ class StudentServiceImplTest {
     @Test
     void testGetAllStudents() {
         List<Student> mockStudentList = List.of(
-                new Student("firstName1", "lastName1", new GregorianCalendar(2023, Calendar.JULY, 28, 15, 43).getTime(), "gender1", "password1", "role1", true),
-                new Student("firstName2", "lastName2", new GregorianCalendar(2023, Calendar.JULY, 28, 15, 44).getTime(), "gender2", "password2", "role2", true),
-                new Student("firstName3", "lastName3", new GregorianCalendar(2023, Calendar.JULY, 28, 15, 45).getTime(), "gender3", "password3", "role3", true)
+                new Student("firstName1", "lastName1", new GregorianCalendar(2023, Calendar.JULY, 28, 15, 43).getTime(), "gender1", "password1", "role1"),
+                new Student("firstName2", "lastName2", new GregorianCalendar(2023, Calendar.JULY, 28, 15, 44).getTime(), "gender2", "password2", "role2"),
+                new Student("firstName3", "lastName3", new GregorianCalendar(2023, Calendar.JULY, 28, 15, 45).getTime(), "gender3", "password3", "role3")
         );
         when(studentRepo.findAll()).thenReturn(mockStudentList);
 
@@ -134,9 +132,9 @@ class StudentServiceImplTest {
     @Test
     void testGetStudentsByFirstName() {
         List<Student> mockStudentList = List.of(
-                new Student("firstName", "lastName1", new GregorianCalendar(2023, Calendar.JULY, 28, 15, 43).getTime(), "gender1", "password1", "role1", true),
-                new Student("firstName", "lastName2", new GregorianCalendar(2023, Calendar.JULY, 28, 15, 44).getTime(), "gender2", "password2", "role2", true),
-                new Student("firstName", "lastName3", new GregorianCalendar(2023, Calendar.JULY, 28, 15, 45).getTime(), "gender3", "password3", "role3", true)
+                new Student("firstName", "lastName1", new GregorianCalendar(2023, Calendar.JULY, 28, 15, 43).getTime(), "gender1", "password1", "role1"),
+                new Student("firstName", "lastName2", new GregorianCalendar(2023, Calendar.JULY, 28, 15, 44).getTime(), "gender2", "password2", "role2"),
+                new Student("firstName", "lastName3", new GregorianCalendar(2023, Calendar.JULY, 28, 15, 45).getTime(), "gender3", "password3", "role3")
         );
         when(studentRepo.findStudentsByFirstName("firstName")).thenReturn(mockStudentList);
 
@@ -148,9 +146,9 @@ class StudentServiceImplTest {
     @Test
     void testGetStudentsByLastName() {
         List<Student> mockStudentList = List.of(
-                new Student("firstName1", "lastName", new GregorianCalendar(2023, Calendar.JULY, 28, 15, 43).getTime(), "gender1", "password1", "role1", true),
-                new Student("firstName2", "lastName", new GregorianCalendar(2023, Calendar.JULY, 28, 15, 44).getTime(), "gender2", "password2", "role2", true),
-                new Student("firstName3", "lastName", new GregorianCalendar(2023, Calendar.JULY, 28, 15, 45).getTime(), "gender3", "password3", "role3", true)
+                new Student("firstName1", "lastName", new GregorianCalendar(2023, Calendar.JULY, 28, 15, 43).getTime(), "gender1", "password1", "role1"),
+                new Student("firstName2", "lastName", new GregorianCalendar(2023, Calendar.JULY, 28, 15, 44).getTime(), "gender2", "password2", "role2"),
+                new Student("firstName3", "lastName", new GregorianCalendar(2023, Calendar.JULY, 28, 15, 45).getTime(), "gender3", "password3", "role3")
         );
         when(studentRepo.findStudentsByLastName("lastName")).thenReturn(mockStudentList);
 
@@ -161,7 +159,7 @@ class StudentServiceImplTest {
 
     @Test
     void testGetStudentByFirstNameAndLastName_StudentExists() {
-        Student mockStudent = new Student("firstName", "lastName", new GregorianCalendar(2023, Calendar.JULY, 28, 15, 43).getTime(), "gender", "password", "role", true);
+        Student mockStudent = new Student("firstName", "lastName", new GregorianCalendar(2023, Calendar.JULY, 28, 15, 43).getTime(), "gender", "password", "role");
         when(studentRepo.findStudentByFirstNameAndLastName("firstName", "lastName")).thenReturn(Optional.of(mockStudent));
 
         Student result = studentServiceImpl.getStudentByFirstNameAndLastName("firstName", "lastName");
@@ -178,9 +176,9 @@ class StudentServiceImplTest {
     @Test
     void testGetStudentsByCourse() {
         List<Student> mockStudentList = List.of(
-                new Student("firstName1", "lastName1", new GregorianCalendar(2023, Calendar.JULY, 28, 15, 43).getTime(), "gender1", "password1", "role1", true),
-                new Student("firstName2", "lastName2", new GregorianCalendar(2023, Calendar.JULY, 28, 15, 44).getTime(), "gender2", "password2", "role2", true),
-                new Student("firstName3", "lastName3", new GregorianCalendar(2023, Calendar.JULY, 28, 15, 45).getTime(), "gender3", "password3", "role3", true)
+                new Student("firstName1", "lastName1", new GregorianCalendar(2023, Calendar.JULY, 28, 15, 43).getTime(), "gender1", "password1", "role1"),
+                new Student("firstName2", "lastName2", new GregorianCalendar(2023, Calendar.JULY, 28, 15, 44).getTime(), "gender2", "password2", "role2"),
+                new Student("firstName3", "lastName3", new GregorianCalendar(2023, Calendar.JULY, 28, 15, 45).getTime(), "gender3", "password3", "role3")
         );
         when(studentRepo.findStudentsByCourseId(anyLong())).thenReturn(mockStudentList);
 
@@ -196,9 +194,9 @@ class StudentServiceImplTest {
     @Test
     void testGetStudentsByUniversity() {
         List<Student> mockStudentList = List.of(
-                new Student("firstName1", "lastName1", new GregorianCalendar(2023, Calendar.JULY, 28, 15, 43).getTime(), "gender1", "password1", "role1", true),
-                new Student("firstName2", "lastName2", new GregorianCalendar(2023, Calendar.JULY, 28, 15, 44).getTime(), "gender2", "password2", "role2", true),
-                new Student("firstName3", "lastName3", new GregorianCalendar(2023, Calendar.JULY, 28, 15, 45).getTime(), "gender3", "password3", "role3", true)
+                new Student("firstName1", "lastName1", new GregorianCalendar(2023, Calendar.JULY, 28, 15, 43).getTime(), "gender1", "password1", "role1"),
+                new Student("firstName2", "lastName2", new GregorianCalendar(2023, Calendar.JULY, 28, 15, 44).getTime(), "gender2", "password2", "role2"),
+                new Student("firstName3", "lastName3", new GregorianCalendar(2023, Calendar.JULY, 28, 15, 45).getTime(), "gender3", "password3", "role3")
         );
         when(studentRepo.findStudentsByUniversityId(anyLong())).thenReturn(mockStudentList);
 
@@ -213,7 +211,7 @@ class StudentServiceImplTest {
     @Test
     void testAssignCourseToStudent_StudentNotRegistered() {
         Course mockCourse = new Course("name", "department", "instructor", 1);
-        assertThrows(StudentNotFoundException.class, () -> studentServiceImpl.assignCourseToStudent(new Student("firstName", "lastName", new GregorianCalendar(2023, Calendar.JULY, 28, 15, 43).getTime(), "gender", "password", "role", true), mockCourse));
+        assertThrows(StudentNotFoundException.class, () -> studentServiceImpl.assignCourseToStudent(new Student("firstName", "lastName", new GregorianCalendar(2023, Calendar.JULY, 28, 15, 43).getTime(), "gender", "password", "role"), mockCourse));
     }
 
     @Test
@@ -225,7 +223,7 @@ class StudentServiceImplTest {
 
         Course mockCourse = new Course("name", "department", "instructor", 1);
         mockCourse.setUniversity(university1);
-        Student mockStudent = new Student("firstName", "lastName", new GregorianCalendar(2023, Calendar.JULY, 28, 15, 43).getTime(), "gender", "password", "role", true);
+        Student mockStudent = new Student("firstName", "lastName", new GregorianCalendar(2023, Calendar.JULY, 28, 15, 43).getTime(), "gender", "password", "role");
         mockStudent.setId(1L);
         mockStudent.setUniversity(university2);
 
@@ -237,7 +235,7 @@ class StudentServiceImplTest {
         University mockUniversity = new University("name", "country", "city");
         mockUniversity.setId(1L);
 
-        Student mockStudent = new Student("firstName", "lastName", new GregorianCalendar(2023, Calendar.JULY, 28, 15, 43).getTime(), "gender", "password", "role", true);
+        Student mockStudent = new Student("firstName", "lastName", new GregorianCalendar(2023, Calendar.JULY, 28, 15, 43).getTime(), "gender", "password", "role");
         mockStudent.setId(1L);
 
         mockStudent.setUniversity(mockUniversity);
@@ -254,7 +252,7 @@ class StudentServiceImplTest {
         when(coursePreRequiteRepo.findPrerequisiteCoursesByCourseId(anyLong())).thenReturn(courseList);
         when(bookRepo.findBooksByCourseId(anyLong())).thenReturn(List.of(new Book(null, null, null, null, null, 0)));
 
-        Student student = new Student("firstName", "lastName", new GregorianCalendar(2023, Calendar.JULY, 28, 15, 43).getTime(), "gender", "password", "role", true);
+        Student student = new Student("firstName", "lastName", new GregorianCalendar(2023, Calendar.JULY, 28, 15, 43).getTime(), "gender", "password", "role");
         student.setId(1L);
 
         StudentReportDto result = studentServiceImpl.getStudentReport(student);
@@ -265,7 +263,7 @@ class StudentServiceImplTest {
 
     @Test
     void testGetStudentReport_NoUniversityAssociated() {
-        Student mockStudent = new Student("firstName", "lastName", new GregorianCalendar(2023, Calendar.JULY, 28, 15, 43).getTime(), "gender", "password", "role", true);
+        Student mockStudent = new Student("firstName", "lastName", new GregorianCalendar(2023, Calendar.JULY, 28, 15, 43).getTime(), "gender", "password", "role");
         mockStudent.setId(1L);
 
         String email = mockStudent.getFirstName().toLowerCase().trim() + "." + mockStudent.getLastName().toLowerCase().trim()

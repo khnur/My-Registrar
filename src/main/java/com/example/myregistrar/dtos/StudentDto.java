@@ -18,7 +18,6 @@ public class StudentDto {
     private String email;
     private String password;
     private String role;
-    private boolean isActive;
 
     private UniversityDto university;
 

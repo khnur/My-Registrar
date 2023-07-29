@@ -11,6 +11,7 @@ import com.example.myregistrar.services.StudentService;
 import com.example.myregistrar.services.UniversityService;
 import com.example.myregistrar.util.DateMapper;
 import com.example.myregistrar.util.NewModel;
+import com.example.myregistrar.util.Role;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.ApplicationRunner;
 import org.springframework.boot.CommandLineRunner;
@@ -52,8 +53,7 @@ public class ApplicationDataToTest {
                     DateMapper.DATE_FORMAT.parse("1234-78-78"),
                     "M",
                     "aaa",
-                    "ROLE_USER",
-                    true
+                    Role.STUDENT.getRoleName()
             ));
 
             universityService.createUniversity(new University(

@@ -174,7 +174,7 @@ class CourseServiceImplTest {
     void testGetCoursesByStudent() {
         Long studentId = 1L;
 
-        Student student = new Student("firstName", "lastName", new GregorianCalendar(2023, Calendar.JULY, 28, 16, 39).getTime(), "gender", "password", "role", true);
+        Student student = new Student("firstName", "lastName", new GregorianCalendar(2023, Calendar.JULY, 28, 16, 39).getTime(), "gender", "password", "role");
         student.setId(studentId);
 
         List<Course> expectedCourses = List.of(new Course("name", "department", "instructor", 0));
@@ -190,7 +190,7 @@ class CourseServiceImplTest {
     void testGetCoursesByStudent_NullPoint() {
         Long studentId = 1L;
 
-        Student student = new Student("firstName", "lastName", new GregorianCalendar(2023, Calendar.JULY, 28, 16, 39).getTime(), "gender", "password", "role", true);
+        Student student = new Student("firstName", "lastName", new GregorianCalendar(2023, Calendar.JULY, 28, 16, 39).getTime(), "gender", "password", "role");
 
         List<Course> expectedCourses = List.of(new Course("name", "department", "instructor", 0));
 
@@ -249,7 +249,7 @@ class CourseServiceImplTest {
         course.setId(1L);
         course.setUniversity(university);
 
-        Student student = new Student("firstName", "lastName", new GregorianCalendar(2023, Calendar.JULY, 28, 16, 39).getTime(), "gender", "password", "role", true);
+        Student student = new Student("firstName", "lastName", new GregorianCalendar(2023, Calendar.JULY, 28, 16, 39).getTime(), "gender", "password", "role");
         student.setId(1L);
         student.setUniversity(university);
 
@@ -272,7 +272,7 @@ class CourseServiceImplTest {
         Course course = new Course("name", "department", "instructor", 0);
         course.setUniversity(university);
 
-        Student student = new Student("firstName", "lastName", new GregorianCalendar(2023, Calendar.JULY, 28, 16, 39).getTime(), "gender", "password", "role", true);
+        Student student = new Student("firstName", "lastName", new GregorianCalendar(2023, Calendar.JULY, 28, 16, 39).getTime(), "gender", "password", "role");
         student.setId(1L);
         student.setUniversity(university);
 
