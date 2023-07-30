@@ -1,7 +1,9 @@
 package com.example.myregistrar.jms;
 
 import com.example.myregistrar.dtos.CourseDto;
+import com.example.myregistrar.models.University;
 import com.example.myregistrar.services.StudentService;
+import com.example.myregistrar.services.UniversityService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.clients.admin.NewTopic;
@@ -10,7 +12,6 @@ import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.kafka.config.TopicBuilder;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
-
 
 @Service
 @Slf4j
@@ -21,6 +22,7 @@ public class KafkaService {
 
     private final KafkaTemplate<Long, CourseDto> kafkaTemplate;
     private final StudentService studentService;
+    private final UniversityService universityService;
 
     public void sendToCourseTopic(CourseDto courseDto) {
         if (courseDto == null) {
@@ -36,9 +38,10 @@ public class KafkaService {
     @KafkaListener(topics = TOPIC, groupId = GROUP_ID)
     public void listenMessage(CourseDto courseDto) {
         log.info(">>> Received: created new course " + courseDto.toJson());
+        University university = universityService.getUniversityById(courseDto.getUniversity().getId());
 
         final int[] studentIter = new int[]{1};
-        studentService.getAllStudents().forEach(student -> {
+        studentService.getStudentsByUniversity(university).forEach(student -> {
             log.info("Student with the following credentials received course enrolment request: {} {}",
                     studentIter[0]++, student.toStudentDto().toJson());
             if (student.getAge() >= 25) {

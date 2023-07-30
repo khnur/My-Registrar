@@ -3,6 +3,7 @@ package com.example.myregistrar.util;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import lombok.extern.slf4j.Slf4j;
 
 import java.text.SimpleDateFormat;
@@ -16,6 +17,7 @@ public class JsonMapper {
     static {
         mapper.enable(SerializationFeature.INDENT_OUTPUT);
         mapper.setDateFormat(DATE_FORMAT);
+        mapper.registerModule(new JavaTimeModule());
     }
 
     public static String toJsonString(Object entity) {

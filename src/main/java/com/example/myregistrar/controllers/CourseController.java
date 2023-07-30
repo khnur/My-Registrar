@@ -133,10 +133,11 @@ public class CourseController {
     @GetMapping("/{id}/notify")
     public List<StudentDto> getNotifiedStudents(@PathVariable Long id) {
         Course course = courseService.getCourseById(id);
+        University university = course.getUniversity();
         courseService.notifyStudentsWithinUniversity(course);
 
         return StudentMapper.INSTANCE.studentListToStudentDtoList(
-                studentService.getStudentsByCourse(course)
+                studentService.getStudentsByUniversity(university)
         );
     }
 }
