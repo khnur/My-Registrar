@@ -1,8 +1,7 @@
 package com.example.myregistrar.controllers;
 
+import com.example.myregistrar.controllers.facade.BookFacade;
 import com.example.myregistrar.dtos.BookDto;
-import com.example.myregistrar.services.BookService;
-import com.example.myregistrar.util.entity_dto_mappers.BookMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
@@ -12,26 +11,20 @@ import java.util.List;
 @RequestMapping("/book")
 @RequiredArgsConstructor
 public class BookController {
-    private final BookService bookService;
+    private final BookFacade bookFacade;
 
     @PostMapping
     public BookDto createBook(@RequestBody BookDto bookDto) {
-        return BookMapper.INSTANCE.bookToBookDto(
-                bookService.createBook(bookDto.toBook())
-        );
+        return bookFacade.createBook(bookDto);
     }
 
     @GetMapping
     public List<BookDto> getAllBooks() {
-        return BookMapper.INSTANCE.bookListToBookDtoList(
-                bookService.getAllBooks()
-        );
+        return bookFacade.getAllBooks();
     }
 
     @GetMapping("/{id}")
     public BookDto getBookById(@PathVariable Long id) {
-        return BookMapper.INSTANCE.bookToBookDto(
-                bookService.getBookById(id)
-        );
+        return bookFacade.getBookById(id);
     }
 }

@@ -1,7 +1,5 @@
 package com.example.myregistrar.models;
 
-import com.example.myregistrar.dtos.StudentDto;
-import com.example.myregistrar.util.entity_dto_mappers.StudentMapper;
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -80,9 +78,5 @@ public class Student {
         this.age = Period.between(birthDate, LocalDate.now()).getYears();
         this.gender = gender;
         this.email = firstName.toLowerCase() + '.' + lastName.toLowerCase() + "@onelab.kz";
-    }
-
-    public StudentDto toStudentDto() {
-        return StudentMapper.INSTANCE.studentToStudentDto(this);
     }
 }

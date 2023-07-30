@@ -56,7 +56,7 @@ class CourseControllerTest {
         when(courseService.createCourse(any())).thenReturn(course);
 
         CourseDto result = courseController.createCourse(new CourseDto());
-        Assertions.assertEquals(course.toCourseDto(), result);
+        Assertions.assertEquals(CourseMapper.INSTANCE.courseToCourseDto(course), result);
     }
 
     @Test
@@ -90,7 +90,7 @@ class CourseControllerTest {
         when(courseService.getCourseById(anyLong())).thenReturn(course);
 
         CourseDto result = courseController.getCourseById(1L);
-        Assertions.assertEquals(course.toCourseDto(), result);
+        Assertions.assertEquals(CourseMapper.INSTANCE.courseToCourseDto(course), result);
     }
 
     @Test

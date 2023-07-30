@@ -36,7 +36,7 @@ class BookControllerTest {
         when(bookService.createBook(any())).thenReturn(book);
 
         BookDto result = bookController.createBook(new BookDto());
-        Assertions.assertEquals(book.toBookDto(), result);
+        Assertions.assertEquals(BookMapper.INSTANCE.bookToBookDto(book), result);
     }
 
 
@@ -61,7 +61,7 @@ class BookControllerTest {
         when(bookService.getBookById(anyLong())).thenReturn(book);
 
         BookDto result = bookController.getBookById(1L);
-        Assertions.assertEquals(book, result.toBook());
+        Assertions.assertEquals(book, BookMapper.INSTANCE.bookDtoToBook(result));
     }
 
 }

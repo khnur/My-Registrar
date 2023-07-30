@@ -1,9 +1,13 @@
 package com.example.myregistrar.jms;
 
 import com.example.myregistrar.dtos.CourseDto;
+import com.example.myregistrar.dtos.StudentDto;
+import com.example.myregistrar.models.Course;
 import com.example.myregistrar.models.University;
 import com.example.myregistrar.services.StudentService;
 import com.example.myregistrar.services.UniversityService;
+import com.example.myregistrar.util.entity_dto_mappers.CourseMapper;
+import com.example.myregistrar.util.entity_dto_mappers.StudentMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.clients.admin.NewTopic;
@@ -42,10 +46,15 @@ public class KafkaService {
 
         final int[] studentIter = new int[]{1};
         studentService.getStudentsByUniversity(university).forEach(student -> {
+
+            StudentDto studentDto = StudentMapper.INSTANCE.studentToStudentDto(student);
             log.info("Student with the following credentials received course enrolment request: {} {}",
-                    studentIter[0]++, student.toStudentDto().toJson());
+                    studentIter[0]++, studentDto.toJson());
+
             if (student.getAge() >= 25) {
-                studentService.assignCourseToStudent(student, courseDto.toCourse());
+
+                Course course = CourseMapper.INSTANCE.courseDtoToCourse(courseDto);
+                studentService.assignCourseToStudent(student, course);
 
                 log.info("Student accepted course enrolment request");
             } else {

@@ -1,7 +1,5 @@
 package com.example.myregistrar.models;
 
-import com.example.myregistrar.dtos.CourseDto;
-import com.example.myregistrar.util.entity_dto_mappers.CourseMapper;
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -63,10 +61,6 @@ public class Course {
             orphanRemoval = true
     )
     private List<CoursePreRequisite> coursePreRequisiteList = new ArrayList<>();
-
-    public CourseDto toCourseDto() {
-        return CourseMapper.INSTANCE.courseToCourseDto(this);
-    }
 
     public Course(String name, String department, String instructor, Integer creditHours) {
         this.name = name;

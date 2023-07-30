@@ -12,6 +12,9 @@ import org.springframework.stereotype.Component;
 @Component
 @Slf4j
 public class ServiceAdvice {
+    @Pointcut("execution(public * com.example.myregistrar.security.JwtService.generateToken(..))")
+    public void tokenGenerationPointCut() {}
+
     @Pointcut("execution(public com.example.myregistrar.models.* com.example.myregistrar.services.*.get*(..))")
     public void getModelPointCut() {}
 
@@ -38,6 +41,11 @@ public class ServiceAdvice {
     @Before("assignPointCut()")
     public void logAssignMethodExecutionWithinServicesPackage() {
         log.info("Executing assign method matching pointcut within services package");
+    }
+
+    @Before("tokenGenerationPointCut()")
+    public void logTokenGeneration() {
+        log.info("Attempt to generate a new token");
     }
 
     @Before("createMethodPointCut()")
@@ -172,12 +180,30 @@ public class ServiceAdvice {
         log.error("An exception occurred: {}", ex.getMessage());
     }
 
+    @AfterThrowing(pointcut = "tokenGenerationPointCut()", throwing = "ex")
+    public void afterThrowingTokenGeneration(JoinPoint joinPoint, Exception ex) {
+        String declaringMethodType = joinPoint.getSignature().getDeclaringType().getSimpleName();
+        String methodName = joinPoint.getSignature().getName();
+
+        log.error("Token Generation: After Throwing Exception in [{}] {} method within the service layer",
+                declaringMethodType, methodName);
+        log.error("An exception occurred: {}", ex.getMessage());
+    }
+
     @AfterReturning(pointcut = "getPointCut()", returning = "result")
     public void afterReturningGetMethods(JoinPoint joinPoint, Object result) {
         String declaringMethodType = joinPoint.getSignature().getDeclaringType().getSimpleName();
         String methodName = joinPoint.getSignature().getName();
         log.info("Date retrieved from database. Method [{}] {} completed. Result type: {}",
                 declaringMethodType, methodName, result.getClass().getSimpleName());
+    }
+
+    @AfterReturning(pointcut = "tokenGenerationPointCut()")
+    public void afterReturningTokenGeneration(JoinPoint joinPoint) {
+        String declaringMethodType = joinPoint.getSignature().getDeclaringType().getSimpleName();
+        String methodName = joinPoint.getSignature().getName();
+        log.info("Token has been successfully generated. Method [{}] {} completed.",
+                declaringMethodType, methodName);
     }
 
     @AfterReturning(pointcut = "assignPointCut()")

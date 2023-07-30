@@ -1,9 +1,6 @@
 package com.example.myregistrar.dtos;
 
-import com.example.myregistrar.models.Student;
 import com.example.myregistrar.util.JsonMapper;
-import com.example.myregistrar.util.entity_dto_mappers.StudentMapper;
-import jakarta.validation.constraints.Future;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Past;
@@ -32,10 +29,6 @@ public class StudentDto {
     private String email;
 
     private UniversityDto university;
-
-    public Student toStudent() {
-        return StudentMapper.INSTANCE.studentDtoToStudent(this);
-    }
 
     public String toJson() {
         return JsonMapper.toJsonString(this);

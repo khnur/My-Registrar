@@ -1,5 +1,6 @@
 package com.example.myregistrar.services.service_impls;
 
+import com.example.myregistrar.dtos.CourseDto;
 import com.example.myregistrar.embeddables.CoursePreRequisiteId;
 import com.example.myregistrar.exceptions.*;
 import com.example.myregistrar.jms.KafkaService;
@@ -10,6 +11,7 @@ import com.example.myregistrar.repositories.CourseRepo;
 import com.example.myregistrar.repositories.StudentRepo;
 import com.example.myregistrar.services.CourseService;
 import com.example.myregistrar.util.NewModel;
+import com.example.myregistrar.util.entity_dto_mappers.CourseMapper;
 import jakarta.el.MethodNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -227,6 +229,7 @@ public class CourseServiceImpl implements CourseService {
         } else if (course.getUniversity() == null) {
             throw new UniversityNotFoundException("course with id=" + course.getId() + " is not registered by any university");
         }
-        kafkaService.sendToCourseTopic(course.toCourseDto());
+        CourseDto courseDto = CourseMapper.INSTANCE.courseToCourseDto(course);
+        kafkaService.sendToCourseTopic(courseDto);
     }
 }

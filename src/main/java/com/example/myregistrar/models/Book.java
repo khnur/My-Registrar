@@ -1,7 +1,5 @@
 package com.example.myregistrar.models;
 
-import com.example.myregistrar.dtos.BookDto;
-import com.example.myregistrar.util.entity_dto_mappers.BookMapper;
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -52,9 +50,5 @@ public class Book {
         this.publishedDate = publishedDate;
         this.publisher = publisher;
         this.pageNumber = pageNUmber;
-    }
-
-    public BookDto toBookDto() {
-        return BookMapper.INSTANCE.bookToBookDto(this);
     }
 }

@@ -52,7 +52,7 @@ class StudentControllerTest {
         when(studentService.createStudent(any())).thenReturn(student);
 
         StudentDto result = studentController.createStudent(new StudentDto());
-        Assertions.assertEquals(student.toStudentDto(), result);
+        Assertions.assertEquals(StudentMapper.INSTANCE.studentToStudentDto(student), result);
     }
 
     @Test
@@ -78,7 +78,7 @@ class StudentControllerTest {
         when(studentService.getStudentById(anyLong())).thenReturn(student);
 
         StudentDto result = studentController.getStudentById(Long.valueOf(1));
-        Assertions.assertEquals(student.toStudentDto(), result);
+        Assertions.assertEquals(StudentMapper.INSTANCE.studentToStudentDto(student), result);
     }
 
     @Test
@@ -112,7 +112,7 @@ class StudentControllerTest {
         when(universityService.getUniversityByNameAndCountry(anyString(), anyString())).thenReturn(new University("name", "country", "city"));
 
         StudentDto result = studentController.assignStudentToUniversity(Long.valueOf(1), new UniversityDto(Long.valueOf(1), "name", "country", "city"));
-        Assertions.assertEquals(student.toStudentDto(), result);
+        Assertions.assertEquals(StudentMapper.INSTANCE.studentToStudentDto(student), result);
     }
 
     @Test
