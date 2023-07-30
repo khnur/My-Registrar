@@ -1,5 +1,6 @@
 package com.example.myregistrar.controllers;
 
+import com.example.myregistrar.controllers.facade.BookFacade;
 import com.example.myregistrar.dtos.BookDto;
 import com.example.myregistrar.exceptions.BookNotFoundException;
 import com.example.myregistrar.models.Book;
@@ -21,7 +22,7 @@ import static org.mockito.Mockito.*;
 
 class BookControllerTest {
     @Mock
-    BookService bookService;
+    BookFacade bookFacade;
     @InjectMocks
     BookController bookController;
 
@@ -33,7 +34,7 @@ class BookControllerTest {
     @Test
     void testCreateBook() {
         Book book = new Book("name", "author", "genre", LocalDate.EPOCH, "publisher", 0);
-        when(bookService.createBook(any())).thenReturn(book);
+        when(bookFacade.createBook(any())).thenReturn(BookMapper.INSTANCE.bookToBookDto(book));
 
         BookDto result = bookController.createBook(new BookDto());
         Assertions.assertEquals(BookMapper.INSTANCE.bookToBookDto(book), result);
@@ -42,14 +43,14 @@ class BookControllerTest {
 
     @Test
     void testCreateBook_InvalidData() {
-        when(bookService.createBook(any())).thenThrow(new BookNotFoundException(""));
+        when(bookFacade.createBook(any())).thenThrow(new BookNotFoundException(""));
         Assertions.assertThrows(BookNotFoundException.class, () -> bookController.createBook(new BookDto()));
     }
 
     @Test
     void testGetAllBooks() {
         List<Book> bookList = List.of(new Book("name", "author", "genre", LocalDate.EPOCH, "publisher", 0));
-        when(bookService.getAllBooks()).thenReturn(bookList);
+        when(bookFacade.getAllBooks()).thenReturn(BookMapper.INSTANCE.bookListToBookDtoList(bookList));
 
         List<BookDto> result = bookController.getAllBooks();
         Assertions.assertEquals(bookList, BookMapper.INSTANCE.bookDtoListToBookList(result));
@@ -58,7 +59,7 @@ class BookControllerTest {
     @Test
     void testGetBookById() {
         Book book = new Book("name", "author", "genre", LocalDate.EPOCH, "publisher", 0);
-        when(bookService.getBookById(anyLong())).thenReturn(book);
+        when(bookFacade.getBookById(anyLong())).thenReturn(BookMapper.INSTANCE.bookToBookDto(book));
 
         BookDto result = bookController.getBookById(1L);
         Assertions.assertEquals(book, BookMapper.INSTANCE.bookDtoToBook(result));

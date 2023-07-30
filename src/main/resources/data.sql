@@ -5,14 +5,14 @@ INSERT INTO university (name, country, city)
 VALUES ('NU', 'KAZAKHSTAN', 'Astana');
 
 
-INSERT INTO student (first_name, last_name, birth_date, age, gender, email)
-VALUES ('Nurzhan', 'Dope', '1995-08-25', 26, 'Male', 'nurzhan.doe@onelab.kz');
+INSERT INTO student (first_name, last_name, birth_date, age, gender, email, courses_taking)
+VALUES ('Nurzhan', 'Dope', '1995-08-25', 26, 'Male', 'nurzhan.doe@onelab.kz', 2);
 
-INSERT INTO student (first_name, last_name, birth_date, age, gender, email)
-VALUES ('Someone', 'Dope', '1995-08-25', 26, 'Male', 'someone.doe@onelab.kz');
+INSERT INTO student (first_name, last_name, birth_date, age, gender, email, courses_taking)
+VALUES ('Someone', 'Dope', '1995-08-25', 26, 'Male', 'someone.doe@onelab.kz', 2);
 
-INSERT INTO student (first_name, last_name, birth_date, age, gender, email)
-VALUES ('anyone', 'Dope', '1995-08-25', 26, 'Male', 'anyone.doe@onelab.kz');
+INSERT INTO student (first_name, last_name, birth_date, age, gender, email, courses_taking)
+VALUES ('anyone', 'Dope', '1995-08-25', 26, 'Male', 'anyone.doe@onelab.kz', 0);
 
 
 UPDATE student SET university_id = 1 WHERE student.id = 1;
@@ -31,6 +31,9 @@ VALUES ('Java', 'Computer Science', 'Asset', 6, 1);
 
 INSERT INTO course (name, department, instructor, credit_hours, university_id)
 VALUES ('Python', 'Computer Science', 'Ben Tyler', 6, 1);
+
+INSERT INTO course (name, department, instructor, credit_hours, university_id)
+VALUES ('Prolog', 'Computer Science', 'Ben Tyler', 6, 1);
 
 
 INSERT INTO book (name, author, genre, published_date, publisher, page_number)

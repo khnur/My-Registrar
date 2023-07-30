@@ -27,6 +27,7 @@ public class StudentDto {
     private Integer age;
     private String gender;
     private String email;
+    private Integer coursesTaking;
 
     private UniversityDto university;
 

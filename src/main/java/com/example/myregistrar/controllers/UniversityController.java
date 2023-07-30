@@ -1,5 +1,7 @@
 package com.example.myregistrar.controllers;
 
+import com.example.myregistrar.controllers.facade.CourseFacade;
+import com.example.myregistrar.controllers.facade.StudentFacade;
 import com.example.myregistrar.controllers.facade.UniversityFacade;
 import com.example.myregistrar.dtos.CourseDto;
 import com.example.myregistrar.dtos.StudentDto;
@@ -14,6 +16,8 @@ import java.util.List;
 @RequiredArgsConstructor
 public class UniversityController {
     private final UniversityFacade universityFacade;
+    private final StudentFacade studentFacade;
+    private final CourseFacade courseFacade;
 
     @PostMapping
     public UniversityDto createUniversity(@RequestBody UniversityDto universityDto) {
@@ -33,11 +37,11 @@ public class UniversityController {
 
     @GetMapping("/{id}/student")
     public List<StudentDto> getStudentsByUniversity(@PathVariable Long id) {
-        return universityFacade.getStudentsByUniversity(id);
+        return studentFacade.getStudentsByUniversity(id);
     }
 
     @GetMapping("/{id}/course")
     public List<CourseDto> getCoursesByUniversity(@PathVariable Long id) {
-        return universityFacade.getCoursesByUniversity(id);
+        return courseFacade.getCoursesByUniversity(id);
     }
 }

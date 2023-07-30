@@ -1,5 +1,9 @@
 package com.example.myregistrar.controllers;
 
+import com.example.myregistrar.controllers.facade.BookFacade;
+import com.example.myregistrar.controllers.facade.CourseFacade;
+import com.example.myregistrar.controllers.facade.StudentFacade;
+import com.example.myregistrar.controllers.facade.UniversityFacade;
 import com.example.myregistrar.dtos.BookDto;
 import com.example.myregistrar.dtos.CourseDto;
 import com.example.myregistrar.dtos.StudentDto;
@@ -18,6 +22,7 @@ import com.example.myregistrar.services.UniversityService;
 import com.example.myregistrar.util.entity_dto_mappers.BookMapper;
 import com.example.myregistrar.util.entity_dto_mappers.CourseMapper;
 import com.example.myregistrar.util.entity_dto_mappers.StudentMapper;
+import com.example.myregistrar.util.entity_dto_mappers.UniversityMapper;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -35,13 +40,13 @@ import static org.mockito.Mockito.*;
 
 class CourseControllerTest {
     @Mock
-    StudentService studentService;
+    StudentFacade studentService;
     @Mock
-    CourseService courseService;
+    CourseFacade courseService;
     @Mock
-    BookService bookService;
+    BookFacade bookService;
     @Mock
-    UniversityService universityService;
+    UniversityFacade universityService;
     @InjectMocks
     CourseController courseController;
 
@@ -53,7 +58,7 @@ class CourseControllerTest {
     @Test
     void testCreateCourse() {
         Course course = new Course("name", "department", "instructor", 0);
-        when(courseService.createCourse(any())).thenReturn(course);
+        when(courseService.createCourse(any())).thenReturn(CourseMapper.INSTANCE.courseToCourseDto(course));
 
         CourseDto result = courseController.createCourse(new CourseDto());
         Assertions.assertEquals(CourseMapper.INSTANCE.courseToCourseDto(course), result);
@@ -61,16 +66,17 @@ class CourseControllerTest {
 
     @Test
     void testAssignUniversityToCourse_InvalidUniversity() {
-        when(courseService.getCourseById(anyLong())).thenReturn(new Course("name", "department", "instructor", 0));
+        Course course = new Course("name", "department", "instructor", 0);
+        when(courseService.getCourseById(anyLong())).thenReturn(CourseMapper.INSTANCE.courseToCourseDto(course));
         when(universityService.getUniversityById(anyLong())).thenReturn(null);
 
-        Assertions.assertThrows(UniversityNotFoundException.class, () -> courseController.assignUniversityToCourse(1L, new UniversityDto()));
+        Assertions.assertDoesNotThrow(() -> courseController.assignUniversityToCourse(1L, new UniversityDto()));
     }
 
     @Test
     void testGetAllCourses() {
         List<Course> courseList = List.of(new Course("name", "department", "instructor", 0));
-        when(courseService.getAllCourses()).thenReturn(courseList);
+        when(courseService.getAllCourses()).thenReturn(CourseMapper.INSTANCE.courseListToCourseDtoList(courseList));
 
         List<CourseDto> result = courseController.getAllCourses();
         Assertions.assertEquals(CourseMapper.INSTANCE.courseListToCourseDtoList(courseList), result);
@@ -78,16 +84,17 @@ class CourseControllerTest {
 
     @Test
     void testAssignBookToCourse_InvalidBook() {
-        when(courseService.getCourseById(anyLong())).thenReturn(new Course("name", "department", "instructor", 0));
+        Course course = new Course("name", "department", "instructor", 0);
+        when(courseService.getCourseById(anyLong())).thenReturn(CourseMapper.INSTANCE.courseToCourseDto(course));
         when(bookService.getBookById(anyLong())).thenReturn(null);
 
-        Assertions.assertThrows(BookNotFoundException.class, () -> courseController.assignBookToCourse(1L, new BookDto()));
+        Assertions.assertDoesNotThrow(() -> courseController.assignBookToCourse(1L, new BookDto()));
     }
 
     @Test
     void testGetCourseById() {
         Course course = new Course("name", "department", "instructor", 0);
-        when(courseService.getCourseById(anyLong())).thenReturn(course);
+        when(courseService.getCourseById(anyLong())).thenReturn(CourseMapper.INSTANCE.courseToCourseDto(course));
 
         CourseDto result = courseController.getCourseById(1L);
         Assertions.assertEquals(CourseMapper.INSTANCE.courseToCourseDto(course), result);
@@ -97,8 +104,10 @@ class CourseControllerTest {
     void testGetStudentsByCourse() {
         List<Student> students = List.of(new Student("firstName", "lastName",
                 LocalDate.EPOCH, "gender"));
-        when(studentService.getStudentsByCourse(any())).thenReturn(students);
-        when(courseService.getCourseById(anyLong())).thenReturn(new Course("name", "department", "instructor", 0));
+        when(studentService.getStudentsByCourse(any())).thenReturn(StudentMapper.INSTANCE.studentListToStudentDtoList(students));
+        Course course = new Course("name", "department", "instructor", 0);
+
+        when(courseService.getCourseById(anyLong())).thenReturn(CourseMapper.INSTANCE.courseToCourseDto(course));
 
         List<StudentDto> result = courseController.getStudentsByCourse(1L);
         Assertions.assertEquals(StudentMapper.INSTANCE.studentListToStudentDtoList(students), result);
@@ -106,15 +115,16 @@ class CourseControllerTest {
 
     @Test
     void testGetUniversityByCourse() {
-        when(courseService.getCourseById(anyLong())).thenReturn(
-                new Course("name", "department", "instructor", 0));
+        Course course = new Course("name", "department", "instructor", 0);
+        when(courseService.getCourseById(anyLong())).thenReturn(CourseMapper.INSTANCE.courseToCourseDto(course));
 
-        Assertions.assertThrows(UniversityNotFoundException.class, () -> courseController.getUniversityByCourse(1L));
+        Assertions.assertDoesNotThrow(() -> courseController.getUniversityByCourse(1L));
     }
 
     @Test
     void testGetStudentsByCourse_EmptyList() {
-        when(courseService.getCourseById(anyLong())).thenReturn(new Course("name", "department", "instructor", 0));
+        Course course = new Course("name", "department", "instructor", 0);
+        when(courseService.getCourseById(anyLong())).thenReturn(CourseMapper.INSTANCE.courseToCourseDto(course));
 
         when(studentService.getStudentsByCourse(any())).thenReturn(Collections.emptyList());
 
@@ -125,24 +135,25 @@ class CourseControllerTest {
     @Test
     void testAssignPreReqFromCourse_CourseNotFound() {
         when(courseService.getCourseById(anyLong())).thenReturn(null);
-        Assertions.assertThrows(CourseNotFoundException.class, () -> courseController.assignPreReqFromCourse(1L, new CourseDto()));
+        Assertions.assertDoesNotThrow(() -> courseController.assignPreReqFromCourse(1L, new CourseDto()));
     }
 
     @Test
     void testAssignUniversityToCourse() {
-        when(courseService.getCourseById(anyLong())).thenReturn(new Course("name", "department", "instructor", 0));
-        when(universityService.getUniversityById(anyLong())).thenReturn(new University("name", "country", "city"));
-        when(universityService.getUniversityByNameAndCountry(anyString(), anyString())).thenReturn(new University("name", "country", "city"));
+        Course course = new Course("name", "department", "instructor", 0);
+        when(courseService.getCourseById(anyLong())).thenReturn(CourseMapper.INSTANCE.courseToCourseDto(course));
+        University university = new University("name", "country", "city");
+        when(universityService.getUniversityById(anyLong())).thenReturn(UniversityMapper.INSTANCE.universityToUniversityDto(university));
 
-        Assertions.assertThrows(UniversityNotFoundException.class,
-                () -> courseController.assignUniversityToCourse(1L, new UniversityDto()));
+        Assertions.assertDoesNotThrow(() -> courseController.assignUniversityToCourse(1L, new UniversityDto()));
     }
 
     @Test
     void testGetBooksByCourse() {
-        when(courseService.getCourseById(anyLong())).thenReturn(new Course("name", "department", "instructor", 0));
+        Course course = new Course("name", "department", "instructor", 0);
+        when(courseService.getCourseById(anyLong())).thenReturn(CourseMapper.INSTANCE.courseToCourseDto(course));
         List<Book> bookList = List.of(new Book("name", "author", "genre", LocalDate.EPOCH, "publisher", 0));
-        when(bookService.getBooksByCourse(any())).thenReturn(bookList);
+        when(bookService.getBooksByCourse(any())).thenReturn(BookMapper.INSTANCE.bookListToBookDtoList(bookList));
 
         List<BookDto> result = courseController.getBooksByCourse(1L);
         Assertions.assertEquals(BookMapper.INSTANCE.bookListToBookDtoList(bookList), result);
@@ -150,19 +161,21 @@ class CourseControllerTest {
 
     @Test
     void testAssignBookToCourse() {
-        when(courseService.getCourseById(anyLong())).thenReturn(new Course("name", "department", "instructor", 0));
-        when(bookService.getBookById(anyLong())).thenReturn(new Book("name", "author", "genre", LocalDate.EPOCH, "publisher", 0));
+        Course course = new Course("name", "department", "instructor", 0);
+        when(courseService.getCourseById(anyLong())).thenReturn(CourseMapper.INSTANCE.courseToCourseDto(course));
+        Book book = new Book("name", "author", "genre", LocalDate.EPOCH, "publisher", 0);
+        when(bookService.getBookById(anyLong())).thenReturn(BookMapper.INSTANCE.bookToBookDto(book));
 
-        Assertions.assertThrows(BookNotFoundException.class,
-                () -> courseController.assignBookToCourse(1L, new BookDto()));
+        Assertions.assertDoesNotThrow(() -> courseController.assignBookToCourse(1L, new BookDto()));
     }
 
     @Test
     void testGetPreReqsByCourse() {
-        when(courseService.getCourseById(anyLong())).thenReturn(new Course("name", "department", "instructor", 0));
+        Course course = new Course("name", "department", "instructor", 0);
+        when(courseService.getCourseById(anyLong())).thenReturn(CourseMapper.INSTANCE.courseToCourseDto(course));
 
         List<Course> courseList = List.of(new Course("name", "department", "instructor", 0));
-        when(courseService.getCoursePreRequisitesFromCourse(any())).thenReturn(courseList);
+        when(courseService.getPreReqsByCourse(any())).thenReturn(CourseMapper.INSTANCE.courseListToCourseDtoList(courseList));
 
         List<CourseDto> result = courseController.getPreReqsByCourse(1L);
         Assertions.assertEquals(CourseMapper.INSTANCE.courseListToCourseDtoList(courseList), result);
@@ -170,16 +183,18 @@ class CourseControllerTest {
 
     @Test
     void testAssignPreReqFromCourse() {
-        when(courseService.getCourseById(anyLong())).thenReturn(new Course("name", "department", "instructor", 0));
-        Assertions.assertThrows(CourseNotFoundException.class,
-                () -> courseController.assignPreReqFromCourse(1L, new CourseDto()));
+        Course course = new Course("name", "department", "instructor", 0);
+        when(courseService.getCourseById(anyLong())).thenReturn(CourseMapper.INSTANCE.courseToCourseDto(course));
+        Assertions.assertDoesNotThrow(() -> courseController.assignPreReqFromCourse(1L, new CourseDto()));
     }
 
     @Test
     void testGetNotifiedStudents() {
         List<Student> students = List.of(new Student("firstName", "lastName", LocalDate.EPOCH, "gender"));
-        when(studentService.getStudentsByCourse(any())).thenReturn(students);
-        when(courseService.getCourseById(anyLong())).thenReturn(new Course("name", "department", "instructor", 0));
+        when(studentService.getNotifiedStudents(any())).thenReturn(StudentMapper.INSTANCE.studentListToStudentDtoList(students));
+
+        Course course = new Course("name", "department", "instructor", 0);
+        when(courseService.getCourseById(anyLong())).thenReturn(CourseMapper.INSTANCE.courseToCourseDto(course));
 
         List<StudentDto> result = courseController.getNotifiedStudents(1L);
         Assertions.assertEquals(StudentMapper.INSTANCE.studentListToStudentDtoList(students), result);

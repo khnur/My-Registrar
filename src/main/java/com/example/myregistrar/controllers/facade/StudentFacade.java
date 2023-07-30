@@ -1,17 +1,16 @@
 package com.example.myregistrar.controllers.facade;
 
-import com.example.myregistrar.dtos.*;
+import com.example.myregistrar.dtos.StudentDto;
+import com.example.myregistrar.dtos.StudentReportDto;
+import com.example.myregistrar.dtos.UniversityDto;
 import com.example.myregistrar.exceptions.UniversityNotFoundException;
+import com.example.myregistrar.models.Course;
 import com.example.myregistrar.models.Student;
 import com.example.myregistrar.models.University;
-import com.example.myregistrar.services.BookService;
 import com.example.myregistrar.services.CourseService;
 import com.example.myregistrar.services.StudentService;
 import com.example.myregistrar.services.UniversityService;
-import com.example.myregistrar.util.entity_dto_mappers.BookMapper;
-import com.example.myregistrar.util.entity_dto_mappers.CourseMapper;
 import com.example.myregistrar.util.entity_dto_mappers.StudentMapper;
-import com.example.myregistrar.util.entity_dto_mappers.UniversityMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
@@ -22,7 +21,6 @@ import java.util.List;
 public class StudentFacade {
     private final StudentService studentService;
     private final CourseService courseService;
-    private final BookService bookService;
     private final UniversityService universityService;
 
     public StudentDto createStudent(StudentDto studentDto) {
@@ -47,13 +45,11 @@ public class StudentFacade {
         return studentService.getStudentReport(student);
     }
 
-    public UniversityDto getUniversityByStudentId(Long id) {
-        Student student = studentService.getStudentById(id);
-        if (student.getUniversity() == null) {
-            throw new UniversityNotFoundException("Student with name=" + student.getFirstName() +
-                    " has not been approved by any university");
-        }
-        return UniversityMapper.INSTANCE.universityToUniversityDto(student.getUniversity());
+    public List<StudentDto> getStudentsByCourse(Long id) {
+        Course course = courseService.getCourseById(id);
+        return StudentMapper.INSTANCE.studentListToStudentDtoList(
+                studentService.getStudentsByCourse(course)
+        );
     }
 
     public StudentDto assignStudentToUniversity(Long id, UniversityDto universityDto) {
@@ -74,17 +70,20 @@ public class StudentFacade {
         return StudentMapper.INSTANCE.studentToStudentDto(studentService.getStudentById(id));
     }
 
-    public List<CourseDto> getCourseByStudentId(Long id) {
-        Student student = studentService.getStudentById(id);
-        return CourseMapper.INSTANCE.courseListToCourseDtoList(
-                courseService.getCoursesByStudent(student)
+    public List<StudentDto> getStudentsByUniversity(Long id) {
+        University university = universityService.getUniversityById(id);
+        return StudentMapper.INSTANCE
+                .studentListToStudentDtoList(studentService.getStudentsByUniversity(university));
+    }
+
+    public List<StudentDto> getNotifiedStudents(Long id) {
+        Course course = courseService.getCourseById(id);
+        University university = course.getUniversity();
+        courseService.notifyStudentsWithinUniversity(course);
+
+        return StudentMapper.INSTANCE.studentListToStudentDtoList(
+                studentService.getStudentsByUniversity(university)
         );
     }
 
-    public List<BookDto> getBooksByStudentId(Long id) {
-        Student student = studentService.getStudentById(id);
-        return BookMapper.INSTANCE.bookListToBookDtoList(
-                bookService.getBooksByStudent(student)
-        );
-    }
 }

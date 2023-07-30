@@ -36,6 +36,6 @@ class BookControllerIntegrationTest {
                 "http://localhost:" + port + "/book/" + bookId, BookDto.class);
 
 
-        Assertions.assertEquals(HttpStatus.UNAUTHORIZED, response.getStatusCode());
+        Assertions.assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
     }
 }

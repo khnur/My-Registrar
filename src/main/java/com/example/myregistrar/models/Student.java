@@ -1,5 +1,6 @@
 package com.example.myregistrar.models;
 
+import com.example.myregistrar.models.model_utils.Observer;
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -13,7 +14,7 @@ import java.util.List;
 @Table
 @Data
 @NoArgsConstructor
-public class Student {
+public class Student implements Observer {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column
@@ -50,6 +51,9 @@ public class Student {
     )
     private String email;
 
+    @Column(name = "courses_taking")
+    private Integer coursesTaking;
+
     @ManyToOne
     @JoinColumn(
             name = "university_id",
@@ -78,5 +82,11 @@ public class Student {
         this.age = Period.between(birthDate, LocalDate.now()).getYears();
         this.gender = gender;
         this.email = firstName.toLowerCase() + '.' + lastName.toLowerCase() + "@onelab.kz";
+    }
+
+    @Override
+    public void updateCourse() {
+        this.coursesTaking = university == null || courses == null || courses.isEmpty()
+                ? 0 : courses.size();
     }
 }

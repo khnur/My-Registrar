@@ -5,6 +5,7 @@ import com.example.myregistrar.exceptions.*;
 import com.example.myregistrar.models.Course;
 import com.example.myregistrar.models.Student;
 import com.example.myregistrar.models.University;
+import com.example.myregistrar.models.model_utils.StudentEnrolmentManager;
 import com.example.myregistrar.repositories.BookRepo;
 import com.example.myregistrar.repositories.CoursePreRequiteRepo;
 import com.example.myregistrar.repositories.CourseRepo;
@@ -30,6 +31,8 @@ public class StudentServiceImpl implements StudentService {
     private final CourseRepo courseRepo;
     private final CoursePreRequiteRepo coursePreRequiteRepo;
     private final BookRepo bookRepo;
+
+    private final StudentEnrolmentManager studentEnrolmentManager;
 
     @Transactional
     @Override
@@ -142,6 +145,10 @@ public class StudentServiceImpl implements StudentService {
             throw new RuntimeException("Student with id=" + student.getId() + " can not take course with id=" + course.getId());
         }
 
+        if (!studentEnrolmentManager.handleStudent(student, course)) {
+            throw new RuntimeException("Student with id=" + student.getId() + " is not eligible to take course with id=" + course.getId());
+        }
+
         List<Course> courseListByStudent = courseRepo.findCoursesByStudentId(student.getId());
         courseListByStudent.add(course);
 
@@ -149,6 +156,7 @@ public class StudentServiceImpl implements StudentService {
 
         List<Student> studentListByStudent = studentRepo.findStudentsByCourseId(course.getId());
         studentListByStudent.add(student);
+        student.updateCourse();
 
         course.setStudents(studentListByStudent);
 

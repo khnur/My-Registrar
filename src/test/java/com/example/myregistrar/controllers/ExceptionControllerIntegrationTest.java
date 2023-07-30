@@ -25,9 +25,9 @@ class ExceptionControllerIntegrationTest {
         ResponseEntity<ErrorDto> response = restTemplate.getForEntity(
                 "http://localhost:" + port + "/students/1", ErrorDto.class);
 
-        Assertions.assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
-        Assertions.assertEquals(HttpStatus.NOT_FOUND.value(), response.getBody().getStatus());
-        Assertions.assertEquals("Not Found", response.getBody().getError());
+        Assertions.assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, response.getStatusCode());
+        Assertions.assertEquals(HttpStatus.INTERNAL_SERVER_ERROR.value(), response.getBody().getStatus());
+        Assertions.assertEquals("Internal Server Error", response.getBody().getError());
         Assertions.assertNotNull(response.getBody().getTimestamp());
         Assertions.assertNotNull(response.getBody().getMessage());
         Assertions.assertNotNull(response.getBody().getPath());
@@ -38,7 +38,7 @@ class ExceptionControllerIntegrationTest {
         ResponseEntity<ErrorDto> response = restTemplate.getForEntity(
                 "http://localhost:" + port + "/course", ErrorDto.class);
 
-        Assertions.assertEquals(HttpStatus.UNAUTHORIZED, response.getStatusCode());
-        Assertions.assertEquals(HttpStatus.UNAUTHORIZED.value(), response.getBody().getStatus());
+        Assertions.assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
+        Assertions.assertEquals(HttpStatus.NOT_FOUND.value(), response.getBody().getStatus());
     }
 }

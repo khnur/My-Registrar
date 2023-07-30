@@ -5,6 +5,7 @@ import com.example.myregistrar.embeddables.CoursePreRequisiteId;
 import com.example.myregistrar.exceptions.*;
 import com.example.myregistrar.jms.KafkaService;
 import com.example.myregistrar.models.*;
+import com.example.myregistrar.models.model_utils.StudentEnrolmentManager;
 import com.example.myregistrar.repositories.BookRepo;
 import com.example.myregistrar.repositories.CoursePreRequiteRepo;
 import com.example.myregistrar.repositories.CourseRepo;
@@ -14,6 +15,7 @@ import com.example.myregistrar.util.NewModel;
 import com.example.myregistrar.util.entity_dto_mappers.CourseMapper;
 import jakarta.el.MethodNotFoundException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.parameters.P;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -32,6 +34,7 @@ public class CourseServiceImpl implements CourseService {
     private final BookRepo bookRepo;
 
     private final KafkaService kafkaService;
+    private final StudentEnrolmentManager studentEnrolmentManager;
 
     @Transactional
     @Override
@@ -153,8 +156,13 @@ public class CourseServiceImpl implements CourseService {
             throw new RuntimeException("Student with id=" + student.getId() + " can not take course with id=" + course.getId());
         }
 
+        if (!studentEnrolmentManager.handleStudent(student, course)) {
+            throw new RuntimeException("Student with id=" + student.getId() + " is not eligible to take course with id=" + course.getId());
+        }
+
         List<Student> studentListByCourse = studentRepo.findStudentsByCourseId(course.getId());
         studentListByCourse.add(student);
+        student.updateCourse();
 
         course.setStudents(studentListByCourse);
 

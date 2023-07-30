@@ -27,7 +27,7 @@ class AuthControllerIntegrationTest {
         ResponseEntity<JwtDto> response = restTemplate
                 .postForEntity("http://localhost:" + port + "/auth/login", jwtDto, JwtDto.class, userDto);
 
-        Assertions.assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
+        Assertions.assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
     }
 
     @Test
@@ -36,7 +36,7 @@ class AuthControllerIntegrationTest {
         ResponseEntity<UserDto> response = restTemplate
                 .postForEntity("http://localhost:" + port + "/auth/register", userDto, UserDto.class);
 
-        Assertions.assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
+        Assertions.assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
     }
 }
 

@@ -1,8 +1,12 @@
 package com.example.myregistrar.controllers;
 
+import com.example.myregistrar.controllers.facade.BookFacade;
+import com.example.myregistrar.controllers.facade.CourseFacade;
+import com.example.myregistrar.controllers.facade.StudentFacade;
+import com.example.myregistrar.controllers.facade.UniversityFacade;
 import com.example.myregistrar.dtos.auth_dto.ErrorDto;
 import com.example.myregistrar.models.Student;
-import com.example.myregistrar.services.StudentService;
+import com.example.myregistrar.util.entity_dto_mappers.StudentMapper;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
@@ -26,15 +30,15 @@ class StudentControllerIntegrationTest {
     private TestRestTemplate restTemplate;
 
     @Mock
-    StudentService studentService;
+    StudentFacade studentFacade;
 
     @Test
     void testGetStudentById() {
-        when(studentService.getStudentById(anyLong())).thenReturn(new Student());
+        when(studentFacade.getStudentById(anyLong())).thenReturn(StudentMapper.INSTANCE.studentToStudentDto(new Student()));
         ResponseEntity<ErrorDto> response = restTemplate.getForEntity(
                 "http://localhost:" + port + "/student/1", ErrorDto.class);
 
-        Assertions.assertEquals(HttpStatus.UNAUTHORIZED, response.getStatusCode());
-        Assertions.assertEquals(HttpStatus.UNAUTHORIZED.value(), response.getBody().getStatus());
+        Assertions.assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
+        Assertions.assertEquals(HttpStatus.NOT_FOUND.value(), response.getBody().getStatus());
     }
 }

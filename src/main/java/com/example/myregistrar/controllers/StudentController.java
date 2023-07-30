@@ -1,6 +1,9 @@
 package com.example.myregistrar.controllers;
 
+import com.example.myregistrar.controllers.facade.BookFacade;
+import com.example.myregistrar.controllers.facade.CourseFacade;
 import com.example.myregistrar.controllers.facade.StudentFacade;
+import com.example.myregistrar.controllers.facade.UniversityFacade;
 import com.example.myregistrar.dtos.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
@@ -12,6 +15,9 @@ import java.util.List;
 @RequiredArgsConstructor
 public class StudentController {
     private final StudentFacade studentFacade;
+    private final CourseFacade courseFacade;
+    private final UniversityFacade universityFacade;
+    private final BookFacade bookFacade;
 
     @PostMapping
     public StudentDto createStudent(@RequestBody StudentDto studentDto) {
@@ -35,7 +41,7 @@ public class StudentController {
 
     @GetMapping("/{id}/uni")
     public UniversityDto getUniversityByStudentId(@PathVariable Long id) {
-        return studentFacade.getUniversityByStudentId(id);
+        return universityFacade.getUniversityByStudentId(id);
     }
 
     @PutMapping("/{id}/uni")
@@ -45,11 +51,11 @@ public class StudentController {
 
     @GetMapping("/{id}/course")
     public List<CourseDto> getCourseByStudentId(@PathVariable Long id) {
-        return studentFacade.getCourseByStudentId(id);
+        return courseFacade.getCourseByStudentId(id);
     }
 
     @GetMapping("/{id}/book")
     public List<BookDto> getBooksByStudentId(@PathVariable Long id) {
-        return studentFacade.getBooksByStudentId(id);
+        return bookFacade.getBooksByStudentId(id);
     }
 }

@@ -21,6 +21,7 @@ CREATE TABLE IF NOT EXISTS student (
     age INTEGER NOT NULL,
     gender VARCHAR(100) NOT NULL,
     email VARCHAR(120) NOT NULL UNIQUE,
+    courses_taking INTEGER,
     university_id BIGINT,
     FOREIGN KEY (university_id) REFERENCES university (id)
 );

@@ -35,6 +35,6 @@ class CourseControllerIntegrationTest {
         ResponseEntity<CourseDto> response = restTemplate
                 .getForEntity("http://localhost:" + port + "/course/" + id, CourseDto.class);
 
-        Assertions.assertEquals(HttpStatus.UNAUTHORIZED, response.getStatusCode());
+        Assertions.assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
     }
 }

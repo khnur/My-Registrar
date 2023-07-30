@@ -1,5 +1,8 @@
 package com.example.myregistrar.controllers;
 
+import com.example.myregistrar.controllers.facade.CourseFacade;
+import com.example.myregistrar.controllers.facade.StudentFacade;
+import com.example.myregistrar.controllers.facade.UniversityFacade;
 import com.example.myregistrar.dtos.CourseDto;
 import com.example.myregistrar.dtos.StudentDto;
 import com.example.myregistrar.dtos.UniversityDto;
@@ -29,11 +32,11 @@ import static org.mockito.Mockito.*;
 
 class UniversityControllerTest {
     @Mock
-    StudentService studentService;
+    StudentFacade studentService;
     @Mock
-    CourseService courseService;
+    CourseFacade courseService;
     @Mock
-    UniversityService universityService;
+    UniversityFacade universityService;
     @InjectMocks
     UniversityController universityController;
 
@@ -45,7 +48,7 @@ class UniversityControllerTest {
     @Test
     void testCreateUniversity() {
         University university = new University("name", "country", "city");
-        when(universityService.createUniversity(any())).thenReturn(university);
+        when(universityService.createUniversity(any())).thenReturn(UniversityMapper.INSTANCE.universityToUniversityDto(university));
 
         UniversityDto result = universityController.createUniversity(UniversityMapper.INSTANCE.universityToUniversityDto(university));
         result.setId(1L);
@@ -59,11 +62,12 @@ class UniversityControllerTest {
 
     @Test
     void testGetAllUniversities() {
-        when(universityService.getAllUniversities()).thenReturn(List.of(new University("name", "country", "city")));
+        University university = new University("name", "country", "city");
+        when(universityService.getAllUniversities()).thenReturn(List.of(UniversityMapper.INSTANCE.universityToUniversityDto(university)));
 
         List<UniversityDto> result = universityController.getAllUniversities();
         result.get(0).setId(1L);
-        Assertions.assertEquals(List.of(new UniversityDto(Long.valueOf(1), "name", "country", "city")), result);
+        Assertions.assertEquals(List.of(new UniversityDto(1L, "name", "country", "city")), result);
     }
 
     @Test
@@ -74,7 +78,8 @@ class UniversityControllerTest {
 
     @Test
     void testGetUniversityById() {
-        when(universityService.getUniversityById(anyLong())).thenReturn(new University("name", "country", "city"));
+        University university = new University("name", "country", "city");
+        when(universityService.getUniversityById(anyLong())).thenReturn(UniversityMapper.INSTANCE.universityToUniversityDto(university));
 
         UniversityDto result = universityController.getUniversityById(1L);
         result.setId(1L);
@@ -86,9 +91,10 @@ class UniversityControllerTest {
     void testGetStudentsByUniversity() {
         List<Student> students = List.of(new Student("firstName", "lastName",
                 LocalDate.EPOCH, "male"));
-        when(studentService.getStudentsByUniversity(any())).thenReturn(
-                students);
-        when(universityService.getUniversityById(anyLong())).thenReturn(new University("name", "country", "city"));
+        when(studentService.getStudentsByUniversity(any())).thenReturn(StudentMapper.INSTANCE.studentListToStudentDtoList(students));
+
+        University university = new University("name", "country", "city");
+        when(universityService.getUniversityById(anyLong())).thenReturn(UniversityMapper.INSTANCE.universityToUniversityDto(university));
 
         List<StudentDto> result = universityController.getStudentsByUniversity(1L);
         Assertions.assertEquals(StudentMapper.INSTANCE.studentListToStudentDtoList(students), result);
@@ -97,8 +103,10 @@ class UniversityControllerTest {
     @Test
     void testGetCoursesByUniversity() {
         List<Course> courseList = List.of(new Course("name", "department", "instructor", 0));
-        when(courseService.getCoursesByUniversity(any())).thenReturn(courseList);
-        when(universityService.getUniversityById(anyLong())).thenReturn(new University("name", "country", "city"));
+        when(courseService.getCoursesByUniversity(any())).thenReturn(CourseMapper.INSTANCE.courseListToCourseDtoList(courseList));
+
+        University university = new University("name", "country", "city");
+        when(universityService.getUniversityById(anyLong())).thenReturn(UniversityMapper.INSTANCE.universityToUniversityDto(university));
 
         List<CourseDto> result = universityController.getCoursesByUniversity(1L);
         Assertions.assertEquals(CourseMapper.INSTANCE.courseListToCourseDtoList(courseList), result);
