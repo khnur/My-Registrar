@@ -8,6 +8,7 @@ import com.example.myregistrar.exceptions.StudentNotFoundException;
 import com.example.myregistrar.exceptions.UniversityNotFoundException;
 import com.example.myregistrar.jms.KafkaService;
 import com.example.myregistrar.models.*;
+import com.example.myregistrar.models.model_utils.StudentEnrolmentManager;
 import com.example.myregistrar.repositories.BookRepo;
 import com.example.myregistrar.repositories.CoursePreRequiteRepo;
 import com.example.myregistrar.repositories.CourseRepo;
@@ -39,6 +40,9 @@ class CourseServiceImplTest {
     BookRepo bookRepo;
     @Mock
     KafkaService kafkaService;
+
+    @Mock
+    StudentEnrolmentManager studentEnrolmentManager;
     @InjectMocks
     CourseServiceImpl courseServiceImpl;
 
@@ -252,6 +256,7 @@ class CourseServiceImplTest {
 
         Student student = new Student("firstName", "lastName", LocalDate.EPOCH, "gender");
         student.setId(1L);
+        student.setAge(20);
         student.setUniversity(university);
 
         courseServiceImpl.assignStudentToCourse(course, student);

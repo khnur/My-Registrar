@@ -15,7 +15,6 @@ import com.example.myregistrar.util.NewModel;
 import com.example.myregistrar.util.entity_dto_mappers.CourseMapper;
 import jakarta.el.MethodNotFoundException;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.core.parameters.P;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -156,7 +155,7 @@ public class CourseServiceImpl implements CourseService {
             throw new RuntimeException("Student with id=" + student.getId() + " can not take course with id=" + course.getId());
         }
 
-        if (!studentEnrolmentManager.handleStudent(student, course)) {
+        if (studentEnrolmentManager.studentPasses(student, course)) {
             throw new RuntimeException("Student with id=" + student.getId() + " is not eligible to take course with id=" + course.getId());
         }
 

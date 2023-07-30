@@ -8,8 +8,13 @@ import com.example.myregistrar.dtos.BookDto;
 import com.example.myregistrar.dtos.CourseDto;
 import com.example.myregistrar.dtos.StudentDto;
 import com.example.myregistrar.dtos.UniversityDto;
+import com.example.myregistrar.dtos.auth_dto.ResponseDto;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
+
+import static org.springframework.http.HttpStatus.INTERNAL_SERVER_ERROR;
+import static org.springframework.http.HttpStatus.OK;
 
 import java.util.List;
 
@@ -23,8 +28,21 @@ public class CourseController {
     private final UniversityFacade universityFacade;
 
     @PostMapping
-    public CourseDto createCourse(@RequestBody CourseDto courseDto) {
-        return courseFacade.createCourse(courseDto);
+    public ResponseDto<CourseDto> createCourse(@RequestBody @Valid CourseDto courseDto) {
+        CourseDto newCourseDto = courseFacade.createCourse(courseDto);
+
+        if (newCourseDto == null) {
+            return new ResponseDto<>(
+                    INTERNAL_SERVER_ERROR.value(),
+                    INTERNAL_SERVER_ERROR.getReasonPhrase(),
+                    null
+            );
+        }
+        return new ResponseDto<>(
+                OK.value(),
+                OK.getReasonPhrase(),
+                newCourseDto
+        );
     }
 
     @GetMapping

@@ -6,10 +6,15 @@ import com.example.myregistrar.controllers.facade.UniversityFacade;
 import com.example.myregistrar.dtos.CourseDto;
 import com.example.myregistrar.dtos.StudentDto;
 import com.example.myregistrar.dtos.UniversityDto;
+import com.example.myregistrar.dtos.auth_dto.ResponseDto;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+
+import static org.springframework.http.HttpStatus.INTERNAL_SERVER_ERROR;
+import static org.springframework.http.HttpStatus.OK;
 
 @RestController
 @RequestMapping("/university")
@@ -20,8 +25,20 @@ public class UniversityController {
     private final CourseFacade courseFacade;
 
     @PostMapping
-    public UniversityDto createUniversity(@RequestBody UniversityDto universityDto) {
-        return universityFacade.createUniversity(universityDto);
+    public ResponseDto<UniversityDto> createUniversity(@RequestBody @Valid UniversityDto universityDto) {
+        UniversityDto newUniversityDto = universityFacade.createUniversity(universityDto);
+        if (newUniversityDto == null) {
+            return new ResponseDto<>(
+                    INTERNAL_SERVER_ERROR.value(),
+                    INTERNAL_SERVER_ERROR.getReasonPhrase(),
+                    null
+            );
+        }
+        return new ResponseDto<>(
+                OK.value(),
+                OK.getReasonPhrase(),
+                newUniversityDto
+        );
     }
 
     @GetMapping

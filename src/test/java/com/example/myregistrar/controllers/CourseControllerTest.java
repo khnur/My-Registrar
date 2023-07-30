@@ -60,7 +60,7 @@ class CourseControllerTest {
         Course course = new Course("name", "department", "instructor", 0);
         when(courseService.createCourse(any())).thenReturn(CourseMapper.INSTANCE.courseToCourseDto(course));
 
-        CourseDto result = courseController.createCourse(new CourseDto());
+        CourseDto result = courseController.createCourse(new CourseDto()).getObject();
         Assertions.assertEquals(CourseMapper.INSTANCE.courseToCourseDto(course), result);
     }
 

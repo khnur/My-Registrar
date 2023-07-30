@@ -14,6 +14,9 @@ VALUES ('Someone', 'Dope', '1995-08-25', 26, 'Male', 'someone.doe@onelab.kz', 2)
 INSERT INTO student (first_name, last_name, birth_date, age, gender, email, courses_taking)
 VALUES ('anyone', 'Dope', '1995-08-25', 26, 'Male', 'anyone.doe@onelab.kz', 0);
 
+INSERT INTO student (first_name, last_name, birth_date, age, gender, email, courses_taking)
+VALUES ('noone', 'Dope', '1995-08-25', 26, 'Male', 'noone.doe@onelab.kz', 0);
+
 
 UPDATE student SET university_id = 1 WHERE student.id = 1;
 UPDATE student SET university_id = 1 WHERE student.id = 2;

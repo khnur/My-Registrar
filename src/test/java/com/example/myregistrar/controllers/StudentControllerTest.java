@@ -54,7 +54,7 @@ class StudentControllerTest {
                 LocalDate.EPOCH, "gender");
         when(studentFacade.createStudent(any())).thenReturn(StudentMapper.INSTANCE.studentToStudentDto(student));
 
-        StudentDto result = studentController.createStudent(new StudentDto());
+        StudentDto result = studentController.createStudent(new StudentDto()).getObject();
         Assertions.assertEquals(StudentMapper.INSTANCE.studentToStudentDto(student), result);
     }
 

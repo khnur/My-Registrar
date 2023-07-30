@@ -6,6 +6,7 @@ import com.example.myregistrar.models.EndUser;
 import com.example.myregistrar.repositories.EndUserRepo;
 import com.example.myregistrar.services.EndUserService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -13,6 +14,7 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 public class EndUserServiceImpl implements EndUserService {
     private final EndUserRepo endUserRepo;
+    private final PasswordEncoder passwordEncoder;
 
     @Transactional
     @Override
@@ -22,6 +24,10 @@ public class EndUserServiceImpl implements EndUserService {
         } else if (user.getId() != null) {
             throw new UserAlreadyExistsException("User with id=" + user.getId() + " already exists");
         }
+
+        String password = passwordEncoder.encode(user.getPassword());
+        user.setPassword(password);
+
         return endUserRepo.save(user);
     }
 

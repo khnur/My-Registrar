@@ -9,3 +9,7 @@ public class Application {
         SpringApplication.run(Application.class, args);
     }
 }
+
+// localhost:8080/auth/login
+// username : admin
+// password : admin

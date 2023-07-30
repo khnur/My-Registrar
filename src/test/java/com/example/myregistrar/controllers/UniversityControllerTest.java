@@ -50,7 +50,10 @@ class UniversityControllerTest {
         University university = new University("name", "country", "city");
         when(universityService.createUniversity(any())).thenReturn(UniversityMapper.INSTANCE.universityToUniversityDto(university));
 
-        UniversityDto result = universityController.createUniversity(UniversityMapper.INSTANCE.universityToUniversityDto(university));
+        UniversityDto result = universityController
+                .createUniversity(UniversityMapper.INSTANCE.universityToUniversityDto(university))
+                .getObject();
+
         result.setId(1L);
         Assertions.assertEquals(new UniversityDto(1L, "name", "country", "city"), result);
     }

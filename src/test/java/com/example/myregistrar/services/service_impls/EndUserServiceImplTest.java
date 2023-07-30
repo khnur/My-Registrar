@@ -1,6 +1,7 @@
 package com.example.myregistrar.services.service_impls;
 
 import com.example.myregistrar.models.EndUser;
+import com.example.myregistrar.models.model_utils.StudentEnrolmentManager;
 import com.example.myregistrar.repositories.EndUserRepo;
 import jakarta.transaction.Transactional;
 import org.junit.jupiter.api.Assertions;
@@ -9,6 +10,7 @@ import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.util.Optional;
 
@@ -20,6 +22,12 @@ class EndUserServiceImplTest {
     EndUserRepo endUserRepo;
     @InjectMocks
     EndUserServiceImpl endUserServiceImpl;
+
+    @Mock
+    PasswordEncoder passwordEncoder;
+
+    @Mock
+    StudentEnrolmentManager studentEnrolmentManager;
 
     @BeforeEach
     void setUp() {

@@ -145,7 +145,7 @@ public class StudentServiceImpl implements StudentService {
             throw new RuntimeException("Student with id=" + student.getId() + " can not take course with id=" + course.getId());
         }
 
-        if (!studentEnrolmentManager.handleStudent(student, course)) {
+        if (studentEnrolmentManager.studentPasses(student, course)) {
             throw new RuntimeException("Student with id=" + student.getId() + " is not eligible to take course with id=" + course.getId());
         }
 
@@ -216,6 +216,7 @@ public class StudentServiceImpl implements StudentService {
 
                     return coursePreRequiteRepo.findPrerequisiteCoursesByCourseId(course.getId()).stream();
                 })
+                .distinct()
                 .forEach(coursePreRequite -> {
                     if (coursePreRequite == null || coursePreRequite.getId() == null) {
                         throw new CourseNotFoundException("coursePreReq is null or has not been registered");

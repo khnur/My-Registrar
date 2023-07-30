@@ -36,7 +36,7 @@ class BookControllerTest {
         Book book = new Book("name", "author", "genre", LocalDate.EPOCH, "publisher", 0);
         when(bookFacade.createBook(any())).thenReturn(BookMapper.INSTANCE.bookToBookDto(book));
 
-        BookDto result = bookController.createBook(new BookDto());
+        BookDto result = bookController.createBook(new BookDto()).getObject();
         Assertions.assertEquals(BookMapper.INSTANCE.bookToBookDto(book), result);
     }
 

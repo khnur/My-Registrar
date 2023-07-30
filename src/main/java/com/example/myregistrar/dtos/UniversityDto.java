@@ -3,6 +3,7 @@ package com.example.myregistrar.dtos;
 import com.example.myregistrar.models.University;
 import com.example.myregistrar.util.JsonMapper;
 import com.example.myregistrar.util.entity_dto_mappers.UniversityMapper;
+import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -13,6 +14,7 @@ import lombok.NoArgsConstructor;
 public class UniversityDto {
     private Long id;
 
+    @NotBlank
     private String name;
 
     private String country;
