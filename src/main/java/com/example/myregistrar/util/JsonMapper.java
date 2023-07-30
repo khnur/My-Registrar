@@ -5,13 +5,17 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import lombok.extern.slf4j.Slf4j;
 
+import java.text.SimpleDateFormat;
+
 @Slf4j
 public class JsonMapper {
+    private static final String PATTERN = "yyyy-MM-dd";
+    private static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat(PATTERN);
     private static final ObjectMapper mapper = new ObjectMapper();
 
     static {
         mapper.enable(SerializationFeature.INDENT_OUTPUT);
-        mapper.setDateFormat(DateMapper.DATE_FORMAT);
+        mapper.setDateFormat(DATE_FORMAT);
     }
 
     public static String toJsonString(Object entity) {

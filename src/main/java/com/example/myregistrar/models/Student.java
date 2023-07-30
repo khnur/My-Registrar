@@ -1,14 +1,14 @@
 package com.example.myregistrar.models;
 
 import com.example.myregistrar.dtos.StudentDto;
-import com.example.myregistrar.util.DateMapper;
 import com.example.myregistrar.util.entity_dto_mappers.StudentMapper;
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDate;
+import java.time.Period;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 @Entity
@@ -33,11 +33,12 @@ public class Student {
     )
     private String lastName;
 
+    @Temporal(TemporalType.DATE)
     @Column(
             name = "birth_date",
             nullable = false
     )
-    private Date birthDate;
+    private LocalDate birthDate;
 
     @Column(nullable = false)
     private Integer age;
@@ -50,13 +51,6 @@ public class Student {
             unique = true
     )
     private String email;
-
-    @Column(nullable = false)
-    private String password;
-
-    @Column(nullable = false)
-    private String role;
-
 
     @ManyToOne
     @JoinColumn(
@@ -79,15 +73,13 @@ public class Student {
     )
     private List<Course> courses = new ArrayList<>();
 
-    public Student(String firstName, String lastName, Date birthDate, String gender, String password, String role) {
+    public Student(String firstName, String lastName, LocalDate birthDate, String gender) {
         this.firstName = firstName;
         this.lastName = lastName;
         this.birthDate = birthDate;
-        this.age = DateMapper.GET_AGE(birthDate);
+        this.age = Period.between(birthDate, LocalDate.now()).getYears();
         this.gender = gender;
         this.email = firstName.toLowerCase() + '.' + lastName.toLowerCase() + "@onelab.kz";
-        this.password = password;
-        this.role = role;
     }
 
     public StudentDto toStudentDto() {

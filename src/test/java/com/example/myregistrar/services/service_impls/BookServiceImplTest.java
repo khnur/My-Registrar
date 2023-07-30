@@ -15,6 +15,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
+import java.time.LocalDate;
 import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -117,7 +118,7 @@ class BookServiceImplTest {
                         "name",
                         "author",
                         "genre",
-                        new GregorianCalendar(2023, Calendar.JULY, 28, 15, 17).getTime(),
+                        LocalDate.EPOCH,
                         "publisher",
                         0)
         );
@@ -131,7 +132,7 @@ class BookServiceImplTest {
     @Test
     void testGetBookById() {
         long bookId = 1L;
-        Book mockBook = new Book("name", "author", "genre", new GregorianCalendar(2023, Calendar.JULY, 28, 15, 17).getTime(), "publisher", 0);
+        Book mockBook = new Book("name", "author", "genre", LocalDate.EPOCH, "publisher", 0);
         when(bookRepo.findById(bookId)).thenReturn(Optional.of(mockBook));
 
         Book result = bookServiceImpl.getBookById(bookId);
@@ -141,7 +142,7 @@ class BookServiceImplTest {
 
     @Test
     void testGetBooksByName_BooksExist() {
-        List<Book> mockBookList = List.of(new Book("name", "author", "genre", new GregorianCalendar(2023, Calendar.JULY, 28, 15, 17).getTime(), "publisher", 0));
+        List<Book> mockBookList = List.of(new Book("name", "author", "genre", LocalDate.EPOCH, "publisher", 0));
         when(bookRepo.findBooksByName("name")).thenReturn(mockBookList);
 
         List<Book> result = bookServiceImpl.getBooksByName("name");
@@ -163,7 +164,7 @@ class BookServiceImplTest {
 
     @Test
     void testGetBooksByAuthor_BooksExist() {
-        List<Book> mockBookList = List.of(new Book("name", "author", "genre", new GregorianCalendar(2023, Calendar.JULY, 28, 15, 17).getTime(), "publisher", 0));
+        List<Book> mockBookList = List.of(new Book("name", "author", "genre", LocalDate.EPOCH, "publisher", 0));
         when(bookRepo.findBooksByAuthor("author")).thenReturn(mockBookList);
 
         List<Book> result = bookServiceImpl.getBooksByAuthor("author");
@@ -187,7 +188,7 @@ class BookServiceImplTest {
     void testGetBookByNameAndAuthor_BookExists() {
         String name = "name";
         String author = "author";
-        Book mockBook = new Book(name, author, "genre", new GregorianCalendar(2023, Calendar.JULY, 28, 15, 17).getTime(), "publisher", 0);
+        Book mockBook = new Book(name, author, "genre", LocalDate.EPOCH, "publisher", 0);
         when(bookRepo.findBookByNameAndAuthor(name, author)).thenReturn(Optional.of(mockBook));
 
         Book result = bookServiceImpl.getBookByNameAndAuthor(name, author);
@@ -207,10 +208,10 @@ class BookServiceImplTest {
     @Test
     void testGetBooksByStudent_StudentExists() {
         long studentId = 1L;
-        Student mockStudent = new Student("firstName", "lastName", new GregorianCalendar(2023, Calendar.JULY, 28, 15, 17).getTime(), "gender", "password", "role");
+        Student mockStudent = new Student("firstName", "lastName", LocalDate.EPOCH, "gender");
         mockStudent.setId(studentId);
 
-        List<Book> mockBookList = List.of(new Book("name", "author", "genre", new GregorianCalendar(2023, Calendar.JULY, 28, 15, 17).getTime(), "publisher", 0));
+        List<Book> mockBookList = List.of(new Book("name", "author", "genre", LocalDate.EPOCH, "publisher", 0));
         when(bookRepo.findBooksByStudentId(studentId)).thenReturn(mockBookList);
 
         List<Book> result = bookServiceImpl.getBooksByStudent(mockStudent);
@@ -220,7 +221,7 @@ class BookServiceImplTest {
 
     @Test
     void testGetBooksByStudent_StudentDoesNotExist() {
-        Student mockStudent = new Student("firstName", "lastName", new GregorianCalendar(2023, Calendar.JULY, 28, 15, 17).getTime(), "gender", "password", "role");
+        Student mockStudent = new Student("firstName", "lastName", LocalDate.EPOCH, "gender");
         assertThrows(StudentNotFoundException.class, () -> bookServiceImpl.getBooksByStudent(mockStudent));
     }
 
@@ -230,7 +231,7 @@ class BookServiceImplTest {
         Course mockCourse = new Course("name", "department", "instructor", 0);
         mockCourse.setId(courseId);
 
-        List<Book> mockBookList = List.of(new Book("name", "author", "genre", new GregorianCalendar(2023, Calendar.JULY, 28, 15, 17).getTime(), "publisher", 0));
+        List<Book> mockBookList = List.of(new Book("name", "author", "genre", LocalDate.EPOCH, "publisher", 0));
         when(bookRepo.findBooksByCourseId(courseId)).thenReturn(mockBookList);
 
         List<Book> result = bookServiceImpl.getBooksByCourse(mockCourse);

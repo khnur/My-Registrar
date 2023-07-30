@@ -5,7 +5,7 @@ import com.example.myregistrar.util.JsonMapper;
 import com.example.myregistrar.util.entity_dto_mappers.BookMapper;
 import lombok.Data;
 
-import java.util.Date;
+import java.time.LocalDate;
 
 @Data
 public class BookDto {
@@ -13,7 +13,7 @@ public class BookDto {
     private String name;
     private String author;
     private String genre;
-    private Date publishedDate;
+    private LocalDate publishedDate;
     private String publisher;
     private Integer pageNumber;
 

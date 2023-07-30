@@ -1,6 +1,6 @@
 package com.example.myregistrar.controllers;
 
-import com.example.myregistrar.dtos.ErrorDto;
+import com.example.myregistrar.dtos.auth_dto.ErrorDto;
 import com.example.myregistrar.exceptions.CourseAlreadyExistsException;
 import com.example.myregistrar.exceptions.StudentNotFoundException;
 import jakarta.servlet.http.HttpServletRequest;

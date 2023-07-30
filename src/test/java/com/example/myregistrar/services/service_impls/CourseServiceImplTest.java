@@ -20,6 +20,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
+import java.time.LocalDate;
 import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
@@ -101,7 +102,7 @@ class CourseServiceImplTest {
 
     @Test
     void testGetAllCourses() {
-        List<Course> expectedCourses = List.of(new Course("name", "department", "instructor", Integer.valueOf(0)));
+        List<Course> expectedCourses = List.of(new Course("name", "department", "instructor", 0));
 
         when(courseRepo.findAll()).thenReturn(expectedCourses);
 
@@ -114,7 +115,7 @@ class CourseServiceImplTest {
     void testGetCoursesByName() {
         String courseName = "name";
 
-        List<Course> expectedCourses = List.of(new Course("name", "department", "instructor", Integer.valueOf(0)));
+        List<Course> expectedCourses = List.of(new Course("name", "department", "instructor", 0));
 
         when(courseRepo.findCoursesByName(courseName)).thenReturn(expectedCourses);
 
@@ -174,7 +175,7 @@ class CourseServiceImplTest {
     void testGetCoursesByStudent() {
         Long studentId = 1L;
 
-        Student student = new Student("firstName", "lastName", new GregorianCalendar(2023, Calendar.JULY, 28, 16, 39).getTime(), "gender", "password", "role");
+        Student student = new Student("firstName", "lastName", LocalDate.EPOCH, "gender");
         student.setId(studentId);
 
         List<Course> expectedCourses = List.of(new Course("name", "department", "instructor", 0));
@@ -190,7 +191,7 @@ class CourseServiceImplTest {
     void testGetCoursesByStudent_NullPoint() {
         Long studentId = 1L;
 
-        Student student = new Student("firstName", "lastName", new GregorianCalendar(2023, Calendar.JULY, 28, 16, 39).getTime(), "gender", "password", "role");
+        Student student = new Student("firstName", "lastName", LocalDate.EPOCH, "gender");
 
         List<Course> expectedCourses = List.of(new Course("name", "department", "instructor", 0));
 
@@ -208,7 +209,7 @@ class CourseServiceImplTest {
         Course course = new Course("name", "department", "instructor", 0);
         course.setId(courseId);
 
-        Book book = new Book("name", "author", "genre", new GregorianCalendar(2023, Calendar.JULY, 28, 16, 39).getTime(), "publisher", Integer.valueOf(0));
+        Book book = new Book("name", "author", "genre", LocalDate.EPOCH, "publisher", Integer.valueOf(0));
         book.setId(bookId);
 
         List<Book> expectedBooks = new ArrayList<>();
@@ -227,7 +228,7 @@ class CourseServiceImplTest {
         Course course = new Course("name", "department", "instructor", 0);
         course.setId(courseId);
 
-        Book book = new Book("name", "author", "genre", new GregorianCalendar(2023, Calendar.JULY, 28, 16, 39).getTime(), "publisher", Integer.valueOf(0));
+        Book book = new Book("name", "author", "genre",LocalDate.EPOCH, "publisher", 0);
 
         List<Book> expectedBooks = new ArrayList<>();
 
@@ -249,7 +250,7 @@ class CourseServiceImplTest {
         course.setId(1L);
         course.setUniversity(university);
 
-        Student student = new Student("firstName", "lastName", new GregorianCalendar(2023, Calendar.JULY, 28, 16, 39).getTime(), "gender", "password", "role");
+        Student student = new Student("firstName", "lastName", LocalDate.EPOCH, "gender");
         student.setId(1L);
         student.setUniversity(university);
 
@@ -272,7 +273,7 @@ class CourseServiceImplTest {
         Course course = new Course("name", "department", "instructor", 0);
         course.setUniversity(university);
 
-        Student student = new Student("firstName", "lastName", new GregorianCalendar(2023, Calendar.JULY, 28, 16, 39).getTime(), "gender", "password", "role");
+        Student student = new Student("firstName", "lastName", LocalDate.EPOCH, "gender");
         student.setId(1L);
         student.setUniversity(university);
 

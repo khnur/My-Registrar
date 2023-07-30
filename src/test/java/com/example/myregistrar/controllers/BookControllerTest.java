@@ -12,6 +12,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
+import java.time.LocalDate;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
 import java.util.List;
@@ -31,7 +32,7 @@ class BookControllerTest {
 
     @Test
     void testCreateBook() {
-        Book book = new Book("name", "author", "genre", new GregorianCalendar(2023, Calendar.JULY, 28, 21, 48).getTime(), "publisher", Integer.valueOf(0));
+        Book book = new Book("name", "author", "genre", LocalDate.EPOCH, "publisher", 0);
         when(bookService.createBook(any())).thenReturn(book);
 
         BookDto result = bookController.createBook(new BookDto());
@@ -47,7 +48,7 @@ class BookControllerTest {
 
     @Test
     void testGetAllBooks() {
-        List<Book> bookList = List.of(new Book("name", "author", "genre", new GregorianCalendar(2023, Calendar.JULY, 28, 21, 48).getTime(), "publisher", Integer.valueOf(0)));
+        List<Book> bookList = List.of(new Book("name", "author", "genre", LocalDate.EPOCH, "publisher", 0));
         when(bookService.getAllBooks()).thenReturn(bookList);
 
         List<BookDto> result = bookController.getAllBooks();
@@ -56,10 +57,10 @@ class BookControllerTest {
 
     @Test
     void testGetBookById() {
-        Book book = new Book("name", "author", "genre", new GregorianCalendar(2023, Calendar.JULY, 28, 21, 48).getTime(), "publisher", Integer.valueOf(0));
+        Book book = new Book("name", "author", "genre", LocalDate.EPOCH, "publisher", 0);
         when(bookService.getBookById(anyLong())).thenReturn(book);
 
-        BookDto result = bookController.getBookById(Long.valueOf(1));
+        BookDto result = bookController.getBookById(1L);
         Assertions.assertEquals(book, result.toBook());
     }
 

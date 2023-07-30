@@ -1,4 +1,4 @@
-package com.example.myregistrar.dtos;
+package com.example.myregistrar.dtos.auth_dto;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.AllArgsConstructor;
@@ -6,7 +6,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.util.Date;
+import java.time.LocalDateTime;
 
 @Data
 @Builder
@@ -14,7 +14,7 @@ import java.util.Date;
 @NoArgsConstructor
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class ErrorDto {
-    private Date timestamp;
+    private LocalDateTime timestamp;
     private int status;
     private String error;
     private String path;

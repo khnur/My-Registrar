@@ -1,10 +1,11 @@
 package com.example.myregistrar.controllers;
 
-import com.example.myregistrar.dtos.ErrorDto;
-import com.example.myregistrar.dtos.StudentDto;
+import com.example.myregistrar.dtos.auth_dto.ErrorDto;
 import com.example.myregistrar.models.Student;
+import com.example.myregistrar.services.StudentService;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mock;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.client.TestRestTemplate;
@@ -12,7 +13,8 @@ import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
-import java.util.Date;
+import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.Mockito.when;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 class StudentControllerIntegrationTest {
@@ -23,25 +25,16 @@ class StudentControllerIntegrationTest {
     @Autowired
     private TestRestTemplate restTemplate;
 
-    @Test
-    void testCreateStudent_Success() {
-        Student student= new Student("Nurzhan", "kkk", new Date(), "password", "aaa", "USER");
-
-        ResponseEntity<StudentDto> response = restTemplate.postForEntity(
-                "http://localhost:" + port + "/student", student.toStudentDto(), StudentDto.class);
-
-        Assertions.assertEquals(HttpStatus.OK, response.getStatusCode());
-        Assertions.assertNotNull(response.getBody());
-        Assertions.assertEquals("Nurzhan", response.getBody().getFirstName());
-        Assertions.assertEquals("kkk", response.getBody().getLastName());
-    }
+    @Mock
+    StudentService studentService;
 
     @Test
     void testGetStudentById() {
+        when(studentService.getStudentById(anyLong())).thenReturn(new Student());
         ResponseEntity<ErrorDto> response = restTemplate.getForEntity(
                 "http://localhost:" + port + "/student/1", ErrorDto.class);
 
-        Assertions.assertEquals(HttpStatus.OK, response.getStatusCode());
-        Assertions.assertEquals(0, response.getBody().getStatus());
+        Assertions.assertEquals(HttpStatus.UNAUTHORIZED, response.getStatusCode());
+        Assertions.assertEquals(HttpStatus.UNAUTHORIZED.value(), response.getBody().getStatus());
     }
 }

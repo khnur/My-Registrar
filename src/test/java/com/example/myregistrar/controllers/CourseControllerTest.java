@@ -25,6 +25,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
+import java.time.LocalDate;
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.GregorianCalendar;
@@ -60,15 +61,15 @@ class CourseControllerTest {
 
     @Test
     void testAssignUniversityToCourse_InvalidUniversity() {
-        when(courseService.getCourseById(anyLong())).thenReturn(new Course("name", "department", "instructor", Integer.valueOf(0)));
+        when(courseService.getCourseById(anyLong())).thenReturn(new Course("name", "department", "instructor", 0));
         when(universityService.getUniversityById(anyLong())).thenReturn(null);
 
-        Assertions.assertThrows(UniversityNotFoundException.class, () -> courseController.assignUniversityToCourse(Long.valueOf(1), new UniversityDto()));
+        Assertions.assertThrows(UniversityNotFoundException.class, () -> courseController.assignUniversityToCourse(1L, new UniversityDto()));
     }
 
     @Test
     void testGetAllCourses() {
-        List<Course> courseList = List.of(new Course("name", "department", "instructor", Integer.valueOf(0)));
+        List<Course> courseList = List.of(new Course("name", "department", "instructor", 0));
         when(courseService.getAllCourses()).thenReturn(courseList);
 
         List<CourseDto> result = courseController.getAllCourses();
@@ -77,28 +78,27 @@ class CourseControllerTest {
 
     @Test
     void testAssignBookToCourse_InvalidBook() {
-        when(courseService.getCourseById(anyLong())).thenReturn(new Course("name", "department", "instructor", Integer.valueOf(0)));
+        when(courseService.getCourseById(anyLong())).thenReturn(new Course("name", "department", "instructor", 0));
         when(bookService.getBookById(anyLong())).thenReturn(null);
 
-        Assertions.assertThrows(BookNotFoundException.class, () -> courseController.assignBookToCourse(Long.valueOf(1), new BookDto()));
+        Assertions.assertThrows(BookNotFoundException.class, () -> courseController.assignBookToCourse(1L, new BookDto()));
     }
 
     @Test
     void testGetCourseById() {
-        Course course = new Course("name", "department", "instructor", Integer.valueOf(0));
+        Course course = new Course("name", "department", "instructor", 0);
         when(courseService.getCourseById(anyLong())).thenReturn(course);
 
-        CourseDto result = courseController.getCourseById(Long.valueOf(1));
+        CourseDto result = courseController.getCourseById(1L);
         Assertions.assertEquals(course.toCourseDto(), result);
     }
 
     @Test
     void testGetStudentsByCourse() {
-        List<Student> students = List.of(new Student("firstName", "lastName", new
-                GregorianCalendar(2023, Calendar.JULY, 28, 22, 3).getTime(),
-                "gender", "password", "role"));
+        List<Student> students = List.of(new Student("firstName", "lastName",
+                LocalDate.EPOCH, "gender"));
         when(studentService.getStudentsByCourse(any())).thenReturn(students);
-        when(courseService.getCourseById(anyLong())).thenReturn(new Course("name", "department", "instructor", Integer.valueOf(0)));
+        when(courseService.getCourseById(anyLong())).thenReturn(new Course("name", "department", "instructor", 0));
 
         List<StudentDto> result = courseController.getStudentsByCourse(1L);
         Assertions.assertEquals(StudentMapper.INSTANCE.studentListToStudentDtoList(students), result);
@@ -114,23 +114,23 @@ class CourseControllerTest {
 
     @Test
     void testGetStudentsByCourse_EmptyList() {
-        when(courseService.getCourseById(anyLong())).thenReturn(new Course("name", "department", "instructor", Integer.valueOf(0)));
+        when(courseService.getCourseById(anyLong())).thenReturn(new Course("name", "department", "instructor", 0));
 
         when(studentService.getStudentsByCourse(any())).thenReturn(Collections.emptyList());
 
-        List<StudentDto> result = courseController.getStudentsByCourse(Long.valueOf(1));
+        List<StudentDto> result = courseController.getStudentsByCourse(1L);
         Assertions.assertEquals(Collections.emptyList(), result);
     }
 
     @Test
     void testAssignPreReqFromCourse_CourseNotFound() {
         when(courseService.getCourseById(anyLong())).thenReturn(null);
-        Assertions.assertThrows(CourseNotFoundException.class, () -> courseController.assignPreReqFromCourse(Long.valueOf(1), new CourseDto()));
+        Assertions.assertThrows(CourseNotFoundException.class, () -> courseController.assignPreReqFromCourse(1L, new CourseDto()));
     }
 
     @Test
     void testAssignUniversityToCourse() {
-        when(courseService.getCourseById(anyLong())).thenReturn(new Course("name", "department", "instructor", Integer.valueOf(0)));
+        when(courseService.getCourseById(anyLong())).thenReturn(new Course("name", "department", "instructor", 0));
         when(universityService.getUniversityById(anyLong())).thenReturn(new University("name", "country", "city"));
         when(universityService.getUniversityByNameAndCountry(anyString(), anyString())).thenReturn(new University("name", "country", "city"));
 
@@ -140,28 +140,28 @@ class CourseControllerTest {
 
     @Test
     void testGetBooksByCourse() {
-        when(courseService.getCourseById(anyLong())).thenReturn(new Course("name", "department", "instructor", Integer.valueOf(0)));
-        List<Book> bookList = List.of(new Book("name", "author", "genre", new GregorianCalendar(2023, Calendar.JULY, 28, 22, 3).getTime(), "publisher", Integer.valueOf(0)));
+        when(courseService.getCourseById(anyLong())).thenReturn(new Course("name", "department", "instructor", 0));
+        List<Book> bookList = List.of(new Book("name", "author", "genre", LocalDate.EPOCH, "publisher", 0));
         when(bookService.getBooksByCourse(any())).thenReturn(bookList);
 
-        List<BookDto> result = courseController.getBooksByCourse(Long.valueOf(1));
+        List<BookDto> result = courseController.getBooksByCourse(1L);
         Assertions.assertEquals(BookMapper.INSTANCE.bookListToBookDtoList(bookList), result);
     }
 
     @Test
     void testAssignBookToCourse() {
-        when(courseService.getCourseById(anyLong())).thenReturn(new Course("name", "department", "instructor", Integer.valueOf(0)));
-        when(bookService.getBookById(anyLong())).thenReturn(new Book("name", "author", "genre", new GregorianCalendar(2023, Calendar.JULY, 28, 22, 3).getTime(), "publisher", Integer.valueOf(0)));
+        when(courseService.getCourseById(anyLong())).thenReturn(new Course("name", "department", "instructor", 0));
+        when(bookService.getBookById(anyLong())).thenReturn(new Book("name", "author", "genre", LocalDate.EPOCH, "publisher", 0));
 
         Assertions.assertThrows(BookNotFoundException.class,
-                () -> courseController.assignBookToCourse(Long.valueOf(1), new BookDto()));
+                () -> courseController.assignBookToCourse(1L, new BookDto()));
     }
 
     @Test
     void testGetPreReqsByCourse() {
-        when(courseService.getCourseById(anyLong())).thenReturn(new Course("name", "department", "instructor", Integer.valueOf(0)));
+        when(courseService.getCourseById(anyLong())).thenReturn(new Course("name", "department", "instructor", 0));
 
-        List<Course> courseList = List.of(new Course("name", "department", "instructor", Integer.valueOf(0)));
+        List<Course> courseList = List.of(new Course("name", "department", "instructor", 0));
         when(courseService.getCoursePreRequisitesFromCourse(any())).thenReturn(courseList);
 
         List<CourseDto> result = courseController.getPreReqsByCourse(1L);
@@ -170,16 +170,16 @@ class CourseControllerTest {
 
     @Test
     void testAssignPreReqFromCourse() {
-        when(courseService.getCourseById(anyLong())).thenReturn(new Course("name", "department", "instructor", Integer.valueOf(0)));
+        when(courseService.getCourseById(anyLong())).thenReturn(new Course("name", "department", "instructor", 0));
         Assertions.assertThrows(CourseNotFoundException.class,
                 () -> courseController.assignPreReqFromCourse(1L, new CourseDto()));
     }
 
     @Test
     void testGetNotifiedStudents() {
-        List<Student> students = List.of(new Student("firstName", "lastName", new GregorianCalendar(2023, Calendar.JULY, 28, 22, 3).getTime(), "gender", "password", "role"));
+        List<Student> students = List.of(new Student("firstName", "lastName", LocalDate.EPOCH, "gender"));
         when(studentService.getStudentsByCourse(any())).thenReturn(students);
-        when(courseService.getCourseById(anyLong())).thenReturn(new Course("name", "department", "instructor", Integer.valueOf(0)));
+        when(courseService.getCourseById(anyLong())).thenReturn(new Course("name", "department", "instructor", 0));
 
         List<StudentDto> result = courseController.getNotifiedStudents(1L);
         Assertions.assertEquals(StudentMapper.INSTANCE.studentListToStudentDtoList(students), result);

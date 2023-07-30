@@ -1,4 +1,4 @@
-package com.example.myregistrar.dtos;
+package com.example.myregistrar.dtos.auth_dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -7,7 +7,6 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class LoginDto {
-    private String email;
-    private String password;
+public class JwtDto {
+    private String jwt;
 }

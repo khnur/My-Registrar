@@ -6,7 +6,7 @@ import jakarta.persistence.*;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.util.Date;
+import java.time.LocalDate;
 
 @Entity
 @Table
@@ -29,7 +29,7 @@ public class Book {
 
     @Temporal(TemporalType.DATE)
     @Column(name = "published_date")
-    private Date publishedDate;
+    private LocalDate publishedDate;
 
     @Column
     private String publisher;
@@ -45,7 +45,7 @@ public class Book {
     )
     private Course course;
 
-    public Book(String name, String author, String genre, Date publishedDate, String publisher, Integer pageNUmber) {
+    public Book(String name, String author, String genre, LocalDate publishedDate, String publisher, Integer pageNUmber) {
         this.name = name;
         this.author = author;
         this.genre = genre;

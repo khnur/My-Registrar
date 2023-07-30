@@ -1,9 +1,8 @@
 package com.example.myregistrar.util;
 
-import com.example.myregistrar.dtos.LoginDto;
+import com.example.myregistrar.dtos.auth_dto.UserDto;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.exc.InvalidDefinitionException;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -29,7 +28,7 @@ class JsonMapperTest {
 
     @Test
     void testToJsonString() throws JsonProcessingException {
-        LoginDto loginDto = new LoginDto();
+        UserDto loginDto = new UserDto();
         String expectedResult = """
                 
                 LoginDto {
@@ -54,7 +53,7 @@ class JsonMapperTest {
 
     @Test
     void testToJsonStringException() throws JsonProcessingException {
-        Object entity = new LoginDto();
+        Object entity = new UserDto();
 
         when(mapper.writeValueAsString(entity)).thenThrow(new RuntimeException("Test exception"));
 

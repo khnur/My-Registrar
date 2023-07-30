@@ -1,7 +1,6 @@
 package com.example.myregistrar.controllers;
 
-import com.example.myregistrar.dtos.CourseDto;
-import com.example.myregistrar.dtos.ErrorDto;
+import com.example.myregistrar.dtos.auth_dto.ErrorDto;
 import com.example.myregistrar.models.Course;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -36,11 +35,10 @@ class ExceptionControllerIntegrationTest {
 
     @Test
     void testHandleCourseAlreadyExistsException() {
-        Course course = new Course("name", "department", "instructor", 0);
-        ResponseEntity<ErrorDto> response = restTemplate.postForEntity(
-                "http://localhost:" + port + "/course", course.toCourseDto(), ErrorDto.class);
+        ResponseEntity<ErrorDto> response = restTemplate.getForEntity(
+                "http://localhost:" + port + "/course", ErrorDto.class);
 
-        Assertions.assertEquals(HttpStatus.OK, response.getStatusCode());
-        Assertions.assertEquals(0, response.getBody().getStatus());
+        Assertions.assertEquals(HttpStatus.UNAUTHORIZED, response.getStatusCode());
+        Assertions.assertEquals(HttpStatus.UNAUTHORIZED.value(), response.getBody().getStatus());
     }
 }

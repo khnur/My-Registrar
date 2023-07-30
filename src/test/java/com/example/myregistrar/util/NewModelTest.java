@@ -13,11 +13,6 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.slf4j.Logger;
 
-import java.util.Calendar;
-import java.util.GregorianCalendar;
-
-import static org.mockito.Mockito.*;
-
 class NewModelTest {
     @Mock
     Faker faker;
@@ -65,8 +60,6 @@ class NewModelTest {
         Assertions.assertNotNull(result.getLastName());
         Assertions.assertNotNull(result.getBirthDate());
         Assertions.assertNotNull(result.getGender());
-        Assertions.assertNotNull(result.getPassword());
-        Assertions.assertNotNull(result.getRole());
     }
 
     @Test

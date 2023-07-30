@@ -1,17 +1,19 @@
 package com.example.myregistrar.controllers;
 
-import com.example.myregistrar.dtos.ErrorDto;
 import com.example.myregistrar.dtos.UniversityDto;
 import com.example.myregistrar.models.University;
-import com.example.myregistrar.util.entity_dto_mappers.UniversityMapper;
+import com.example.myregistrar.services.UniversityService;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mock;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+
+import static org.mockito.Mockito.when;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 class UniversityControllerIntegrationTest {
@@ -22,17 +24,18 @@ class UniversityControllerIntegrationTest {
     @Autowired
     private TestRestTemplate restTemplate;
 
+    @Mock
+    UniversityService universityService;
+
     @Test
-    void testCreateUniversity_Success() {
-        University university = new University("name", "country", "city");
+    void testGetUniversityById() {
+        Long id = 1L;
+        when(universityService.getUniversityById(id)).thenReturn(new University());
 
-        ResponseEntity<UniversityDto> response = restTemplate.postForEntity(
-                "http://localhost:" + port + "/university", UniversityMapper.INSTANCE.universityToUniversityDto(university), UniversityDto.class);
+        ResponseEntity<UniversityDto> response = restTemplate
+                .getForEntity("http://localhost:" + port + "/university/" + id, UniversityDto.class);
 
-        Assertions.assertEquals(HttpStatus.OK, response.getStatusCode());
-        Assertions.assertNotNull(response.getBody());
-        Assertions.assertEquals("name", response.getBody().getName());
-        Assertions.assertEquals("country", response.getBody().getCountry());
+        Assertions.assertEquals(HttpStatus.UNAUTHORIZED, response.getStatusCode());
     }
 }
 

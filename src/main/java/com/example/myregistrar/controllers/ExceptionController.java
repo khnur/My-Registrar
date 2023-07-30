@@ -1,16 +1,16 @@
 package com.example.myregistrar.controllers;
 
-import com.example.myregistrar.dtos.ErrorDto;
+import com.example.myregistrar.dtos.auth_dto.ErrorDto;
 import com.example.myregistrar.exceptions.*;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.validation.ValidationException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
-import java.util.Date;
+import java.time.LocalDateTime;
 
-import static org.springframework.http.HttpStatus.CONFLICT;
-import static org.springframework.http.HttpStatus.NOT_FOUND;
+import static org.springframework.http.HttpStatus.*;
 
 @RestControllerAdvice
 public class ExceptionController {
@@ -20,10 +20,10 @@ public class ExceptionController {
             BookNotFoundException.class,
             UniversityNotFoundException.class
     })
-    public ResponseEntity<?> handleNotFound(HttpServletRequest httpServletRequest, RuntimeException e) {
+    public ResponseEntity<ErrorDto> handleNotFound(HttpServletRequest httpServletRequest, RuntimeException e) {
         return ResponseEntity.status(NOT_FOUND).body(
                 ErrorDto.builder()
-                        .timestamp(new Date())
+                        .timestamp(LocalDateTime.now())
                         .status(NOT_FOUND.value())
                         .error(NOT_FOUND.getReasonPhrase())
                         .path(httpServletRequest.getServletPath())
@@ -38,12 +38,25 @@ public class ExceptionController {
             BookAlreadyExistsException.class,
             UniversityAlreadyExistsException.class
     })
-    public ResponseEntity<?> handleConflict(HttpServletRequest httpServletRequest, RuntimeException e) {
+    public ResponseEntity<ErrorDto> handleConflict(HttpServletRequest httpServletRequest, RuntimeException e) {
         return ResponseEntity.status(CONFLICT).body(
                 ErrorDto.builder()
-                        .timestamp(new Date())
+                        .timestamp(LocalDateTime.now())
                         .status(CONFLICT.value())
                         .error(CONFLICT.getReasonPhrase())
+                        .path(httpServletRequest.getServletPath())
+                        .message(e.getMessage())
+                        .build()
+        );
+    }
+
+    @ExceptionHandler(ValidationException.class)
+    public ResponseEntity<ErrorDto> handleValidation(HttpServletRequest httpServletRequest, RuntimeException e) {
+        return ResponseEntity.status(BAD_REQUEST).body(
+                ErrorDto.builder()
+                        .timestamp(LocalDateTime.now())
+                        .status(BAD_REQUEST.value())
+                        .error(BAD_REQUEST.getReasonPhrase())
                         .path(httpServletRequest.getServletPath())
                         .message(e.getMessage())
                         .build()

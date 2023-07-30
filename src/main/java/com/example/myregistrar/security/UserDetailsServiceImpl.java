@@ -1,8 +1,7 @@
 package com.example.myregistrar.security;
 
-import com.example.myregistrar.exceptions.StudentNotFoundException;
-import com.example.myregistrar.models.Student;
-import com.example.myregistrar.repositories.StudentRepo;
+import com.example.myregistrar.models.EndUser;
+import com.example.myregistrar.services.EndUserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.User;
@@ -16,17 +15,16 @@ import java.util.List;
 @Service
 @RequiredArgsConstructor
 public class UserDetailsServiceImpl implements UserDetailsService {
-    private final StudentRepo studentRepo;
+    private final EndUserService endUserService;
 
     @Override
-    public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
-        Student student = studentRepo.findStudentByEmail(email)
-                .orElseThrow(() -> new StudentNotFoundException("There is no student with such email=" + email));
+    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+        EndUser user = endUserService.getUserByUsername(username);
 
         return new User(
-                student.getEmail(),
-                student.getPassword(),
-                List.of(new SimpleGrantedAuthority(student.getRole()))
+                user.getUsername(),
+                user.getPassword(),
+                List.of(new SimpleGrantedAuthority(user.getRole()))
         );
     }
 }

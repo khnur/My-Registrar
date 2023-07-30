@@ -1,15 +1,8 @@
 package com.example.myregistrar;
 
 import com.example.myregistrar.jms.KafkaService;
-import com.example.myregistrar.models.Book;
-import com.example.myregistrar.models.Course;
-import com.example.myregistrar.models.Student;
-import com.example.myregistrar.models.University;
-import com.example.myregistrar.services.BookService;
-import com.example.myregistrar.services.CourseService;
-import com.example.myregistrar.services.StudentService;
-import com.example.myregistrar.services.UniversityService;
-import com.example.myregistrar.util.DateMapper;
+import com.example.myregistrar.models.*;
+import com.example.myregistrar.services.*;
 import com.example.myregistrar.util.NewModel;
 import com.example.myregistrar.util.Role;
 import lombok.extern.slf4j.Slf4j;
@@ -18,6 +11,7 @@ import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.stereotype.Component;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
@@ -44,16 +38,21 @@ public class ApplicationDataToTest {
             StudentService studentService,
             CourseService courseService,
             BookService bookService,
-            UniversityService universityService
+            UniversityService universityService,
+            EndUserService endUserService
     ) {
         return args -> {
+            endUserService.createUser(new EndUser(
+                    "admin",
+                    "$2a$12$BO709/LgaeJi4N2Q0wlEo.5NetvwKO9hZgJYfnDhuQmQWeziyFgh.",
+                    Role.ADMIN.getRoleName()
+            ));
+
             studentService.createStudent(new Student(
                     "aaa",
                     "aaa",
-                    DateMapper.DATE_FORMAT.parse("1234-78-78"),
-                    "M",
-                    "aaa",
-                    Role.STUDENT.getRoleName()
+                    LocalDate.of(1995, 5,6),
+                    "M"
             ));
 
             universityService.createUniversity(new University(
@@ -96,7 +95,7 @@ public class ApplicationDataToTest {
                             "aaa",
                             "aaa",
                             "aaa",
-                            DateMapper.DATE_FORMAT.parse("1234-78-78"),
+                            LocalDate.now(),
                             "aaa",
                             141
                     ),
@@ -104,7 +103,7 @@ public class ApplicationDataToTest {
                             "bbb",
                             "aaa",
                             "aaa",
-                            DateMapper.DATE_FORMAT.parse("1234-78-78"),
+                            LocalDate.now(),
                             "aaa",
                             252
                     ),
@@ -112,7 +111,7 @@ public class ApplicationDataToTest {
                             "ccc",
                             "aaa",
                             "aaa",
-                            DateMapper.DATE_FORMAT.parse("1234-78-78"),
+                            LocalDate.now(),
                             "aaa",
                             378
                     )

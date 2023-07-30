@@ -7,6 +7,8 @@ import com.example.myregistrar.models.University;
 import com.github.javafaker.Faker;
 import lombok.extern.slf4j.Slf4j;
 
+import java.time.LocalDate;
+import java.time.ZoneId;
 import java.util.Date;
 
 @Slf4j
@@ -28,7 +30,7 @@ public class NewModel {
         String name = book.title();
         String author = book.author();
         String genre = book.genre();
-        Date publishedDate = faker.date().birthday();
+        LocalDate publishedDate = LocalDate.now();
         String publisher = book.publisher();
         int pageNumber = faker.number().numberBetween(100, 500);
 
@@ -40,10 +42,8 @@ public class NewModel {
         String lastName = faker.name().lastName();
         Date date = faker.date().birthday();
         String gender = faker.random().nextInt(5) % 2 == 0 ? "Male" : "Female";
-        String password = faker.name().username();
-        String role = "ROLE_USER";
 
-        return new Student(firstName, lastName, date, gender, password, role);
+        return new Student(firstName, lastName, date.toInstant().atZone(ZoneId.systemDefault()).toLocalDate(), gender);
     }
 
     public static University createRandomUniversity() {

@@ -21,6 +21,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
+import java.time.LocalDate;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
 import java.util.List;
@@ -47,8 +48,7 @@ class StudentControllerTest {
     @Test
     void testCreateStudent() {
         Student student = new Student("firstName", "lastName",
-                new GregorianCalendar(2023, Calendar.JULY, 28, 22, 33).getTime(),
-                "gender", "password", "role");
+                LocalDate.EPOCH, "gender");
         when(studentService.createStudent(any())).thenReturn(student);
 
         StudentDto result = studentController.createStudent(new StudentDto());
@@ -64,8 +64,7 @@ class StudentControllerTest {
     @Test
     void testGetAllStudents() {
         List<Student> students = List.of(new Student("firstName", "lastName",
-                new GregorianCalendar(2023, Calendar.JULY, 28, 22, 33).getTime(),
-                "gender", "password", "role"));
+                LocalDate.EPOCH, "gender"));
         when(studentService.getAllStudents()).thenReturn(students);
 
         List<StudentDto> result = studentController.getAllStudents();
@@ -75,8 +74,7 @@ class StudentControllerTest {
     @Test
     void testGetStudentById() {
         Student student = new Student("firstName", "lastName",
-                new GregorianCalendar(2023, Calendar.JULY, 28, 22, 33).getTime(),
-                "gender", "password", "role");
+                LocalDate.EPOCH, "gender");
         when(studentService.getStudentById(anyLong())).thenReturn(student);
 
         StudentDto result = studentController.getStudentById(Long.valueOf(1));
@@ -85,7 +83,8 @@ class StudentControllerTest {
 
     @Test
     void testGetStudentReportById() {
-        when(studentService.getStudentById(anyLong())).thenReturn(new Student("firstName", "lastName", new GregorianCalendar(2023, Calendar.JULY, 28, 22, 33).getTime(), "gender", "password", "role"));
+        when(studentService.getStudentById(anyLong())).thenReturn(new Student("firstName", "lastName",
+                LocalDate.EPOCH, "gender"));
         when(studentService.getStudentReport(any())).thenReturn(new StudentReportDto("name", "email", Integer.valueOf(0), Integer.valueOf(0), Integer.valueOf(0), Integer.valueOf(0), Integer.valueOf(0), List.of(new CourseDto()), new UniversityDto(Long.valueOf(1), "name", "country", "city")));
 
         StudentReportDto result = studentController.getStudentReportById(Long.valueOf(1));
@@ -95,8 +94,7 @@ class StudentControllerTest {
     @Test
     void testGetUniversityByStudentId() {
         Student student = new Student("firstName", "lastName",
-                new GregorianCalendar(2023, Calendar.JULY, 28, 22, 33).getTime(),
-                "gender", "password", "role");
+                LocalDate.EPOCH, "gender");
         student.setId(1L);
         when(studentService.getStudentById(anyLong())).thenReturn(student);
 
@@ -106,8 +104,8 @@ class StudentControllerTest {
 
     @Test
     void testAssignStudentToUniversity() {
-        Student student = new Student("firstName", "lastName", new GregorianCalendar(2023, Calendar.JULY, 28,
-                22, 33).getTime(), "gender", "password", "role");
+        Student student = new Student("firstName", "lastName",
+                LocalDate.EPOCH, "gender");
 
         when(studentService.getStudentById(anyLong())).thenReturn(student);
         when(universityService.getUniversityById(anyLong())).thenReturn(new University("name", "country", "city"));
@@ -119,7 +117,8 @@ class StudentControllerTest {
 
     @Test
     void testGetCourseByStudentId() {
-        when(studentService.getStudentById(anyLong())).thenReturn(new Student("firstName", "lastName", new GregorianCalendar(2023, Calendar.JULY, 28, 22, 33).getTime(), "gender", "password", "role"));
+        when(studentService.getStudentById(anyLong())).thenReturn(new Student("firstName", "lastName",
+                LocalDate.EPOCH, "gender"));
         List<Course> courseList = List.of(new Course("name", "department", "instructor", 0));
         when(courseService.getCoursesByStudent(any())).thenReturn(courseList);
 
@@ -129,10 +128,10 @@ class StudentControllerTest {
 
     @Test
     void testGetBooksByStudentId() {
-        when(studentService.getStudentById(anyLong())).thenReturn(new Student("firstName", "lastName", new GregorianCalendar(2023, Calendar.JULY, 28, 22, 33).getTime(), "gender", "password", "role"));
+        when(studentService.getStudentById(anyLong())).thenReturn(new Student("firstName", "lastName",
+                LocalDate.EPOCH, "gender"));
         List<Book> bookList = List.of(new Book("name", "author", "genre",
-                new GregorianCalendar(2023, Calendar.JULY, 28, 22, 33).getTime(),
-                "publisher", 0));
+                LocalDate.EPOCH, "publisher", 0));
         when(bookService.getBooksByStudent(any())).thenReturn(
                 bookList);
 

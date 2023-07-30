@@ -13,15 +13,16 @@ import org.springframework.security.config.annotation.authentication.configurati
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
+import org.springframework.security.config.annotation.web.configurers.HeadersConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.security.crypto.password.NoOpPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.authentication.logout.HttpStatusReturningLogoutSuccessHandler;
 
+import static org.springframework.boot.autoconfigure.security.servlet.PathRequest.toH2Console;
 import static org.springframework.http.HttpMethod.*;
 
 @Configuration
@@ -36,24 +37,32 @@ public class SecurityConfig {
     ) throws Exception {
         return httpSecurity
                 .csrf(AbstractHttpConfigurer::disable)
-
+                .headers(header -> header.frameOptions(HeadersConfigurer.FrameOptionsConfig::disable))
                 .authorizeHttpRequests(authorize -> authorize
-                        .requestMatchers(POST).hasAnyRole(Role.ADMIN.name(), Role.MANAGER.name())
-                        .requestMatchers("/student/**").hasAnyRole(Role.STUDENT.name(), Role.ADMIN.name(), Role.MANAGER.name())
-                        .requestMatchers("/university/**").hasRole(Role.ADMIN.name())
-                        .requestMatchers("/course/**").hasAnyRole(Role.ADMIN.name(), Role.MANAGER.name())
-                        .requestMatchers("/book/**").hasAnyRole(Role.STUDENT.name(), Role.ADMIN.name(), Role.MANAGER.name())
-                        .requestMatchers(POST, "/auth/**").permitAll()
-                        .anyRequest().authenticated())
-
+                                .requestMatchers(toH2Console()).permitAll()
+                                .requestMatchers("/auth/**").permitAll()
+                                .requestMatchers(PUT).hasRole(Role.ADMIN.name())
+                                .requestMatchers(POST).hasRole(Role.ADMIN.name())
+                                .requestMatchers(DELETE).hasRole(Role.ADMIN.name())
+//                        .requestMatchers("/student/**").hasAnyRole(Role.STUDENT.name(), Role.ADMIN.name())
+//                        .requestMatchers("/university/**").hasRole(Role.ADMIN.name())
+//                        .requestMatchers("/course/**").hasAnyRole(Role.ADMIN.name())
+//                        .requestMatchers("/book/**").hasAnyRole(Role.ADMIN.name())
+                                .anyRequest().authenticated()
+                )
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .exceptionHandling(exception -> exception.authenticationEntryPoint(authEntryPoint))
                 .addFilterBefore(authJwtFilter, UsernamePasswordAuthenticationFilter.class)
                 .authenticationProvider(authenticationProvider) ///////
 
                 .logout(logout -> logout
+                        .logoutUrl("/logout")
+                        .logoutSuccessUrl("/logout?logout")
                         .logoutSuccessHandler(new HttpStatusReturningLogoutSuccessHandler(HttpStatus.NO_CONTENT))
-                        .deleteCookies("jwt"))
+                        .invalidateHttpSession(true)
+                        .clearAuthentication(true)
+                        .deleteCookies("jwt")
+                )
                 .build();
     }
 
@@ -73,7 +82,6 @@ public class SecurityConfig {
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder(12);
-//        return NoOpPasswordEncoder.getInstance();
     }
 
     @Bean

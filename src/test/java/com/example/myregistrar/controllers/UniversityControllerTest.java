@@ -20,6 +20,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
+import java.time.LocalDate;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
 import java.util.List;
@@ -84,8 +85,7 @@ class UniversityControllerTest {
     @Test
     void testGetStudentsByUniversity() {
         List<Student> students = List.of(new Student("firstName", "lastName",
-                new GregorianCalendar(2023, Calendar.JULY, 28, 22, 47).getTime(),
-                "gender", "password", "role"));
+                LocalDate.EPOCH, "male"));
         when(studentService.getStudentsByUniversity(any())).thenReturn(
                 students);
         when(universityService.getUniversityById(anyLong())).thenReturn(new University("name", "country", "city"));

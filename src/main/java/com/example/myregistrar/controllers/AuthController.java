@@ -1,9 +1,14 @@
 package com.example.myregistrar.controllers;
 
-import com.example.myregistrar.dtos.LoginDto;
+import com.example.myregistrar.dtos.auth_dto.JwtDto;
+import com.example.myregistrar.dtos.auth_dto.ResponseDto;
+import com.example.myregistrar.dtos.auth_dto.UserDto;
 import com.example.myregistrar.security.JwtService;
+import com.example.myregistrar.services.EndUserService;
+import com.example.myregistrar.util.entity_dto_mappers.UserMapper;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -20,21 +25,53 @@ public class AuthController {
     private final AuthenticationManager authenticationManager;
     private final JwtService jwtService;
     private final UserDetailsService userDetailsService;
+    private final EndUserService endUserService;
 
-    @PostMapping
-    public ResponseEntity<String> auth(@RequestBody LoginDto loginDto) {
+    @PostMapping("/login")
+    public ResponseDto<JwtDto> auth(@RequestBody UserDto userDto) {
         authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(
-                        loginDto.getEmail(),
-                        loginDto.getPassword()
+                        userDto.getUsername(),
+                        userDto.getPassword()
                 )
         );
 
-        final UserDetails userDetails = userDetailsService.loadUserByUsername(loginDto.getEmail());
+        final UserDetails userDetails = userDetailsService.loadUserByUsername(userDto.getUsername());
 
         if (userDetails == null) {
-            return ResponseEntity.ofNullable("Something went wrong");
+            return new ResponseDto<>(
+                    HttpStatus.INTERNAL_SERVER_ERROR.value(),
+                    "Something went wrong",
+                    null
+            );
         }
-        return ResponseEntity.ok(jwtService.generateToken(userDetails));
+        return new ResponseDto<>(
+                HttpStatus.OK.value(),
+                "Jwt is created for the user: " + userDto.getUsername(),
+                new JwtDto(jwtService.generateToken(userDetails))
+        );
+    }
+
+    @PostMapping("/register")
+    public ResponseDto<UserDto> register(@RequestBody @Valid UserDto userDto) {
+        UserDto newUser = UserMapper.INSTANCE.userToUserDto(
+                endUserService.createUser(
+                        UserMapper.INSTANCE.userDtoToUser(userDto)
+                )
+        );
+
+        if (newUser == null) {
+            return new ResponseDto<>(
+                    HttpStatus.INTERNAL_SERVER_ERROR.value(),
+                    "Something went wrong",
+                    null
+            );
+        }
+
+        return new ResponseDto<>(
+                HttpStatus.OK.value(),
+                "new user created with username=" + newUser.getUsername() + " and role=" + newUser.getRole(),
+                newUser
+        );
     }
 }
