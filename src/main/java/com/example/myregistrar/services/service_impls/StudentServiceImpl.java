@@ -1,7 +1,11 @@
 package com.example.myregistrar.services.service_impls;
 
 import com.example.myregistrar.dtos.StudentReportDto;
-import com.example.myregistrar.exceptions.*;
+import com.example.myregistrar.exceptions.conflict.StudentAlreadyExistsException;
+import com.example.myregistrar.exceptions.conflict.UniversityAlreadyExistsException;
+import com.example.myregistrar.exceptions.not_found.CourseNotFoundException;
+import com.example.myregistrar.exceptions.not_found.StudentNotFoundException;
+import com.example.myregistrar.exceptions.not_found.UniversityNotFoundException;
 import com.example.myregistrar.models.Course;
 import com.example.myregistrar.models.Student;
 import com.example.myregistrar.models.University;

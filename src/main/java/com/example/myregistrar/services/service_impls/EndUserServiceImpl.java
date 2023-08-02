@@ -1,7 +1,7 @@
 package com.example.myregistrar.services.service_impls;
 
-import com.example.myregistrar.exceptions.UserAlreadyExistsException;
-import com.example.myregistrar.exceptions.UserNotFoundException;
+import com.example.myregistrar.exceptions.conflict.UserAlreadyExistsException;
+import com.example.myregistrar.exceptions.not_found.UserNotFoundException;
 import com.example.myregistrar.models.EndUser;
 import com.example.myregistrar.repositories.EndUserRepo;
 import com.example.myregistrar.services.EndUserService;

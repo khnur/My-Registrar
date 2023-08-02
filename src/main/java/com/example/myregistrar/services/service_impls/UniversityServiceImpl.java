@@ -1,7 +1,7 @@
 package com.example.myregistrar.services.service_impls;
 
-import com.example.myregistrar.exceptions.UniversityAlreadyExistsException;
-import com.example.myregistrar.exceptions.UniversityNotFoundException;
+import com.example.myregistrar.exceptions.conflict.UniversityAlreadyExistsException;
+import com.example.myregistrar.exceptions.not_found.UniversityNotFoundException;
 import com.example.myregistrar.models.University;
 import com.example.myregistrar.repositories.UniversityRepo;
 import com.example.myregistrar.services.UniversityService;

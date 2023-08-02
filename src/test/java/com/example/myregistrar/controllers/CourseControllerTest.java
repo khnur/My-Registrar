@@ -8,17 +8,10 @@ import com.example.myregistrar.dtos.BookDto;
 import com.example.myregistrar.dtos.CourseDto;
 import com.example.myregistrar.dtos.StudentDto;
 import com.example.myregistrar.dtos.UniversityDto;
-import com.example.myregistrar.exceptions.BookNotFoundException;
-import com.example.myregistrar.exceptions.CourseNotFoundException;
-import com.example.myregistrar.exceptions.UniversityNotFoundException;
 import com.example.myregistrar.models.Book;
 import com.example.myregistrar.models.Course;
 import com.example.myregistrar.models.Student;
 import com.example.myregistrar.models.University;
-import com.example.myregistrar.services.BookService;
-import com.example.myregistrar.services.CourseService;
-import com.example.myregistrar.services.StudentService;
-import com.example.myregistrar.services.UniversityService;
 import com.example.myregistrar.util.entity_dto_mappers.BookMapper;
 import com.example.myregistrar.util.entity_dto_mappers.CourseMapper;
 import com.example.myregistrar.util.entity_dto_mappers.StudentMapper;
@@ -31,9 +24,7 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
 import java.time.LocalDate;
-import java.util.Calendar;
 import java.util.Collections;
-import java.util.GregorianCalendar;
 import java.util.List;
 
 import static org.mockito.Mockito.*;

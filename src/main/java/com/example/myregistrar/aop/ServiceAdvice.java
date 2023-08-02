@@ -223,24 +223,4 @@ public class ServiceAdvice {
     public void afterReturningNotifyMethods() {
         log.info("All students with the university have been notified about new course");
     }
-
-
-//    @Around("getListPointCut()")
-//    public Object handleListNotFoundException(ProceedingJoinPoint joinPoint) throws Throwable {
-//        try {
-//            return joinPoint.proceed();
-//        } catch (RuntimeException ex) {
-//            return Collections.emptyList();
-//        }
-//    }
-
-//    @Around("getModelPointCut()")
-//    public Object handleGetMethods(ProceedingJoinPoint joinPoint) throws Throwable {
-//        Class<?> clazz = ((MethodSignature) joinPoint.getSignature()).getReturnType();
-//        try {
-//            return joinPoint.proceed();
-//        } catch (RuntimeException ex) {
-//            return clazz.getDeclaredConstructor().newInstance();
-//        }
-//    }
 }

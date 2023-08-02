@@ -1,50 +1,33 @@
-package com.example.myregistrar.security;
+package com.example.myregistrar.security.auth_exception_handlers;
 
 import com.example.myregistrar.dtos.auth_dto.ErrorDto;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
-import org.springframework.security.core.AuthenticationException;
-import org.springframework.security.web.AuthenticationEntryPoint;
+import org.springframework.http.MediaType;
+import org.springframework.security.access.AccessDeniedException;
+import org.springframework.security.web.access.AccessDeniedHandler;
 import org.springframework.stereotype.Service;
-import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping;
 
 import java.io.IOException;
 import java.time.LocalDateTime;
 
-import static jakarta.servlet.http.HttpServletResponse.SC_UNAUTHORIZED;
-import static org.springframework.http.HttpStatus.*;
-
 @Service
 @RequiredArgsConstructor
-public class AuthEntryPoint implements AuthenticationEntryPoint {
-    private final RequestMappingHandlerMapping requestMappingHandlerMapping;
+public class AccessDeniedHandlerImpl implements AccessDeniedHandler {
     private final ObjectMapper objectMapper;
-
     @Override
-    public void commence(
+    public void handle(
             HttpServletRequest request,
             HttpServletResponse response,
-            AuthenticationException authException
-    ) throws IOException {
-        response.setContentType("application/json");
+            AccessDeniedException accessDeniedException
+    ) throws IOException, ServletException {
+        response.setContentType(MediaType.APPLICATION_JSON_VALUE);
 
-        HttpStatus status = NOT_FOUND;
-        String exMessage = authException.getMessage();
-
-        try {
-            requestMappingHandlerMapping.getHandler(request).getHandler();
-        } catch (IllegalArgumentException e) {
-            status = BAD_REQUEST;
-            exMessage = e.getMessage();
-        } catch (Exception e) {
-            status = INTERNAL_SERVER_ERROR;
-            exMessage = e.getMessage();
-        }
-
-        handleException(request, response, exMessage, status);
+        handleException(request, response, accessDeniedException.getMessage(), HttpStatus.FORBIDDEN);
     }
 
     private void handleException(

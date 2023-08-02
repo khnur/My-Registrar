@@ -1,6 +1,5 @@
 package com.example.myregistrar.config;
 
-import com.example.myregistrar.security.AuthEntryPoint;
 import com.example.myregistrar.security.AuthJwtFilter;
 import com.example.myregistrar.util.Role;
 import org.springframework.context.annotation.Bean;
@@ -15,10 +14,15 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.annotation.web.configurers.HeadersConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.core.userdetails.User;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.provisioning.InMemoryUserDetailsManager;
+import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.access.AccessDeniedHandler;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.authentication.logout.HttpStatusReturningLogoutSuccessHandler;
 
@@ -32,8 +36,10 @@ public class SecurityConfig {
     public SecurityFilterChain securityFilterChain(
             HttpSecurity httpSecurity,
             AuthJwtFilter authJwtFilter,
-            AuthEntryPoint authEntryPoint,
-            AuthenticationProvider authenticationProvider
+            AuthenticationEntryPoint authEntryPoint,
+            AuthenticationProvider authenticationProvider,
+            AuthenticationManager authenticationManager,
+            AccessDeniedHandler accessDeniedHandler
     ) throws Exception {
         return httpSecurity
                 .csrf(AbstractHttpConfigurer::disable)
@@ -41,6 +47,8 @@ public class SecurityConfig {
                 .authorizeHttpRequests(authorize -> authorize
                                 .requestMatchers(toH2Console()).permitAll()
                                 .requestMatchers("/auth/**").permitAll()
+                                .requestMatchers("/completable-future/**").permitAll()
+                                .requestMatchers("/student/**").permitAll()  /////// DEL
                                 .requestMatchers(PUT).hasRole(Role.ADMIN.name())
                                 .requestMatchers(POST).hasRole(Role.ADMIN.name())
                                 .requestMatchers(DELETE).hasRole(Role.ADMIN.name())
@@ -51,9 +59,16 @@ public class SecurityConfig {
                                 .anyRequest().authenticated()
                 )
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-                .exceptionHandling(exception -> exception.authenticationEntryPoint(authEntryPoint))
+
+                .exceptionHandling(exception -> {
+                    exception.authenticationEntryPoint(authEntryPoint);
+                    exception.accessDeniedHandler(accessDeniedHandler);
+                })
+
                 .addFilterBefore(authJwtFilter, UsernamePasswordAuthenticationFilter.class)
-                .authenticationProvider(authenticationProvider) ///////
+
+                .authenticationProvider(authenticationProvider)
+                .authenticationManager(authenticationManager)
 
                 .logout(logout -> logout
                         .logoutUrl("/logout")
@@ -87,5 +102,14 @@ public class SecurityConfig {
     @Bean
     public AuthenticationManager authenticationManager(AuthenticationConfiguration configuration) throws Exception {
         return configuration.getAuthenticationManager();
+    }
+
+    @Bean
+    public InMemoryUserDetailsManager userDetailsService() {
+        UserDetails admin = User.withUsername("admin")
+                .password("$2a$12$BO709/LgaeJi4N2Q0wlEo.5NetvwKO9hZgJYfnDhuQmQWeziyFgh.")
+                .roles("ADMIN")
+                .build();
+        return new InMemoryUserDetailsManager(admin);
     }
 }

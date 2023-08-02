@@ -2,8 +2,8 @@ package com.example.myregistrar.controllers.facade;
 
 import com.example.myregistrar.dtos.CourseDto;
 import com.example.myregistrar.dtos.UniversityDto;
-import com.example.myregistrar.exceptions.CourseNotFoundException;
-import com.example.myregistrar.exceptions.UniversityNotFoundException;
+import com.example.myregistrar.exceptions.not_found.CourseNotFoundException;
+import com.example.myregistrar.exceptions.not_found.UniversityNotFoundException;
 import com.example.myregistrar.models.Course;
 import com.example.myregistrar.models.Student;
 import com.example.myregistrar.models.University;
@@ -12,11 +12,11 @@ import com.example.myregistrar.services.StudentService;
 import com.example.myregistrar.services.UniversityService;
 import com.example.myregistrar.util.entity_dto_mappers.CourseMapper;
 import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 
 import java.util.List;
 
-@Component
+@Service
 @RequiredArgsConstructor
 public class CourseFacade {
     private final StudentService studentService;

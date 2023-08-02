@@ -1,9 +1,9 @@
 package com.example.myregistrar.services.service_impls;
 
 import com.example.myregistrar.dtos.StudentReportDto;
-import com.example.myregistrar.exceptions.StudentAlreadyExistsException;
-import com.example.myregistrar.exceptions.StudentNotFoundException;
-import com.example.myregistrar.exceptions.UniversityAlreadyExistsException;
+import com.example.myregistrar.exceptions.conflict.StudentAlreadyExistsException;
+import com.example.myregistrar.exceptions.not_found.StudentNotFoundException;
+import com.example.myregistrar.exceptions.conflict.UniversityAlreadyExistsException;
 import com.example.myregistrar.models.Book;
 import com.example.myregistrar.models.Course;
 import com.example.myregistrar.models.Student;
@@ -20,8 +20,6 @@ import org.mockito.MockitoAnnotations;
 
 import java.text.ParseException;
 import java.time.LocalDate;
-import java.util.Calendar;
-import java.util.GregorianCalendar;
 import java.util.List;
 import java.util.Optional;
 

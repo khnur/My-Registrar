@@ -2,10 +2,9 @@ package com.example.myregistrar.services.service_impls;
 
 import com.example.myregistrar.dtos.CourseDto;
 import com.example.myregistrar.embeddables.CoursePreRequisiteId;
-import com.example.myregistrar.exceptions.BookNotFoundException;
-import com.example.myregistrar.exceptions.CourseNotFoundException;
-import com.example.myregistrar.exceptions.StudentNotFoundException;
-import com.example.myregistrar.exceptions.UniversityNotFoundException;
+import com.example.myregistrar.exceptions.not_found.CourseNotFoundException;
+import com.example.myregistrar.exceptions.not_found.StudentNotFoundException;
+import com.example.myregistrar.exceptions.not_found.UniversityNotFoundException;
 import com.example.myregistrar.jms.KafkaService;
 import com.example.myregistrar.models.*;
 import com.example.myregistrar.models.model_utils.StudentEnrolmentManager;
@@ -23,7 +22,6 @@ import org.mockito.MockitoAnnotations;
 
 import java.time.LocalDate;
 import java.util.*;
-import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 import static org.junit.jupiter.api.Assertions.*;

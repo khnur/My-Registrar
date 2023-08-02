@@ -1,5 +1,6 @@
 package com.example.myregistrar.controllers;
 
+import com.example.myregistrar.annotation.LogDuration;
 import com.example.myregistrar.controllers.facade.BookFacade;
 import com.example.myregistrar.controllers.facade.CourseFacade;
 import com.example.myregistrar.controllers.facade.StudentFacade;
@@ -18,6 +19,7 @@ import static org.springframework.http.HttpStatus.OK;
 @RestController
 @RequestMapping("/student")
 @RequiredArgsConstructor
+@LogDuration
 public class StudentController {
     private final StudentFacade studentFacade;
     private final CourseFacade courseFacade;

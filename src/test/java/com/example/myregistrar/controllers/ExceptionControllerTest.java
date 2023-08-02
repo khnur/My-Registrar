@@ -1,8 +1,8 @@
 package com.example.myregistrar.controllers;
 
 import com.example.myregistrar.dtos.auth_dto.ErrorDto;
-import com.example.myregistrar.exceptions.CourseAlreadyExistsException;
-import com.example.myregistrar.exceptions.StudentNotFoundException;
+import com.example.myregistrar.exceptions.conflict.CourseAlreadyExistsException;
+import com.example.myregistrar.exceptions.not_found.StudentNotFoundException;
 import jakarta.servlet.http.HttpServletRequest;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;

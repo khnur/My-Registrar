@@ -1,14 +1,13 @@
 package com.example.myregistrar.services.service_impls;
 
-import com.example.myregistrar.exceptions.BookAlreadyExistsException;
-import com.example.myregistrar.exceptions.BookNotFoundException;
-import com.example.myregistrar.exceptions.CourseNotFoundException;
-import com.example.myregistrar.exceptions.StudentNotFoundException;
+import com.example.myregistrar.exceptions.conflict.BookAlreadyExistsException;
+import com.example.myregistrar.exceptions.not_found.BookNotFoundException;
+import com.example.myregistrar.exceptions.not_found.CourseNotFoundException;
+import com.example.myregistrar.exceptions.not_found.StudentNotFoundException;
 import com.example.myregistrar.models.Book;
 import com.example.myregistrar.models.Course;
 import com.example.myregistrar.models.Student;
 import com.example.myregistrar.repositories.BookRepo;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;

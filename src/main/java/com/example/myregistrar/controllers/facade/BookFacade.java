@@ -1,7 +1,7 @@
 package com.example.myregistrar.controllers.facade;
 
 import com.example.myregistrar.dtos.BookDto;
-import com.example.myregistrar.exceptions.BookNotFoundException;
+import com.example.myregistrar.exceptions.not_found.BookNotFoundException;
 import com.example.myregistrar.models.Book;
 import com.example.myregistrar.models.Course;
 import com.example.myregistrar.models.Student;
@@ -10,11 +10,11 @@ import com.example.myregistrar.services.CourseService;
 import com.example.myregistrar.services.StudentService;
 import com.example.myregistrar.util.entity_dto_mappers.BookMapper;
 import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 
 import java.util.List;
 
-@Component
+@Service
 @RequiredArgsConstructor
 public class BookFacade {
     private final BookService bookService;
